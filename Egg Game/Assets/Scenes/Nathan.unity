@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 225709406}
   m_Layer: 0
   m_Name: Test Square
-  m_TagString: Untagged
+  m_TagString: Player2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -239,7 +239,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 225709405}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.61, y: -2.13, z: 0}
+  m_LocalPosition: {x: 2.37, y: -2.13, z: 0}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -492,9 +492,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7889276292189517990, guid: cb1917bf1b90f244fad44407dac8aede, type: 3}
+      propertyPath: weaponCooldown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7889276292189517997, guid: cb1917bf1b90f244fad44407dac8aede, type: 3}
       propertyPath: m_Name
-      value: Player
+      value: PlayerOne
+      objectReference: {fileID: 0}
+    - target: {fileID: 7889276293914662720, guid: cb1917bf1b90f244fad44407dac8aede, type: 3}
+      propertyPath: knockbackStrength
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7889276293914662722, guid: cb1917bf1b90f244fad44407dac8aede, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb1917bf1b90f244fad44407dac8aede, type: 3}
