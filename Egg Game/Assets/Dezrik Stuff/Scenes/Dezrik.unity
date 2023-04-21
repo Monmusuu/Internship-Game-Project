@@ -344,8 +344,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3a201a1b681f8e64bbceafb94d096a36, type: 2}
   - {fileID: 11400000, guid: cb05703185042174ca13f145f8c45cdf, type: 2}
   - {fileID: 11400000, guid: af836ecc78073f1418a36080e2e2c344, type: 2}
+  - {fileID: 11400000, guid: 675ef572b7d71f94e97d4765b58ea48a, type: 2}
   UITiles: []
   selectedTile: 0
+  removeTile: 4
   tileGridUI: {fileID: 882302309}
 --- !u!4 &761557912
 Transform:
@@ -703,7 +705,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1885820984}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.08, y: 0.47, z: 0}
+  m_LocalPosition: {x: -0.61, y: -0.99, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

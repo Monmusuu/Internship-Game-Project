@@ -13,6 +13,7 @@ public class BuildManager : MonoBehaviour
     public List<GameObject> UITiles;
 
     public int selectedTile = 0;
+    public int removeTile = 0;
 
     public Transform tileGridUI;
 
@@ -59,6 +60,14 @@ public class BuildManager : MonoBehaviour
         {
             selectedTile = 2;
             RenderUITiles();
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            selectedTile = 3;
+            RenderUITiles();
+            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+            selectedTile = 0;
         }
 
         if (Input.GetMouseButtonDown(0))
