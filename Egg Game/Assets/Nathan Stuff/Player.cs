@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float weaponCooldown = 2.0f;
 
+    [SerializeField] private float knockbackStrength;
+
 
     void OnEnable() {
         internalTimer = weaponTimer;
@@ -115,4 +117,5 @@ public class Player : MonoBehaviour
         gameObject.transform.localScale = currentScale;
         lastDirRight = !lastDirRight;
     }
+    
 }
