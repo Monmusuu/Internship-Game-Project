@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour
 {
     [SerializeField] Transform groundCheckCollider;
     private Rigidbody2D rigid;
+
+    private CharacterController controller;
 
     [SerializeField] private float jumpSpeed = 5;
 
@@ -35,16 +39,43 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float knockbackStrength;
 
+    private bool left = false;
+    private bool right = false;
+
+    private bool jumped = false;
+
+    private bool attack = false;
 
     void OnEnable() {
         internalTimer = weaponTimer;
     }
+
+    
 
     // Start is called before the first frame update
     void Start()
     {
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
+        controller = gameObject.GetComponent<CharacterController>();
+    }
+
+    public void OnMoveLeft(InputAction.CallbackContext context){
+        left = context.action.triggered;
+    }
+
+    public void OnMoveRight(InputAction.CallbackContext context){
+        right = context.action.triggered;
+    }
+
+    public void OnJump(InputAction.CallbackContext context){
+        jumped = context.action.triggered;
+
+    }
+
+    public void OnAttack(InputAction.CallbackContext context){
+        attack = context.action.triggered;
+
     }
 
     // Update is called once per frame
@@ -53,27 +84,27 @@ public class Player : MonoBehaviour
         GroundCheck();
 
         if(isGrounded){
-            if(Input.GetKeyDown(KeyCode.UpArrow)){
+            if(jumped){
                 rigid.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
                 Debug.Log("Jumped");
             }
         }
 
-        if(Input.GetKey(KeyCode.LeftArrow)){
-            rigid.AddForce(Vector3.left * m_RunSpeed, ForceMode2D.Impulse);
+        if(left){
+            rigid.AddForce(Vector2.left * m_RunSpeed, ForceMode2D.Impulse);
             if(!lastDirRight){
                 Flip();
             }
         }
 
-        if(Input.GetKey(KeyCode.RightArrow)){
-            rigid.AddForce(Vector3.right * m_RunSpeed, ForceMode2D.Impulse);
+        if(right){
+            rigid.AddForce(Vector2.right * m_RunSpeed, ForceMode2D.Impulse);
             if(lastDirRight){
                 Flip();
             }
         }
 
-        if(Input.GetMouseButtonDown(0) && weaponCooldown == 1.0f && !isAttacking){
+        if(attack && weaponCooldown == 1.0f && !isAttacking){
             isAttacking = true;
             weaponCollider.enabled = true;
             m_WeaponAnimator.SetTrigger("Swing");
