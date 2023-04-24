@@ -12,7 +12,6 @@ public class Weapon : MonoBehaviour
         Rigidbody2D m_rigidbody = other.GetComponent<Collider2D>().GetComponent<Rigidbody2D>();
         Vector2 direction = other.transform.position - transform.position;
         direction.y = 4;
-        direction.x = 5;
 
         if (transform.parent.CompareTag("Player1")){
             Debug.Log("I'm Player One");
