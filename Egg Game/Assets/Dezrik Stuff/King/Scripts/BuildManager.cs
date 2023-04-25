@@ -19,6 +19,8 @@ public class BuildManager : MonoBehaviour
 
     private void Start()
     {
+       tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+
         int i = 0;
         foreach (Tile tile in tiles)
         {

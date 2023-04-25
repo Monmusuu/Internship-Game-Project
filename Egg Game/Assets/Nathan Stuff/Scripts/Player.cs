@@ -6,6 +6,12 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour
 {
+    public PlayerDetails playerDetails;
+
+    public GameObject BuildManager;
+
+    public GameObject KingGrid;
+
     [SerializeField] Transform groundCheckCollider;
     private Rigidbody2D rigid;
 
@@ -46,6 +52,8 @@ public class Player : MonoBehaviour
 
     private bool attack = false;
 
+    public bool isKing = false;
+
     void OnEnable() {
         internalTimer = weaponTimer;
     }
@@ -53,6 +61,8 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        BuildManager.SetActive(false);
+        KingGrid.SetActive(false);
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
         controller = gameObject.GetComponent<CharacterController>();
@@ -146,5 +156,15 @@ public class Player : MonoBehaviour
         gameObject.transform.localScale = currentScale;
         lastDirRight = !lastDirRight;
     }
-    
+
+    void OnTriggerEnter2D(Collider2D other) {
+
+        if (other.gameObject.CompareTag("KingPoint")){
+           isKing = true;
+           BuildManager.SetActive(true);
+           KingGrid.SetActive(true);
+           Debug.Log(playerDetails.playerID.ToString() + " is King");
+
+        }
+    }
 }
