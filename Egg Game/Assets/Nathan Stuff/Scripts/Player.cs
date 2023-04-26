@@ -54,6 +54,8 @@ public class Player : MonoBehaviour
 
     public bool isKing = false;
 
+    private float maxSpeed = 15.0f;
+
     void OnEnable() {
         internalTimer = weaponTimer;
     }
@@ -96,6 +98,11 @@ public class Player : MonoBehaviour
                 rigid.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
                 Debug.Log("Jumped");
             }
+        }
+
+        Debug.Log(rigid.velocity.magnitude);
+        if(rigid.velocity.magnitude > maxSpeed){
+            rigid.velocity = Vector2.ClampMagnitude(rigid.velocity, maxSpeed);
         }
 
         if(left){

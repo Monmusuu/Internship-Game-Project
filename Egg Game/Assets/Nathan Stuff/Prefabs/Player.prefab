@@ -516,8 +516,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1.5
-  m_LinearDrag: 0.01
-  m_AngularDrag: 0.5
+  m_LinearDrag: 0.1
+  m_AngularDrag: 4
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -540,12 +540,12 @@ MonoBehaviour:
   BuildManager: {fileID: 6232265083158212558}
   KingGrid: {fileID: 1192708395103770121}
   groundCheckCollider: {fileID: 3219085189834981985}
-  jumpSpeed: 2.5
+  jumpSpeed: 5
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   isGrounded: 0
-  m_RunSpeed: 0.5
+  m_RunSpeed: 0.4
   Weapon: {fileID: 3219085189739878061}
   weaponCollider: {fileID: 3219085189739878054}
   m_WeaponAnimator: {fileID: 3219085189739878057}
