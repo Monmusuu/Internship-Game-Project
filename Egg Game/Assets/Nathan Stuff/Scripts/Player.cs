@@ -56,6 +56,16 @@ public class Player : MonoBehaviour
 
     private float maxSpeed = 15.0f;
 
+    private int maxHealth = 6;
+    private int currentHealth = 6;
+    [SerializeField] private Healthbar healthbar;
+
+    public int GetMaxHealth(){return maxHealth;}
+    public void SetMaxHealth(int value){maxHealth = value;}
+    
+    public int  GetCurrentHealth(){return currentHealth;}
+    public void SetCurrentHealth(int value){currentHealth = value;}
+
     void OnEnable() {
         internalTimer = weaponTimer;
     }
@@ -63,6 +73,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        healthbar.SetMaxHealth(maxHealth);
         BuildManager.SetActive(false);
         KingGrid.SetActive(false);
         weaponCollider.enabled = false;
@@ -100,7 +111,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        Debug.Log(rigid.velocity.magnitude);
+        //Debug.Log(rigid.velocity.magnitude);
         if(rigid.velocity.magnitude > maxSpeed){
             rigid.velocity = Vector2.ClampMagnitude(rigid.velocity, maxSpeed);
         }
@@ -172,6 +183,11 @@ public class Player : MonoBehaviour
            KingGrid.SetActive(true);
            Debug.Log(playerDetails.playerID.ToString() + " is King");
 
+        }
+
+        if (other.gameObject.CompareTag("Trap")){
+            currentHealth -= 1;
+           Debug.Log(playerDetails.playerID.ToString() + "is Hit by Trap");
         }
     }
 }

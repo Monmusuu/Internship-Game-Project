@@ -12,6 +12,7 @@ TagManager:
   - Player5
   - Player6
   - KingPoint
+  - Trap
   layers:
   - Default
   - TransparentFX
