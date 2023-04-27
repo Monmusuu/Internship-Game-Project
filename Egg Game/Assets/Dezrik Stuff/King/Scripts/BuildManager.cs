@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class BuildManager : MonoBehaviour
 { 
     public Tilemap tilemap;
+    public Tilemap playerTilemap;
     public Tile[] tiles;
     public List<GameObject> UITiles;
 
@@ -65,17 +66,40 @@ public class BuildManager : MonoBehaviour
         }
         else if (Input.GetMouseButtonDown(1))
         {
-            selectedTile = 3;
-            RenderUITiles();
-            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
-            selectedTile = 0;
+            if (gameObject.layer == 7)
+            {
+                if (selectedTile = 0)
+                {
+                    selectedTile = 3;
+                    RenderUITiles();
+                    Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+                    selectedTile = 0;
+                }
+                if (selectedTile = 1)
+                {
+                    selectedTile = 3;
+                    RenderUITiles();
+                    Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+                    selectedTile = 1;
+                }
+                if (selectedTile = 2)
+                {
+                    selectedTile = 3;
+                    RenderUITiles();
+                    Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+                    selectedTile = 2;
+                }
+            }
         }
 
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+            gameObject.layer = 7;
         }
 
     }

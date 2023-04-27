@@ -96,11 +96,11 @@ public class Player : MonoBehaviour
         if(isGrounded){
             if(jumped){
                 rigid.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
-                //Debug.Log("Jumped");
+                Debug.Log("Jumped");
             }
         }
 
-        //Debug.Log(rigid.velocity.magnitude);
+        Debug.Log(rigid.velocity.magnitude);
         if(rigid.velocity.magnitude > maxSpeed){
             rigid.velocity = Vector2.ClampMagnitude(rigid.velocity, maxSpeed);
         }
