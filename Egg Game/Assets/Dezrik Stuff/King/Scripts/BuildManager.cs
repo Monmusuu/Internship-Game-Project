@@ -68,29 +68,29 @@ public class BuildManager : MonoBehaviour
         {
             if (gameObject.layer == 7)
             {
-                if (selectedTile = 0)
+                if (selectedTile == 0)
                 {
                     selectedTile = 3;
-                    RenderUITiles();
                     Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
                     selectedTile = 0;
+                    RenderUITiles();
                 }
-                if (selectedTile = 1)
+                if (selectedTile == 1)
                 {
                     selectedTile = 3;
-                    RenderUITiles();
                     Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
                     selectedTile = 1;
+                    RenderUITiles();
                 }
-                if (selectedTile = 2)
+                if (selectedTile == 2)
                 {
                     selectedTile = 3;
-                    RenderUITiles();
                     Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
                     selectedTile = 2;
+                    RenderUITiles();
                 }
             }
         }
