@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     public GameObject KingGrid;
 
     [SerializeField] Transform groundCheckCollider;
+    [SerializeField] Transform groundCheckCollider2;
     private Rigidbody2D rigid;
 
     private CharacterController controller;
@@ -162,8 +163,14 @@ public class Player : MonoBehaviour
     void GroundCheck(){
         isGrounded = false;
 
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckCollider.position, groundCheckRadius, groundLayer, kingLayer);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckCollider.position, groundCheckRadius, groundLayer);
+        Collider2D[] colliders2 = Physics2D.OverlapCircleAll(groundCheckCollider2.position, groundCheckRadius, kingLayer);
         if(colliders.Length > 0){
+            isGrounded = true;
+            //Debug.Log("Grounded");
+        }
+
+        if(colliders2.Length > 0){
             isGrounded = true;
             //Debug.Log("Grounded");
         }

@@ -555,6 +555,7 @@ MonoBehaviour:
   BuildManager: {fileID: 6232265083158212558}
   KingGrid: {fileID: 1192708395103770121}
   groundCheckCollider: {fileID: 3219085189834981985}
+  groundCheckCollider2: {fileID: 3219085189834981985}
   jumpSpeed: 5
   groundLayer:
     serializedVersion: 2
