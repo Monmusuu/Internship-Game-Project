@@ -13,6 +13,7 @@ TagManager:
   - Player6
   - KingPoint
   - Trap
+  - Player1IMG
   layers:
   - Default
   - TransparentFX
