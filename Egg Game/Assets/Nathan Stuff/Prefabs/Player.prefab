@@ -559,6 +559,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  kingLayer:
+    serializedVersion: 2
+    m_Bits: 128
   isGrounded: 0
   m_RunSpeed: 0.4
   Weapon: {fileID: 3219085189739878061}
@@ -964,7 +967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de2aba3d5b730e94aaef4467fbff9943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilemap: {fileID: 0}
+  KingTilemap: {fileID: 0}
   tiles:
   - {fileID: 11400000, guid: 3a201a1b681f8e64bbceafb94d096a36, type: 2}
   - {fileID: 11400000, guid: cb05703185042174ca13f145f8c45cdf, type: 2}

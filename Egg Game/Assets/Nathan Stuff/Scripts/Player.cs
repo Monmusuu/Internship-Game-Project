@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float jumpSpeed = 5;
 
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] LayerMask kingLayer;
 
     [SerializeField] bool isGrounded = false;
     const float groundCheckRadius = 0.2f;
@@ -161,7 +162,7 @@ public class Player : MonoBehaviour
     void GroundCheck(){
         isGrounded = false;
 
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckCollider.position, groundCheckRadius, groundLayer);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckCollider.position, groundCheckRadius, groundLayer, kingLayer);
         if(colliders.Length > 0){
             isGrounded = true;
             //Debug.Log("Grounded");
