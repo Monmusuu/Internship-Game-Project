@@ -2,14 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 public class BuildManager : MonoBehaviour
 { 
-    public Tilemap tilemap;
-    public Tilemap playerTilemap;
+    public Tilemap KingTilemap;
     public Tile[] tiles;
     public List<GameObject> UITiles;
 
@@ -20,7 +21,7 @@ public class BuildManager : MonoBehaviour
 
     private void Start()
     {
-       tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+       KingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
 
         int i = 0;
         foreach (Tile tile in tiles)
@@ -72,7 +73,7 @@ public class BuildManager : MonoBehaviour
                 {
                     selectedTile = 3;
                     Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+                    KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
                     selectedTile = 0;
                     RenderUITiles();
                 }
@@ -80,7 +81,7 @@ public class BuildManager : MonoBehaviour
                 {
                     selectedTile = 3;
                     Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+                    KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
                     selectedTile = 1;
                     RenderUITiles();
                 }
@@ -88,18 +89,30 @@ public class BuildManager : MonoBehaviour
                 {
                     selectedTile = 3;
                     Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+                    KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
                     selectedTile = 2;
                     RenderUITiles();
                 }
+                Debug.Log("7 clicked");
+            }
+            else
+            {
+                Debug.Log("not 7 clicked");
             }
         }
 
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            tilemap.SetTile(tilemap.WorldToCell(position), tiles[selectedTile]);
+            KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
             gameObject.layer = 7;
+        }
+
+        void OnMouseEnter()
+        {
+            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+            Debug.Log("Mouse is over "+ gameObject.layer+ ".");
         }
 
     }
