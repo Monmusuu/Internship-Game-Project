@@ -43,7 +43,7 @@ public class Player : MonoBehaviour
     [SerializeField] private double internalTimer;
     private bool isAttacking = false;
 
-    [SerializeField] private float weaponCooldown = 1.0f;
+    [SerializeField] private float weaponCooldown = 0.8f;
 
     [SerializeField] private float knockbackStrength;
 
@@ -132,7 +132,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(attack && weaponCooldown == 1.0f && !isAttacking){
+        if(attack && weaponCooldown == 0.8f && !isAttacking){
             isAttacking = true;
             weaponCollider.enabled = true;
             m_WeaponAnimator.SetTrigger("Swing");
@@ -151,7 +151,7 @@ public class Player : MonoBehaviour
             weaponCooldown -= Time.deltaTime;
         }
         if(weaponCooldown <= 0){
-            weaponCooldown = 1.0f;
+            weaponCooldown = 0.8f;
             attackFinished = false;
         }
     }

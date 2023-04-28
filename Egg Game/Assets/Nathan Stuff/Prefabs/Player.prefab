@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2389812458205567497}
   - component: {fileID: 3966779884658995311}
   - component: {fileID: 1526557127058223658}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 7897022731226887920}
   - component: {fileID: 4546441270414195879}
   - component: {fileID: 40734570421801012}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: KingGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -374,8 +374,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3219085189834981985}
-  - component: {fileID: 5785561941838819285}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -397,32 +396,6 @@ Transform:
   m_Father: {fileID: 3219085190463158597}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &5785561941838819285
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3219085189834981984}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 0.12}
-  m_EdgeRadius: 0
 --- !u!1 &3219085190463158601
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,7 +412,7 @@ GameObject:
   - component: {fileID: 3651565879809642998}
   - component: {fileID: 3219085190463158595}
   - component: {fileID: 3219085190463158592}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -569,7 +542,7 @@ MonoBehaviour:
   weaponCollider: {fileID: 3219085189739878054}
   m_WeaponAnimator: {fileID: 3219085189739878057}
   internalTimer: 0
-  weaponCooldown: 1
+  weaponCooldown: 0.8
   knockbackStrength: 0
   isKing: 0
   healthbar: {fileID: 1526557127058223658}
@@ -691,7 +664,7 @@ CapsuleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -730,7 +703,7 @@ GameObject:
   - component: {fileID: 1739579921768492573}
   - component: {fileID: 5315876220054875814}
   - component: {fileID: 6852571181201124758}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: TileUIGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -831,7 +804,7 @@ GameObject:
   - component: {fileID: 8800191686422525723}
   - component: {fileID: 2107181849583729994}
   - component: {fileID: 7439600807958861789}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -934,7 +907,7 @@ GameObject:
   - component: {fileID: 6651161947505266835}
   - component: {fileID: 867584244316948660}
   - component: {fileID: 3901283972191160901}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BuildManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1088,7 +1061,7 @@ GameObject:
   - component: {fileID: 6577305689341565977}
   - component: {fileID: 6498437342107554747}
   - component: {fileID: 3935128673461635769}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1164,7 +1137,7 @@ GameObject:
   - component: {fileID: 985508690804979190}
   - component: {fileID: 109239082971429514}
   - component: {fileID: 2921950879818419760}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1238,7 +1211,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3102023435479335604}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
