@@ -8,6 +8,9 @@ public class CharacterSelection : MonoBehaviour
     [SerializeField] private Sprite playerSpriteHat;
     [SerializeField] private Sprite playerSpriteBody;
     [SerializeField] private Sprite playerSpriteWeapon;
+    [SerializeField] private Button hatBox;
+    [SerializeField] private Button bodyBox;
+    [SerializeField] private Button weaponBox;
     [SerializeField] private Button Left1;
     [SerializeField] private Button Left2;
     [SerializeField] private Button Left3;
@@ -15,19 +18,35 @@ public class CharacterSelection : MonoBehaviour
     [SerializeField] private Button Right2;
     [SerializeField] private Button Right3;
     [SerializeField] private Button Ready;
+
+
     private int[] MenuArray = new int[4];
     private int menuPos = 0;
-    [SerializeField] private Sprite[] allHats;
+
+
+    public Sprite[] allHats;
+    private int _HatValue = 0;
+    public int hatValue{
+        get => _HatValue;
+        set{
+            _HatValue = hatValue;
+            playerSpriteHat = allHats[hatValue];
+        }
+    }
     private int hatPos = 0;
+
+
     [SerializeField] private Sprite[] allBodies;
     //private int bodyPos = 0;
     [SerializeField] private Sprite[] allWeapons;
     //private int weaponPos = 0;
-    private bool isReady = false;
-    private bool clickedUP = false;
-    private bool clickedDown = false;
-    private bool clickedLeft = false;
-    private bool clickedRight = false;
+
+
+    [SerializeField]private bool isReady = false;
+    [SerializeField]private bool clickedUP = false;
+    [SerializeField]private bool clickedDown = false;
+    [SerializeField]private bool clickedLeft = false;
+    [SerializeField]private bool clickedRight = false;
 
     public void OnUP(InputAction.CallbackContext context){
         clickedUP = context.action.triggered;
@@ -47,9 +66,10 @@ public class CharacterSelection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerSpriteHat = transform.GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite;
-        playerSpriteBody = transform.GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite;
-        playerSpriteWeapon = transform.GetChild(6).gameObject.GetComponent<SpriteRenderer>().sprite;
+        
+        playerSpriteHat = transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite;
+        playerSpriteBody = transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite;
+        playerSpriteWeapon = transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite;
     }
 
     // Update is called once per frame
@@ -63,40 +83,46 @@ public class CharacterSelection : MonoBehaviour
             }
         }
         if(clickedDown){
-            if(menuPos <= MenuArray.Length +1){
-                menuPos = 0;
+            if(menuPos == 0){
+                menuPos = MenuArray.Length -1;
             }else{
                 menuPos -= 1;
             }
         }
         if(menuPos == 0){
-            Left1.Select();
-            Right1.Select();
+            hatBox.Select();
             //Debug.Log("Hats");
-            if(clickedLeft){
-                if(hatPos >= allHats.Length -1){
-                    hatPos = 0;
-                }else{
-                    hatPos += 1;
-                }
-                Left1.onClick.Invoke();
-                //yield WaitForSeconds(1);
-                Debug.Log("Previous Hat");
-            }
             if(clickedRight){
                 Right1.onClick.Invoke();
-                Debug.Log("Next Hat");
+                if(_HatValue >= allHats.Length-1){
+                    _HatValue = 0;
+                }else{
+                    _HatValue += 1;
+                }
+                playerSpriteHat = allHats[hatValue];
+                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHat;
+                // Debug.Log("Next Hat");
+            }
+
+            if(clickedLeft){
+                Left1.onClick.Invoke();
+                if(_HatValue == 0){
+                    _HatValue = allHats.Length-1;
+                }else{
+                    _HatValue -= 1;
+                }
+                playerSpriteHat = allHats[hatValue];
+                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHat;
+                // Debug.Log("Previous Hat");
             }
         }
         if(menuPos == 1){
             //Debug.Log("Bodies");
-            Left2.Select();
-            Right2.Select();
+            bodyBox.Select();
         }
         if(menuPos == 2){
             //Debug.Log("Weapons");
-            Left3.Select();
-            Right3.Select();
+            weaponBox.Select();
         }
         if(isReady){
             Ready.GetComponent<Image>().color = Color.green;

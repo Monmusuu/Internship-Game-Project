@@ -56,7 +56,7 @@
                     "name": "",
                     "id": "46fd1e00-5e9b-465c-a8ba-941c447303cd",
                     "path": "<Keyboard>/w",
-                    "interactions": "",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": "KeyBoard",
                     "action": "ButtonSetUp",
