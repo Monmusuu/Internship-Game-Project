@@ -12,6 +12,9 @@ public class Player : MonoBehaviour
 
     public GameObject KingGrid;
 
+    public Transform playerSpawnLocation;
+    public Transform kingSpawnLocation;
+
     [SerializeField] Transform groundCheckCollider;
     [SerializeField] Transform groundCheckCollider2;
     private Rigidbody2D rigid;
@@ -55,6 +58,8 @@ public class Player : MonoBehaviour
     private bool attack = false;
 
     public bool isKing = false;
+    public bool becameKing = false;
+    public bool isPlayer = false;
 
     private float maxSpeed = 15.0f;
 
@@ -75,6 +80,8 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
+        kingSpawnLocation = GameObject.Find("KingPoint").transform;
         healthbar.SetMaxHealth(maxHealth);
         BuildManager.SetActive(false);
         KingGrid.SetActive(false);
@@ -104,55 +111,62 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GroundCheck();
+        if(!isKing){
+            GroundCheck();
 
-        if(isGrounded){
-            if(jumped){
-                rigid.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
-                Debug.Log("Jumped");
+            if(isGrounded){
+                if(jumped){
+                    rigid.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
+                    Debug.Log("Jumped");
+                }
+            }
+
+            //Debug.Log(rigid.velocity.magnitude);
+            if(rigid.velocity.magnitude > maxSpeed){
+                rigid.velocity = Vector2.ClampMagnitude(rigid.velocity, maxSpeed);
+            }
+
+            if(left){
+                rigid.AddForce(Vector2.left * m_RunSpeed, ForceMode2D.Impulse);
+                if(!lastDirRight){
+                    Flip();
+                }
+            }
+
+            if(right){
+                rigid.AddForce(Vector2.right * m_RunSpeed, ForceMode2D.Impulse);
+                if(lastDirRight){
+                    Flip();
+                }
+            }
+
+            if(attack && weaponCooldown == 0.8f && !isAttacking){
+                isAttacking = true;
+                weaponCollider.enabled = true;
+                m_WeaponAnimator.SetTrigger("Swing");
+                Debug.Log("Attack");
+            }
+            if(isAttacking){
+                internalTimer -= Time.deltaTime;
+                if (internalTimer <= 0){
+                    weaponCollider.enabled = false;
+                    isAttacking = false;
+                    internalTimer = weaponTimer;
+                    attackFinished = true;
+                }
+            }
+            if(attackFinished){
+                weaponCooldown -= Time.deltaTime;
+            }
+            if(weaponCooldown <= 0){
+                weaponCooldown = 0.8f;
+                attackFinished = false;
             }
         }
 
-        //Debug.Log(rigid.velocity.magnitude);
-        if(rigid.velocity.magnitude > maxSpeed){
-            rigid.velocity = Vector2.ClampMagnitude(rigid.velocity, maxSpeed);
-        }
-
-        if(left){
-            rigid.AddForce(Vector2.left * m_RunSpeed, ForceMode2D.Impulse);
-            if(!lastDirRight){
-                Flip();
-            }
-        }
-
-        if(right){
-            rigid.AddForce(Vector2.right * m_RunSpeed, ForceMode2D.Impulse);
-            if(lastDirRight){
-                Flip();
-            }
-        }
-
-        if(attack && weaponCooldown == 0.8f && !isAttacking){
-            isAttacking = true;
-            weaponCollider.enabled = true;
-            m_WeaponAnimator.SetTrigger("Swing");
-            Debug.Log("Attack");
-        }
-        if(isAttacking){
-            internalTimer -= Time.deltaTime;
-            if (internalTimer <= 0){
-                weaponCollider.enabled = false;
-                isAttacking = false;
-                internalTimer = weaponTimer;
-                attackFinished = true;
-            }
-        }
-        if(attackFinished){
-            weaponCooldown -= Time.deltaTime;
-        }
-        if(weaponCooldown <= 0){
-            weaponCooldown = 0.8f;
-            attackFinished = false;
+        if(becameKing){
+            rigid.velocity = Vector2.zero;
+            transform.position = kingSpawnLocation.position;
         }
     }
 
@@ -185,17 +199,23 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) {
 
-        if (other.gameObject.CompareTag("KingPoint")){
-           isKing = true;
-           BuildManager.SetActive(true);
-           KingGrid.SetActive(true);
-           Debug.Log(playerDetails.playerID.ToString() + " is King");
-
+        if(other.gameObject.CompareTag("KingPoint")){
+            becameKing = true;
+            isPlayer = false;
+            BuildManager.SetActive(true);
+            KingGrid.SetActive(true);
+            Debug.Log(playerDetails.playerID.ToString() + " is King");
         }
 
-        if (other.gameObject.CompareTag("Trap")){
+        if(other.gameObject.CompareTag("Trap")){
             currentHealth -= 1;
-           Debug.Log(playerDetails.playerID.ToString() + "is Hit by Trap");
+            Debug.Log(playerDetails.playerID.ToString() + "is Hit by Trap");
+        }
+    }
+    void OnTriggerStay2D(Collider2D other) {
+        if(other.gameObject.CompareTag("KingPoint")){
+            isKing = true;
+            becameKing = false;
         }
     }
 }

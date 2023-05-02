@@ -33,8 +33,6 @@ public class CharacterSelection : MonoBehaviour
             playerSpriteHat = allHats[hatValue];
         }
     }
-    private int hatPos = 0;
-
 
     [SerializeField] private Sprite[] allBodies;
     //private int bodyPos = 0;
@@ -66,7 +64,6 @@ public class CharacterSelection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
         playerSpriteHat = transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite;
         playerSpriteBody = transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite;
         playerSpriteWeapon = transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite;
