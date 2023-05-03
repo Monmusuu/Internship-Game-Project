@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
 {
     public PlayerDetails playerDetails;
 
+    public RoundControl roundControl;
+
     public GameObject BuildManager;
 
     public GameObject KingGrid;
@@ -80,6 +82,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        isPlayer = true;
         playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         healthbar.SetMaxHealth(maxHealth);
@@ -167,6 +170,11 @@ public class Player : MonoBehaviour
         if(becameKing){
             rigid.velocity = Vector2.zero;
             transform.position = kingSpawnLocation.position;
+        }
+        if(isPlayer && roundControl.Respawn){
+            rigid.velocity = Vector2.zero;
+            transform.position = playerSpawnLocation.position;
+            //isPlayer = false;
         }
     }
 

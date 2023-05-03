@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Camera))]
 public class MultiTargetCamera : MonoBehaviour
 {
 
@@ -15,7 +16,7 @@ public class MultiTargetCamera : MonoBehaviour
     private Camera cam;
 
     public bool hasPlayer1;
-    bool hasPlayer2;
+    public bool hasPlayer2;
     bool hasPlayer3;
     bool hasPlayer4;
     bool hasPlayer5;
