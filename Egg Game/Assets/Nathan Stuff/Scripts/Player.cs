@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
 {
     public PlayerDetails playerDetails;
 
+    public Player[] player;
+
     public RoundControl roundControl;
 
     public GameObject BuildManager;
@@ -213,6 +215,36 @@ public class Player : MonoBehaviour
             BuildManager.SetActive(true);
             KingGrid.SetActive(true);
             Debug.Log(playerDetails.playerID.ToString() + " is King");
+
+            if(player[0].isKing){
+                player[0].isKing = false;
+                player[0].isPlayer = true;
+            }
+
+            if(player[1].isKing){
+                player[1].isKing = false;
+                player[1].isPlayer = true;
+            }
+
+            if(player[2].isKing){
+                player[2].isKing = false;
+                player[2].isPlayer = true;
+            }
+
+            if(player[3].isKing){
+                player[3].isKing = false;
+                player[3].isPlayer = true;
+            }
+
+            if(player[4].isKing){
+                player[4].isKing = false;
+                player[4].isPlayer = true;
+            }
+
+            if(player[5].isKing){
+                player[5].isKing = false;
+                player[5].isPlayer = true;
+            }
         }
 
         if(other.gameObject.CompareTag("Trap")){

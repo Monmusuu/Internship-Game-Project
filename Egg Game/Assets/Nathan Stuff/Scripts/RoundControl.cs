@@ -25,11 +25,65 @@ public class RoundControl : MonoBehaviour
             if(player[0].becameKing){
                 Respawn = true;
                 Round += 1;
+                RoundTime = 10f;
+                itemsPlaced = false;
+                timerOn = false;
             }
+            if(player[1].becameKing){
+                Respawn = true;
+                Round += 1;
+                RoundTime = 10f;
+                itemsPlaced = false;
+                timerOn = false;
+            }
+            if(player[2].becameKing){
+                Respawn = true;
+                Round += 1;
+                RoundTime = 10f;
+                itemsPlaced = false;
+                timerOn = false;
+            }
+            if(player[3].becameKing){
+                Respawn = true;
+                Round += 1;
+                RoundTime = 10f;
+                itemsPlaced = false;
+                timerOn = false;
+            }
+            if(player[4].becameKing){
+                Respawn = true;
+                Round += 1;
+                RoundTime = 10f;
+                itemsPlaced = false;
+                timerOn = false;
+            }
+            if(player[5].becameKing){
+                Respawn = true;
+                Round += 1;
+                RoundTime = 10f;
+                itemsPlaced = false;
+                timerOn = false;
+            }
+            
 
             if(itemsPlaced && Round >= 1){
-                if(playerRemovingItem){
+                if(!playerRemovingItem){
                     if(player[0].isKing && itemsPlaced && Round >= 1){
+                        timerOn = true;
+                    }
+                    if(player[1].isKing && itemsPlaced && Round >= 1){
+                        timerOn = true;
+                    }
+                    if(player[2].isKing && itemsPlaced && Round >= 1){
+                        timerOn = true;
+                    }
+                    if(player[3].isKing && itemsPlaced && Round >= 1){
+                        timerOn = true;
+                    }
+                    if(player[4].isKing && itemsPlaced && Round >= 1){
+                        timerOn = true;
+                    }
+                    if(player[5].isKing && itemsPlaced && Round >= 1){
                         timerOn = true;
                     }
 
