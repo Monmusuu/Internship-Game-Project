@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 public class CharacterSelection : MonoBehaviour
 {
+
+    public PlayerSaveData playerSaveData;
     [SerializeField] private Sprite playerSpriteHat;
     [SerializeField] private Sprite playerSpriteBody;
     [SerializeField] private Sprite playerSpriteWeapon;
@@ -41,6 +43,7 @@ public class CharacterSelection : MonoBehaviour
 
 
     [SerializeField]private bool isReady = false;
+    [SerializeField]private bool readiedUp = false;
     [SerializeField]private bool clickedUP = false;
     [SerializeField]private bool clickedDown = false;
     [SerializeField]private bool clickedLeft = false;
@@ -121,8 +124,11 @@ public class CharacterSelection : MonoBehaviour
             //Debug.Log("Weapons");
             weaponBox.Select();
         }
-        if(isReady){
+        if(isReady && !readiedUp){
             Ready.GetComponent<Image>().color = Color.green;
+            PlayerSaveData.playerNumber +=1;
+            readiedUp = true;
+            Debug.Log(PlayerSaveData.playerNumber);
         }
     }
 }
