@@ -387,28 +387,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 882302308}
   m_CullTransparentMesh: 1
---- !u!1001 &1104198362
+--- !u!1001 &1120337490
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: KingTilemap
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.81
+      value: -6.545589
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.68
+      value: -1.5133219
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.8450222
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1516,7 +1520,7 @@ Tilemap:
   m_TileMatrixArray:
   - m_RefCount: 0
     m_Data:
-      e00: 5.0194096e+36
+      e00: 5.0190394e+36
       e01: 0
       e02: -3.8750038
       e03: -3.8750038
@@ -1526,8 +1530,8 @@ Tilemap:
       e13: 7.41e-43
       e20: 0.22254372
       e21: 1e-45
-      e22: 7.3910113e-29
-      e23: -2.0064507
+      e22: 7.429992e-29
+      e23: -2.005024
       e30: 4.5905e-41
       e31: 0
       e32: 7.43e-43

@@ -16,6 +16,9 @@ public class BuildManager : MonoBehaviour
 
     public int selectedTile = 0;
     public int removeTile = 0;
+    public bool trapPlaced = false;
+    public bool autoPlaced = false;
+    public bool blockPlaced = false;
 
     public Transform tileGridUI;
 
@@ -52,18 +55,30 @@ public class BuildManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            selectedTile = 0;
-            RenderUITiles();
-        } 
+            if (autoPlaced == false)
+            {
+                selectedTile = 0;
+                RenderUITiles();
+                  
+            }
+        }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            selectedTile = 1;
-            RenderUITiles();
+            if (trapPlaced == false)
+            {
+                selectedTile = 1;
+                RenderUITiles();
+                
+            }
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            selectedTile = 2;
-            RenderUITiles();
+            if (blockPlaced == false)
+            {
+                selectedTile = 2;
+                RenderUITiles();
+                
+            }
         }
         else if (Input.GetMouseButtonDown(1))
         {
@@ -71,27 +86,27 @@ public class BuildManager : MonoBehaviour
             {
                 if (selectedTile == 0)
                 {
-                    selectedTile = 3;
-                    Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
-                    selectedTile = 0;
-                    RenderUITiles();
+                        selectedTile = 3;
+                        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                        KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+                        selectedTile = 0;
+                        RenderUITiles();
                 }
-                if (selectedTile == 1)
+                else if (selectedTile == 1)
                 {
-                    selectedTile = 3;
-                    Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
-                    selectedTile = 1;
-                    RenderUITiles();
+                        selectedTile = 3;
+                        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                        KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+                        selectedTile = 1;
+                        RenderUITiles();
                 }
-                if (selectedTile == 2)
+                else if (selectedTile == 2)
                 {
-                    selectedTile = 3;
-                    Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
-                    selectedTile = 2;
-                    RenderUITiles();
+                        selectedTile = 3;
+                        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                        KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+                        selectedTile = 2;
+                        RenderUITiles();
                 }
                 Debug.Log("7 clicked");
             }
@@ -100,6 +115,7 @@ public class BuildManager : MonoBehaviour
                 Debug.Log("not 7 clicked");
             }
         }
+       
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -107,6 +123,14 @@ public class BuildManager : MonoBehaviour
             KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
             gameObject.layer = 7;
         }
+
+        if (blockPlaced == true && autoPlaced == true && trapPlaced == true)
+        {
+            //selectedTile = 3;
+            Debug.Log("none selected");
+        }
+
+        Debug.Log(selectedTile + " is selected");
 
         void OnMouseEnter()
         {
