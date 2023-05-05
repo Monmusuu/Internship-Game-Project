@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class CharacterSelection : MonoBehaviour
 {
 
-    public PlayerSaveData playerSaveData;
+    PlayerSaveData playerSaveData;
     [SerializeField] private Sprite playerSpriteHat;
     [SerializeField] private Sprite playerSpriteBody;
     [SerializeField] private Sprite playerSpriteWeapon;
@@ -36,10 +36,25 @@ public class CharacterSelection : MonoBehaviour
         }
     }
 
-    [SerializeField] private Sprite[] allBodies;
-    //private int bodyPos = 0;
+    public Sprite[] allBodies;
+    private int _BodyValue = 0;
+    public int bodyValue{
+        get => _BodyValue;
+        set{
+            _BodyValue = bodyValue;
+            playerSpriteBody = allBodies[bodyValue];
+        }
+    }
+
     [SerializeField] private Sprite[] allWeapons;
-    //private int weaponPos = 0;
+    private int _WeaponValue = 0;
+    public int weaponValue{
+        get => _WeaponValue;
+        set{
+            _WeaponValue = weaponValue;
+            playerSpriteWeapon = allWeapons[weaponValue];
+        }
+    }
 
 
     [SerializeField]private bool isReady = false;
@@ -89,6 +104,7 @@ public class CharacterSelection : MonoBehaviour
                 menuPos -= 1;
             }
         }
+        //Hats
         if(menuPos == 0){
             hatBox.Select();
             //Debug.Log("Hats");
@@ -116,14 +132,65 @@ public class CharacterSelection : MonoBehaviour
                 // Debug.Log("Previous Hat");
             }
         }
+        //Bodies
         if(menuPos == 1){
             //Debug.Log("Bodies");
             bodyBox.Select();
+            
+            if(clickedRight){
+                Right1.onClick.Invoke();
+                if(_BodyValue >= allBodies.Length-1){
+                    _BodyValue = 0;
+                }else{
+                    _BodyValue += 1;
+                }
+                playerSpriteBody = allBodies[hatValue];
+                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
+                // Debug.Log("Next Body");
+            }
+
+            if(clickedLeft){
+                Left1.onClick.Invoke();
+                if(_BodyValue == 0){
+                    _BodyValue = allBodies.Length-1;
+                }else{
+                    _BodyValue -= 1;
+                }
+                playerSpriteBody = allBodies[bodyValue];
+                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
+                // Debug.Log("Previous Body");
+            }
         }
+        //Weapons
         if(menuPos == 2){
             //Debug.Log("Weapons");
             weaponBox.Select();
+
+            if(clickedRight){
+                Right1.onClick.Invoke();
+                if(_WeaponValue >= allWeapons.Length-1){
+                    _WeaponValue = 0;
+                }else{
+                    _WeaponValue += 1;
+                }
+                playerSpriteWeapon = allWeapons[hatValue];
+                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
+                // Debug.Log("Next Weapon");
+            }
+
+            if(clickedLeft){
+                Left1.onClick.Invoke();
+                if(_WeaponValue == 0){
+                    _WeaponValue = allWeapons.Length-1;
+                }else{
+                    _WeaponValue -= 1;
+                }
+                playerSpriteWeapon = allWeapons[hatValue];
+                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
+                // Debug.Log("Previous Weapon");
+            }
         }
+        
         if(isReady && !readiedUp){
             Ready.GetComponent<Image>().color = Color.green;
             PlayerSaveData.playerNumber +=1;
