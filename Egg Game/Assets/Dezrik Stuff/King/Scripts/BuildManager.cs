@@ -108,11 +108,6 @@ public class BuildManager : MonoBehaviour
                         selectedTile = 2;
                         RenderUITiles();
                 }
-                Debug.Log("7 clicked");
-            }
-            else
-            {
-                Debug.Log("not 7 clicked");
             }
         }
        
@@ -127,16 +122,13 @@ public class BuildManager : MonoBehaviour
         if (blockPlaced == true && autoPlaced == true && trapPlaced == true)
         {
             //selectedTile = 3;
-            Debug.Log("none selected");
         }
 
-        Debug.Log(selectedTile + " is selected");
 
         void OnMouseEnter()
         {
             Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
-            Debug.Log("Mouse is over "+ gameObject.layer+ ".");
         }
 
     }
