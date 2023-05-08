@@ -416,7 +416,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 377}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1753487597546291765
@@ -450,6 +450,7 @@ MonoBehaviour:
   allBodies: []
   allWeapons: []
   isReady: 0
+  readiedUp: 0
   clickedUP: 0
   clickedDown: 0
   clickedLeft: 0

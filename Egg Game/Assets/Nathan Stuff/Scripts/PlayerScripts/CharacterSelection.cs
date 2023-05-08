@@ -197,5 +197,12 @@ public class CharacterSelection : MonoBehaviour
             readiedUp = true;
             Debug.Log(PlayerSaveData.playerNumber);
         }
+
+        // if(isReady && readiedUp){
+        //     Ready.GetComponent<Image>().color = Color.white;
+        //     PlayerSaveData.playerNumber -=1;
+        //     readiedUp = false;
+        //     Debug.Log(PlayerSaveData.playerNumber);
+        // }
     }
 }
