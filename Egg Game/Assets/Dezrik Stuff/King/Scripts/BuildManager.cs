@@ -84,39 +84,44 @@ public class BuildManager : MonoBehaviour
         {
             if (gameObject.layer == 7)
             {
-                if (selectedTile == 0)
-                {
-                        selectedTile = 3;
-                        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                        KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
-                        selectedTile = 0;
-                        RenderUITiles();
-                }
-                else if (selectedTile == 1)
-                {
-                        selectedTile = 3;
-                        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                        KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
-                        selectedTile = 1;
-                        RenderUITiles();
-                }
-                else if (selectedTile == 2)
-                {
-                        selectedTile = 3;
-                        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                        KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
-                        selectedTile = 2;
-                        RenderUITiles();
-                }
+                
             }
         }
        
 
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
-            gameObject.layer = 7;
+            if (selectedTile == 0)
+            {
+                Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+                gameObject.layer = 7;
+                selectedTile = 0;
+                autoPlaced = true;
+                selectedTile += 1;
+                RenderUITiles();
+            }
+            else if (selectedTile == 1)
+            {
+                Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+                gameObject.layer = 7;
+                selectedTile = 1;
+                trapPlaced = true;
+                selectedTile += 1;
+                RenderUITiles();
+            }
+            else if (selectedTile == 2)
+            {
+                Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+                gameObject.layer = 7;
+                selectedTile = 2;
+                blockPlaced = true;
+                selectedTile += 1;
+                RenderUITiles();
+            }
+            
         }
 
         if (blockPlaced == true && autoPlaced == true && trapPlaced == true)
