@@ -444,11 +444,14 @@ MonoBehaviour:
   Right2: {fileID: 6070281407125302739}
   Right3: {fileID: 1935267789248209332}
   Ready: {fileID: 2123407897104644172}
+  canvas: {fileID: 0}
   allHats:
   - {fileID: 21300000, guid: f618c5fe13b18994aa5aee8b97d8dca1, type: 3}
   - {fileID: 21300000, guid: 1f21190ca9d1e8540b2a3a2e46002685, type: 3}
-  allBodies: []
-  allWeapons: []
+  allBodies:
+  - {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  allWeapons:
+  - {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
   isReady: 0
   readiedUp: 0
   clickedUP: 0
@@ -561,7 +564,7 @@ MonoBehaviour:
     m_ActionId: 65956e3b-979d-49df-9e32-64e6756776e4
     m_ActionName: Player/Ready[/Keyboard/q]
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: KeyBoard
+  m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -1247,7 +1250,7 @@ SpriteRenderer:
   m_SortingLayerID: -2126358993
   m_SortingLayer: 1
   m_SortingOrder: 2
-  m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.7263827, g: 1, b: 0.10849059, a: 1}
   m_FlipX: 0
   m_FlipY: 0

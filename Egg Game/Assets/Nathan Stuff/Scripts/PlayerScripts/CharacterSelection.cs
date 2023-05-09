@@ -21,6 +21,8 @@ public class CharacterSelection : MonoBehaviour
     [SerializeField] private Button Right3;
     [SerializeField] private Button Ready;
 
+    public Transform canvas;
+
 
     private int[] MenuArray = new int[4];
     private int menuPos = 0;
@@ -58,7 +60,7 @@ public class CharacterSelection : MonoBehaviour
 
 
     [SerializeField]private bool isReady = false;
-    [SerializeField]private bool readiedUp = false;
+    public bool readiedUp = false;
     [SerializeField]private bool clickedUP = false;
     [SerializeField]private bool clickedDown = false;
     [SerializeField]private bool clickedLeft = false;
@@ -82,9 +84,11 @@ public class CharacterSelection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        canvas = GameObject.Find("Canvas").transform;
         playerSpriteHat = transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite;
         playerSpriteBody = transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite;
         playerSpriteWeapon = transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite;
+        this.transform.SetParent (canvas.transform);
     }
 
     // Update is called once per frame
@@ -144,8 +148,8 @@ public class CharacterSelection : MonoBehaviour
                 }else{
                     _BodyValue += 1;
                 }
-                playerSpriteBody = allBodies[hatValue];
-                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
+                playerSpriteBody = allBodies[bodyValue];
+                transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
                 // Debug.Log("Next Body");
             }
 
@@ -157,7 +161,7 @@ public class CharacterSelection : MonoBehaviour
                     _BodyValue -= 1;
                 }
                 playerSpriteBody = allBodies[bodyValue];
-                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
+                transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
                 // Debug.Log("Previous Body");
             }
         }
@@ -173,8 +177,8 @@ public class CharacterSelection : MonoBehaviour
                 }else{
                     _WeaponValue += 1;
                 }
-                playerSpriteWeapon = allWeapons[hatValue];
-                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
+                playerSpriteWeapon = allWeapons[weaponValue];
+                transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
                 // Debug.Log("Next Weapon");
             }
 
@@ -185,8 +189,8 @@ public class CharacterSelection : MonoBehaviour
                 }else{
                     _WeaponValue -= 1;
                 }
-                playerSpriteWeapon = allWeapons[hatValue];
-                transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
+                playerSpriteWeapon = allWeapons[weaponValue];
+                transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
                 // Debug.Log("Previous Weapon");
             }
         }

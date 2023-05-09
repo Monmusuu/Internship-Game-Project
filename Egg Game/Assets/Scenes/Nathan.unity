@@ -498,7 +498,6 @@ GameObject:
   m_Component:
   - component: {fileID: 104318960}
   - component: {fileID: 104318961}
-  - component: {fileID: 104318962}
   m_Layer: 0
   m_Name: PlayerManager
   m_TagString: Untagged
@@ -565,18 +564,6 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!114 &104318962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104318959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53a427394721b7a4abac35fafdd76985, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &157664135
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,6 +707,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158594, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: roundControl
       value: 
@@ -802,23 +793,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_TagString
       value: Player3
       objectReference: {fileID: 0}
+    - target: {fileID: 3651565879809642998, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: playerID
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3901283972191160901, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_ColliderPaths.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6577305689341565977, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6577305689341565977, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
@@ -965,12 +960,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 966defd82d2c82147a437a29c60186a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterSelection: []
+  characterSelection1: {fileID: 0}
+  characterSelection2: {fileID: 0}
+  characterSelection3: {fileID: 0}
+  characterSelection4: {fileID: 0}
+  characterSelection5: {fileID: 0}
+  characterSelection6: {fileID: 0}
   allHats:
   - {fileID: 21300000, guid: f618c5fe13b18994aa5aee8b97d8dca1, type: 3}
   - {fileID: 21300000, guid: 1f21190ca9d1e8540b2a3a2e46002685, type: 3}
-  allBodies: []
-  allWeapons: []
+  allBodies:
+  - {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  allWeapons:
+  - {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   player1SpriteHat: {fileID: 0}
   player2SpriteHat: {fileID: 0}
   player3SpriteHat: {fileID: 0}
@@ -1105,6 +1107,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158594, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: roundControl
       value: 
@@ -1192,6 +1198,10 @@ PrefabInstance:
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_TagString
       value: Player2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651565879809642998, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: playerID
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3901283972191160901, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_ColliderPaths.Array.size
@@ -1974,7 +1984,7 @@ MonoBehaviour:
   offset: {x: 0, y: 0, z: -20}
   smoothTime: 0.5
   minZoom: 15
-  maxZoom: 1
+  maxZoom: 9
   zoomLimiter: 5
   hasPlayer1: 0
   hasPlayer2: 0
@@ -2096,6 +2106,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158594, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: roundControl
       value: 
@@ -2178,23 +2192,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_TagString
       value: Player5
       objectReference: {fileID: 0}
+    - target: {fileID: 3651565879809642998, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: playerID
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 3901283972191160901, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_ColliderPaths.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6577305689341565977, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6577305689341565977, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
@@ -2221,6 +2239,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158594, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: roundControl
       value: 
@@ -2303,23 +2325,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_TagString
       value: Player4
       objectReference: {fileID: 0}
+    - target: {fileID: 3651565879809642998, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: playerID
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 3901283972191160901, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_ColliderPaths.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6577305689341565977, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6577305689341565977, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
@@ -3452,6 +3478,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158594, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: roundControl
       value: 
@@ -3534,23 +3564,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_TagString
       value: Player6
       objectReference: {fileID: 0}
+    - target: {fileID: 3651565879809642998, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: playerID
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 3901283972191160901, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_ColliderPaths.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6577305689341565977, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6577305689341565977, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
@@ -3577,6 +3611,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158594, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: roundControl
       value: 
@@ -3658,8 +3696,20 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_TagString
       value: Player1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651565879809642998, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: playerID
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3901283972191160901, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: m_ColliderPaths.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5988289339147122484, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_IsActive
