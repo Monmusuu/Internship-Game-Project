@@ -23,10 +23,8 @@ public class CharacterSelection : MonoBehaviour
 
     public Transform canvas;
 
-
-    private int[] MenuArray = new int[4];
+    private int[] MenuArray = new int[3];
     private int menuPos = 0;
-
 
     public Sprite[] allHats;
     private int _HatValue = 0;
@@ -65,18 +63,59 @@ public class CharacterSelection : MonoBehaviour
     [SerializeField]private bool clickedDown = false;
     [SerializeField]private bool clickedLeft = false;
     [SerializeField]private bool clickedRight = false;
+    [SerializeField]private bool switchMenu = false;
 
     public void OnUP(InputAction.CallbackContext context){
-        clickedUP = context.action.triggered;
+        //clickedUP = context.action.triggered;
+        
+        if (context.started){
+            Debug.Log("Action was started");
+        }
+        else if (context.performed){
+            Debug.Log("Action was performed");
+            clickedUP = true;
+        }
+        else if (context.canceled){
+            Debug.Log("Action was cancelled");
+        }
+            
+            
     }
     public void OnDown(InputAction.CallbackContext context){
-        clickedDown = context.action.triggered;
+        if (context.started){
+            Debug.Log("Action was started");
+        }
+        else if (context.performed){
+            Debug.Log("Action was performed");
+            clickedDown = true;
+        }
+        else if (context.canceled){
+            Debug.Log("Action was cancelled");
+        }
     }
     public void OnLeft(InputAction.CallbackContext context){
-        clickedLeft = context.action.triggered;
+        if (context.started){
+            Debug.Log("Action was started");
+        }
+        else if (context.performed){
+            Debug.Log("Action was performed");
+            clickedLeft = true;
+        }
+        else if (context.canceled){
+            Debug.Log("Action was cancelled");
+        }
     }   
     public void OnRight(InputAction.CallbackContext context){
-        clickedRight = context.action.triggered;
+        if (context.started){
+            Debug.Log("Action was started");
+        }
+        else if (context.performed){
+            Debug.Log("Action was performed");
+            clickedRight = true;
+        }
+        else if (context.canceled){
+            Debug.Log("Action was cancelled");
+        }
     }
     public void OnReady(InputAction.CallbackContext context){
         isReady = context.action.triggered;
@@ -95,18 +134,24 @@ public class CharacterSelection : MonoBehaviour
     void Update()
     {
         if(clickedUP){
-            if(menuPos >= MenuArray.Length -1){
-                menuPos = 0;
-            }else{
-                menuPos += 1;
-            }
-        }
-        if(clickedDown){
             if(menuPos == 0){
                 menuPos = MenuArray.Length -1;
+                Debug.Log(menuPos);
             }else{
                 menuPos -= 1;
+                Debug.Log(menuPos);
             }
+            clickedUP = false;
+        }
+        if(clickedDown){
+            if(menuPos >= MenuArray.Length -1){
+                menuPos = 0;
+                Debug.Log(menuPos);
+            }else{
+                menuPos += 1;
+                Debug.Log(menuPos);
+            }
+            clickedDown = false;
         }
         //Hats
         if(menuPos == 0){
@@ -121,6 +166,7 @@ public class CharacterSelection : MonoBehaviour
                 }
                 playerSpriteHat = allHats[hatValue];
                 transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHat;
+                clickedRight = false;
                 // Debug.Log("Next Hat");
             }
 
@@ -134,6 +180,7 @@ public class CharacterSelection : MonoBehaviour
                 playerSpriteHat = allHats[hatValue];
                 transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHat;
                 // Debug.Log("Previous Hat");
+                clickedLeft = false;
             }
         }
         //Bodies
@@ -151,6 +198,7 @@ public class CharacterSelection : MonoBehaviour
                 playerSpriteBody = allBodies[bodyValue];
                 transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
                 // Debug.Log("Next Body");
+                clickedRight = false;
             }
 
             if(clickedLeft){
@@ -163,6 +211,7 @@ public class CharacterSelection : MonoBehaviour
                 playerSpriteBody = allBodies[bodyValue];
                 transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
                 // Debug.Log("Previous Body");
+                clickedLeft = false;
             }
         }
         //Weapons
@@ -180,6 +229,7 @@ public class CharacterSelection : MonoBehaviour
                 playerSpriteWeapon = allWeapons[weaponValue];
                 transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
                 // Debug.Log("Next Weapon");
+                clickedRight = false;
             }
 
             if(clickedLeft){
@@ -192,6 +242,7 @@ public class CharacterSelection : MonoBehaviour
                 playerSpriteWeapon = allWeapons[weaponValue];
                 transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
                 // Debug.Log("Previous Weapon");
+                clickedLeft = false;
             }
         }
         
