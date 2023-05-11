@@ -6,7 +6,7 @@ public class Load : MonoBehaviour
 {
     void Start()
     {
-        Cursor.visible = true;
+        //Cursor.visible = true;
     }
 
 }
