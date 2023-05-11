@@ -713,6 +713,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: KingTilemap
+      value: 
+      objectReference: {fileID: 47088415}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 6fc6ccf5c98d6b245adf6917bf03497f, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 02dbcaab2aa4da04ea97116d34462fb4, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: ddcf6fae0ac14dd4e86d410c9e25dfc4, type: 2}
     - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_DefaultControlScheme
       value: 
@@ -1113,6 +1133,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: KingTilemap
+      value: 
+      objectReference: {fileID: 47088415}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 6fc6ccf5c98d6b245adf6917bf03497f, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 02dbcaab2aa4da04ea97116d34462fb4, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: ddcf6fae0ac14dd4e86d410c9e25dfc4, type: 2}
     - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_DefaultControlScheme
       value: 
@@ -2112,6 +2152,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: KingTilemap
+      value: 
+      objectReference: {fileID: 47088415}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 6fc6ccf5c98d6b245adf6917bf03497f, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 02dbcaab2aa4da04ea97116d34462fb4, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: ddcf6fae0ac14dd4e86d410c9e25dfc4, type: 2}
     - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_DefaultControlScheme
       value: 
@@ -2279,6 +2339,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: KingTilemap
+      value: 
+      objectReference: {fileID: 47088415}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 6fc6ccf5c98d6b245adf6917bf03497f, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 02dbcaab2aa4da04ea97116d34462fb4, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: ddcf6fae0ac14dd4e86d410c9e25dfc4, type: 2}
     - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_DefaultControlScheme
       value: 
@@ -3518,6 +3598,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1263652448}
     m_Modifications:
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: KingTilemap
+      value: 
+      objectReference: {fileID: 47088415}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 6fc6ccf5c98d6b245adf6917bf03497f, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 02dbcaab2aa4da04ea97116d34462fb4, type: 2}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: tiles.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: ddcf6fae0ac14dd4e86d410c9e25dfc4, type: 2}
     - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_DefaultControlScheme
       value: 
