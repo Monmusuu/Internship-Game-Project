@@ -64,6 +64,7 @@ public class Player : MonoBehaviour
     public bool isKing = false;
     public bool becameKing = false;
     public bool isPlayer = false;
+    public bool isflashing = false;
 
     private float maxSpeed = 15.0f;
 
@@ -122,7 +123,7 @@ public class Player : MonoBehaviour
             if(isGrounded){
                 if(jumped){
                     rigid.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
-                    Debug.Log("Jumped");
+                    //Debug.Log("Jumped");
                 }
             }
 
@@ -247,15 +248,30 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(other.gameObject.CompareTag("Trap")){
+        if(other.gameObject.CompareTag("Trap") && !isflashing){
+            isflashing = true;
             currentHealth -= 1;
             Debug.Log(playerDetails.playerID.ToString() + "is Hit by Trap");
+            StartCoroutine(InvincibleFlash());
         }
+
     }
     void OnTriggerStay2D(Collider2D other) {
         if(other.gameObject.CompareTag("KingPoint")){
             isKing = true;
             becameKing = false;
         }
+    }
+
+    IEnumerator InvincibleFlash() {
+        for (int i = 0; i <= 2.8; i++)
+        {
+            GetComponent<Renderer>().material.color = new Color(1f, 0.30196078f, 0.30196078f);;
+            yield return new WaitForSeconds(0.5f);
+            GetComponent<Renderer>().material.color = new Color (255, 255, 255);
+            yield return new WaitForSeconds(0.5f);
+        }
+        isflashing = false;
+        
     }
 }

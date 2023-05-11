@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 public class CharacterSelection : MonoBehaviour
 {
-
     PlayerSaveData playerSaveData;
     [SerializeField] private Sprite playerSpriteHat;
     [SerializeField] private Sprite playerSpriteBody;
@@ -63,58 +63,58 @@ public class CharacterSelection : MonoBehaviour
     [SerializeField]private bool clickedDown = false;
     [SerializeField]private bool clickedLeft = false;
     [SerializeField]private bool clickedRight = false;
-    [SerializeField]private bool switchMenu = false;
+    //[SerializeField]private bool switchMenu = false;
 
     public void OnUP(InputAction.CallbackContext context){
         //clickedUP = context.action.triggered;
         
         if (context.started){
-            Debug.Log("Action was started");
+            //Debug.Log("Action was started");
         }
         else if (context.performed){
-            Debug.Log("Action was performed");
+            //Debug.Log("Action was performed");
             clickedUP = true;
         }
         else if (context.canceled){
-            Debug.Log("Action was cancelled");
+            //Debug.Log("Action was cancelled");
         }
             
             
     }
     public void OnDown(InputAction.CallbackContext context){
         if (context.started){
-            Debug.Log("Action was started");
+            //Debug.Log("Action was started");
         }
         else if (context.performed){
-            Debug.Log("Action was performed");
+            //Debug.Log("Action was performed");
             clickedDown = true;
         }
         else if (context.canceled){
-            Debug.Log("Action was cancelled");
+            //Debug.Log("Action was cancelled");
         }
     }
     public void OnLeft(InputAction.CallbackContext context){
         if (context.started){
-            Debug.Log("Action was started");
+            //Debug.Log("Action was started");
         }
         else if (context.performed){
-            Debug.Log("Action was performed");
+            //Debug.Log("Action was performed");
             clickedLeft = true;
         }
         else if (context.canceled){
-            Debug.Log("Action was cancelled");
+            //Debug.Log("Action was cancelled");
         }
     }   
     public void OnRight(InputAction.CallbackContext context){
         if (context.started){
-            Debug.Log("Action was started");
+            //Debug.Log("Action was started");
         }
         else if (context.performed){
-            Debug.Log("Action was performed");
+            //Debug.Log("Action was performed");
             clickedRight = true;
         }
         else if (context.canceled){
-            Debug.Log("Action was cancelled");
+            //Debug.Log("Action was cancelled");
         }
     }
     public void OnReady(InputAction.CallbackContext context){
@@ -136,20 +136,20 @@ public class CharacterSelection : MonoBehaviour
         if(clickedUP){
             if(menuPos == 0){
                 menuPos = MenuArray.Length -1;
-                Debug.Log(menuPos);
+                //Debug.Log(menuPos);
             }else{
                 menuPos -= 1;
-                Debug.Log(menuPos);
+                //Debug.Log(menuPos);
             }
             clickedUP = false;
         }
         if(clickedDown){
             if(menuPos >= MenuArray.Length -1){
                 menuPos = 0;
-                Debug.Log(menuPos);
+                //Debug.Log(menuPos);
             }else{
                 menuPos += 1;
-                Debug.Log(menuPos);
+                //Debug.Log(menuPos);
             }
             clickedDown = false;
         }
