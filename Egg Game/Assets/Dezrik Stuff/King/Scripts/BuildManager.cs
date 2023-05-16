@@ -10,36 +10,38 @@ using Debug = UnityEngine.Debug;
 
 public class BuildManager : MonoBehaviour
 { 
-    public Tilemap KingTilemap;
-    public Tile[] tiles;
-    public List<GameObject> UITiles;
+public Tilemap KingTilemap;
+public GameObject[] tileObjects;
+public List<GameObject> UITiles;
 
-    public int selectedTile = 0;
-    public int removeTile = 0;
-    public bool trapPlaced = false;
-    public bool autoPlaced = false;
-    public bool blockPlaced = false;
+public int selectedTile = 0;
+public int removeTile = 0;
+public bool trapPlaced = false;
+public bool autoPlaced = false;
+public bool blockPlaced = false;
 
-    public Transform tileGridUI;
+public Transform tileGridUI;
 
-    private void Start()
+private void Start()
     {
-       KingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
+        KingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
 
         int i = 0;
-        foreach (Tile tile in tiles)
+        foreach (GameObject tileObject in tileObjects)
         {
             GameObject UITile = new GameObject("UI Tile");
             UITile.transform.parent = tileGridUI;
             UITile.transform.localScale = new Vector3(1f, 1f, 1f);
 
             Image UIImage = UITile.AddComponent<Image>();
-            UIImage.sprite = tile.sprite;
+            SpriteRenderer spriteRenderer = tileObject.GetComponent<SpriteRenderer>();
+            Sprite sprite = spriteRenderer ? spriteRenderer.sprite : null;
+            UIImage.sprite = sprite;
 
             Color tileColor = UIImage.color;
             tileColor.a = 0.5f;
 
-            if(i == selectedTile)
+            if (i == selectedTile)
             {
                 tileColor.a = 1f;
             }
@@ -50,7 +52,7 @@ public class BuildManager : MonoBehaviour
             i++;
         }
     }
-    
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -59,7 +61,6 @@ public class BuildManager : MonoBehaviour
             {
                 selectedTile = 0;
                 RenderUITiles();
-                  
             }
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -68,7 +69,6 @@ public class BuildManager : MonoBehaviour
             {
                 selectedTile = 1;
                 RenderUITiles();
-                
             }
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
@@ -77,24 +77,28 @@ public class BuildManager : MonoBehaviour
             {
                 selectedTile = 2;
                 RenderUITiles();
-                
             }
         }
         else if (Input.GetMouseButtonDown(1))
         {
             if (gameObject.layer == 7)
             {
-                
+
             }
         }
-       
 
         if (Input.GetMouseButtonDown(0))
         {
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int cellPosition = KingTilemap.WorldToCell(mousePosition);
+            Vector3 tilePosition = KingTilemap.CellToWorld(cellPosition) + KingTilemap.cellSize / 2f;
+
+            GameObject tileObject = Instantiate(tileObjects[selectedTile], tilePosition, Quaternion.identity);
+            tileObject.transform.SetParent(KingTilemap.transform);
             if (selectedTile == 0)
             {
                 Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+                //Instantiate(tileObjects[selectedTile], KingTilemap.WorldToCell(position), Quaternion.identity);
                 gameObject.layer = 7;
                 autoPlaced = true;
                 RenderUITiles();
@@ -108,7 +112,7 @@ public class BuildManager : MonoBehaviour
                 {
                     selectedTile = 2;
                     RenderUITiles();
-                }    
+                }
                 else if (blockPlaced == true)
                 {
                     selectedTile = 1;
@@ -123,7 +127,6 @@ public class BuildManager : MonoBehaviour
             else if (selectedTile == 1)
             {
                 Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
                 gameObject.layer = 7;
                 trapPlaced = true;
                 RenderUITiles();
@@ -142,8 +145,7 @@ public class BuildManager : MonoBehaviour
                 {
                     selectedTile = 0;
                     RenderUITiles();
-                }
-                else
+                }else
                 {
                     selectedTile += 1;
                     RenderUITiles();
@@ -152,33 +154,31 @@ public class BuildManager : MonoBehaviour
             else if (selectedTile == 2)
             {
                 Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
                 gameObject.layer = 7;
                 blockPlaced = true;
                 RenderUITiles();
 
-                    if (trapPlaced == true && autoPlaced == true)
+                if (trapPlaced == true && autoPlaced == true)
                 {
                     selectedTile = 3;
                     RenderUITiles();
                 }
-                    else if (trapPlaced == true)
+                else if (trapPlaced == true)
                 {
                     selectedTile = 0;
                     RenderUITiles();
                 }
-                    else if (autoPlaced == true)
+                else if (autoPlaced == true)
                 {
                     selectedTile = 1;
                     RenderUITiles();
                 }
-                    else
+                else
                 {
                     selectedTile = 0;
                     RenderUITiles();
                 }
             }
-            
         }
 
         if (blockPlaced == true && autoPlaced == true && trapPlaced == true)
@@ -186,31 +186,32 @@ public class BuildManager : MonoBehaviour
             selectedTile = 3;
         }
 
-
         void OnMouseEnter()
         {
             Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            KingTilemap.SetTile(KingTilemap.WorldToCell(position), tiles[selectedTile]);
+            KingTilemap.SetTile(KingTilemap.WorldToCell(position), 
+            tileObjects[selectedTile].GetComponent<TileBase>());
         }
 
-    }
-    void RenderUITiles()
-    {
-        int i = 0;
-        foreach (GameObject tile in UITiles)
+        void RenderUITiles()
         {
-            Image UIImage = tile.GetComponent<Image>();
-            Color tileColor = UIImage.color;
-            tileColor.a = 0.5f;
-
-            if (i == selectedTile)
+            int i = 0;
+            foreach (GameObject tileObject in UITiles)
             {
-                tileColor.a = 1f;
+                Image UIImage = tileObject.GetComponent<Image>();
+                Color tileColor = UIImage.color;
+                tileColor.a = 0.5f;
+
+                if (i == selectedTile)
+                {
+                    tileColor.a = 1f;
+                }
+
+                UIImage.color = tileColor;
+
+                i++;
             }
-
-            UIImage.color = tileColor;
-
-            i++;
         }
     }
 }
+
