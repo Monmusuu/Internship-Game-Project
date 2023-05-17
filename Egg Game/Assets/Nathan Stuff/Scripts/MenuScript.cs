@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MenuScript : MonoBehaviour
 {
+    public GameObject menuFirstButton, settingsFirstButton, settingsClosedButton, controlsButton;
+    
     // Reference to the PauseScreen game object
     public GameObject m_menuScreen;
     // Reference to the SettingsScreen game object
@@ -27,6 +30,8 @@ public class MenuScript : MonoBehaviour
     }
 
     public void SwitchToSettingsScreen() {
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(settingsFirstButton);
         m_menuScreen.SetActive(false);
         m_menuScreenIsActive = false;
         m_controlsScreen.SetActive(false);
@@ -35,7 +40,8 @@ public class MenuScript : MonoBehaviour
         m_settingsScreenIsActive = true;
     }
     public void SwitchToMenuScreen() {
-
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(menuFirstButton);
         m_settingsScreen.SetActive(false);
         m_settingsScreenIsActive = false;
         m_controlsScreen.SetActive(false);
@@ -45,6 +51,8 @@ public class MenuScript : MonoBehaviour
     }
 
     public void SwitchToControls(){
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(controlsButton);
         m_menuScreen.SetActive(false);
         m_menuScreenIsActive = false;
         m_settingsScreen.SetActive(false);

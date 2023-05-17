@@ -123,6 +123,7 @@ public class CharacterSelection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PlayerSaveData.playerNumber +=1;
         canvas = GameObject.Find("Canvas").transform;
         playerSpriteHat = transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite;
         playerSpriteBody = transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite;
@@ -248,16 +249,9 @@ public class CharacterSelection : MonoBehaviour
         
         if(isReady && !readiedUp){
             Ready.GetComponent<Image>().color = Color.green;
-            PlayerSaveData.playerNumber +=1;
+            PlayerSaveData.playerReadyNumber +=1;
             readiedUp = true;
-            Debug.Log(PlayerSaveData.playerNumber);
+            Debug.Log(PlayerSaveData.playerReadyNumber);
         }
-
-        // if(isReady && readiedUp){
-        //     Ready.GetComponent<Image>().color = Color.white;
-        //     PlayerSaveData.playerNumber -=1;
-        //     readiedUp = false;
-        //     Debug.Log(PlayerSaveData.playerNumber);
-        // }
     }
 }

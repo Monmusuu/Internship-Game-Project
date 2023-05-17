@@ -14,6 +14,7 @@ public class PlayerSaveData : MonoBehaviour
         public CharacterSelection characterSelection5;
         public CharacterSelection characterSelection6;
         public static int playerNumber = 0;
+        public static int playerReadyNumber = 0;
         public Sprite[] allHats;
         public Sprite[] allBodies;
         public Sprite[] allWeapons;
@@ -378,6 +379,13 @@ public class PlayerSaveData : MonoBehaviour
                                         player6WeaponSpriteNumber = characterSelection6.weaponValue;
                                 }
                         }
+
+                        if(playerNumber >= 1 && playerReadyNumber >=1){
+                                if(playerNumber == playerReadyNumber){
+                                        SceneManager.LoadScene("Nathan");
+                                }
+                        }
+                        
                 }
         }
 }
