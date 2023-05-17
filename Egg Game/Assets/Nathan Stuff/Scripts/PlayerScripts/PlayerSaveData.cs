@@ -54,6 +54,12 @@ private void Start()
             GameObject.Find("Player Six Text")
         };
 
+        for (int i = playerNumber; i < players.Length; i++)
+        {
+            players[i].SetActive(false);
+            playerTexts[i].SetActive(false);
+        }
+
         // Initialize the sprite arrays with the correct sizes
         playerSpriteHats = new Sprite[playerNumber];
         playerSpriteWeapons = new Sprite[playerNumber];
