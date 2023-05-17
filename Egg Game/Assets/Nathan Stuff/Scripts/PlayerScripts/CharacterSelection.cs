@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+
 public class CharacterSelection : MonoBehaviour
 {
     PlayerSaveData playerSaveData;
@@ -28,230 +29,256 @@ public class CharacterSelection : MonoBehaviour
 
     public Sprite[] allHats;
     private int _HatValue = 0;
-    public int hatValue{
+    public int hatValue
+    {
         get => _HatValue;
-        set{
-            _HatValue = hatValue;
-            playerSpriteHat = allHats[hatValue];
+        set
+        {
+            _HatValue = value;
+            playerSpriteHat = allHats[_HatValue];
         }
     }
 
     public Sprite[] allBodies;
     private int _BodyValue = 0;
-    public int bodyValue{
+    public int bodyValue
+    {
         get => _BodyValue;
-        set{
-            _BodyValue = bodyValue;
-            playerSpriteBody = allBodies[bodyValue];
+        set
+        {
+            _BodyValue = value;
+            playerSpriteBody = allBodies[_BodyValue];
         }
     }
 
     [SerializeField] private Sprite[] allWeapons;
     private int _WeaponValue = 0;
-    public int weaponValue{
+    public int weaponValue
+    {
         get => _WeaponValue;
-        set{
-            _WeaponValue = weaponValue;
-            playerSpriteWeapon = allWeapons[weaponValue];
+        set
+        {
+            _WeaponValue = value;
+            playerSpriteWeapon = allWeapons[_WeaponValue];
         }
     }
 
-
-    [SerializeField]private bool isReady = false;
+    [SerializeField] private bool isReady = false;
     public bool readiedUp = false;
-    [SerializeField]private bool clickedUP = false;
-    [SerializeField]private bool clickedDown = false;
-    [SerializeField]private bool clickedLeft = false;
-    [SerializeField]private bool clickedRight = false;
-    //[SerializeField]private bool switchMenu = false;
+    [SerializeField] private bool clickedUP = false;
+    [SerializeField] private bool clickedDown = false;
+    [SerializeField] private bool clickedLeft = false;
+    [SerializeField] private bool clickedRight = false;
 
-    public void OnUP(InputAction.CallbackContext context){
-        //clickedUP = context.action.triggered;
-        
-        if (context.started){
-            //Debug.Log("Action was started");
-        }
-        else if (context.performed){
-            //Debug.Log("Action was performed");
+    public void OnUP(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
             clickedUP = true;
         }
-        else if (context.canceled){
-            //Debug.Log("Action was cancelled");
-        }
-            
-            
     }
-    public void OnDown(InputAction.CallbackContext context){
-        if (context.started){
-            //Debug.Log("Action was started");
-        }
-        else if (context.performed){
-            //Debug.Log("Action was performed");
+
+    public void OnDown(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
             clickedDown = true;
         }
-        else if (context.canceled){
-            //Debug.Log("Action was cancelled");
-        }
     }
-    public void OnLeft(InputAction.CallbackContext context){
-        if (context.started){
-            //Debug.Log("Action was started");
-        }
-        else if (context.performed){
-            //Debug.Log("Action was performed");
+
+    public void OnLeft(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
             clickedLeft = true;
         }
-        else if (context.canceled){
-            //Debug.Log("Action was cancelled");
-        }
-    }   
-    public void OnRight(InputAction.CallbackContext context){
-        if (context.started){
-            //Debug.Log("Action was started");
-        }
-        else if (context.performed){
-            //Debug.Log("Action was performed");
+    }
+
+    public void OnRight(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
             clickedRight = true;
         }
-        else if (context.canceled){
-            //Debug.Log("Action was cancelled");
+    }
+
+    public void OnReady(InputAction.CallbackContext context)
+    {
+        if (context.action.triggered)
+        {
+            isReady = !isReady;
+
+            if (isReady)
+            {
+                Ready.GetComponent<Image>().color = Color.green;
+                PlayerSaveData.playerReadyNumber += 1;
+            }
+            else
+            {
+                Ready.GetComponent<Image>().color = Color.white;
+                PlayerSaveData.playerReadyNumber -= 1;
+            }
         }
     }
-    public void OnReady(InputAction.CallbackContext context){
-        isReady = context.action.triggered;
-    }
-    // Start is called before the first frame update
+
     void Start()
     {
-        PlayerSaveData.playerNumber +=1;
+        PlayerSaveData.playerNumber += 1;
         canvas = GameObject.Find("Canvas").transform;
         playerSpriteHat = transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite;
         playerSpriteBody = transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite;
         playerSpriteWeapon = transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite;
-        this.transform.SetParent (canvas.transform);
+        this.transform.SetParent(canvas.transform);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(clickedUP){
-            if(menuPos == 0){
-                menuPos = MenuArray.Length -1;
-                //Debug.Log(menuPos);
-            }else{
+        if (clickedUP)
+        {
+            if (menuPos == 0)
+            {
+                menuPos = MenuArray.Length - 1;
+            }
+            else
+            {
                 menuPos -= 1;
-                //Debug.Log(menuPos);
             }
             clickedUP = false;
         }
-        if(clickedDown){
-            if(menuPos >= MenuArray.Length -1){
+        if (clickedDown)
+        {
+            if (menuPos >= MenuArray.Length - 1)
+            {
                 menuPos = 0;
-                //Debug.Log(menuPos);
-            }else{
+            }
+            else
+            {
                 menuPos += 1;
-                //Debug.Log(menuPos);
             }
             clickedDown = false;
         }
-        //Hats
-        if(menuPos == 0){
+
+        if (menuPos == 0)
+        {
             hatBox.Select();
-            //Debug.Log("Hats");
-            if(clickedRight){
+            if (clickedRight)
+            {
                 Right1.onClick.Invoke();
-                if(_HatValue >= allHats.Length-1){
+                if (_HatValue >= allHats.Length - 1)
+                {
                     _HatValue = 0;
-                }else{
+                }
+                else
+                {
                     _HatValue += 1;
                 }
                 playerSpriteHat = allHats[hatValue];
                 transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHat;
                 clickedRight = false;
-                // Debug.Log("Next Hat");
             }
 
-            if(clickedLeft){
+            if (clickedLeft)
+            {
                 Left1.onClick.Invoke();
-                if(_HatValue == 0){
-                    _HatValue = allHats.Length-1;
-                }else{
+                if (_HatValue == 0)
+                {
+                    _HatValue = allHats.Length - 1;
+                }
+                else
+                {
                     _HatValue -= 1;
                 }
                 playerSpriteHat = allHats[hatValue];
                 transform.GetChild(0).GetChild(3).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHat;
-                // Debug.Log("Previous Hat");
                 clickedLeft = false;
             }
         }
-        //Bodies
-        if(menuPos == 1){
-            //Debug.Log("Bodies");
+
+        if (menuPos == 1)
+        {
             bodyBox.Select();
-            
-            if(clickedRight){
+
+            if (clickedRight)
+            {
                 Right1.onClick.Invoke();
-                if(_BodyValue >= allBodies.Length-1){
+                if (_BodyValue >= allBodies.Length - 1)
+                {
                     _BodyValue = 0;
-                }else{
+                }
+                else
+                {
                     _BodyValue += 1;
                 }
                 playerSpriteBody = allBodies[bodyValue];
                 transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
-                // Debug.Log("Next Body");
                 clickedRight = false;
             }
 
-            if(clickedLeft){
+            if (clickedLeft)
+            {
                 Left1.onClick.Invoke();
-                if(_BodyValue == 0){
-                    _BodyValue = allBodies.Length-1;
-                }else{
+                if (_BodyValue == 0)
+                {
+                    _BodyValue = allBodies.Length - 1;
+                }
+                else
+                {
                     _BodyValue -= 1;
                 }
                 playerSpriteBody = allBodies[bodyValue];
                 transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
-                // Debug.Log("Previous Body");
                 clickedLeft = false;
             }
         }
-        //Weapons
-        if(menuPos == 2){
-            //Debug.Log("Weapons");
+
+        if (menuPos == 2)
+        {
             weaponBox.Select();
 
-            if(clickedRight){
+            if (clickedRight)
+            {
                 Right1.onClick.Invoke();
-                if(_WeaponValue >= allWeapons.Length-1){
+                if (_WeaponValue >= allWeapons.Length - 1)
+                {
                     _WeaponValue = 0;
-                }else{
+                }
+                else
+                {
                     _WeaponValue += 1;
                 }
                 playerSpriteWeapon = allWeapons[weaponValue];
                 transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
-                // Debug.Log("Next Weapon");
                 clickedRight = false;
             }
 
-            if(clickedLeft){
+            if (clickedLeft)
+            {
                 Left1.onClick.Invoke();
-                if(_WeaponValue == 0){
-                    _WeaponValue = allWeapons.Length-1;
-                }else{
+                if (_WeaponValue == 0)
+                {
+                    _WeaponValue = allWeapons.Length - 1;
+                }
+                else
+                {
                     _WeaponValue -= 1;
                 }
                 playerSpriteWeapon = allWeapons[weaponValue];
                 transform.GetChild(0).GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapon;
-                // Debug.Log("Previous Weapon");
                 clickedLeft = false;
             }
         }
-        
-        if(isReady && !readiedUp){
-            Ready.GetComponent<Image>().color = Color.green;
-            PlayerSaveData.playerReadyNumber +=1;
-            readiedUp = true;
-            Debug.Log(PlayerSaveData.playerReadyNumber);
+
+        // if (isReady && !readiedUp)
+        // {
+        //     Ready.GetComponent<Image>().color = Color.green;
+        //     readiedUp = true;
+        //     Debug.Log(PlayerSaveData.playerReadyNumber);
+        // }
+
+        if (PlayerSaveData.playerReadyNumber == PlayerSaveData.playerNumber)
+        {
+            Debug.Log("Player is readied up. Moving to the next scene...");
+            SceneManager.LoadScene("Nathan"); // Replace "NextSceneName" with the actual name of the next scene
         }
     }
 }
