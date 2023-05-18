@@ -15,6 +15,7 @@ TagManager:
   - Trap
   - Player1IMG
   - Background
+  - Map
   layers:
   - Default
   - TransparentFX

@@ -268,17 +268,10 @@ public class CharacterSelection : MonoBehaviour
             }
         }
 
-        // if (isReady && !readiedUp)
-        // {
-        //     Ready.GetComponent<Image>().color = Color.green;
-        //     readiedUp = true;
-        //     Debug.Log(PlayerSaveData.playerReadyNumber);
-        // }
-
         if (PlayerSaveData.playerReadyNumber == PlayerSaveData.playerNumber)
         {
             Debug.Log("Player is readied up. Moving to the next scene...");
-            SceneManager.LoadScene("Nathan"); // Replace "NextSceneName" with the actual name of the next scene
+            SceneManager.LoadScene("MapSelection"); // Replace "NextSceneName" with the actual name of the next scene
         }
     }
 }

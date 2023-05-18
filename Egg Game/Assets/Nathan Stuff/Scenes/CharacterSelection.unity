@@ -462,7 +462,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Nathan
+          m_StringArgument: Menu
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &417776545
@@ -974,7 +974,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 120}
+  m_AnchoredPosition: {x: 36, y: 120}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1717578622
@@ -1126,7 +1126,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -300}
+  m_AnchoredPosition: {x: 36, y: -300}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1824816217
@@ -1287,12 +1287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 966defd82d2c82147a437a29c60186a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterSelection1: {fileID: 0}
-  characterSelection2: {fileID: 0}
-  characterSelection3: {fileID: 0}
-  characterSelection4: {fileID: 0}
-  characterSelection5: {fileID: 0}
-  characterSelection6: {fileID: 0}
+  characterSelections: []
   allHats:
   - {fileID: 21300000, guid: f618c5fe13b18994aa5aee8b97d8dca1, type: 3}
   - {fileID: 21300000, guid: 1f21190ca9d1e8540b2a3a2e46002685, type: 3}
@@ -1300,36 +1295,15 @@ MonoBehaviour:
   - {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
   allWeapons:
   - {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  player1SpriteHat: {fileID: 0}
-  player2SpriteHat: {fileID: 0}
-  player3SpriteHat: {fileID: 0}
-  player4SpriteHat: {fileID: 0}
-  player5SpriteHat: {fileID: 0}
-  player6SpriteHat: {fileID: 0}
-  player1SpriteBody: {fileID: 0}
-  player2SpriteBody: {fileID: 0}
-  player3SpriteBody: {fileID: 0}
-  player4SpriteBody: {fileID: 0}
-  player5SpriteBody: {fileID: 0}
-  player6SpriteBody: {fileID: 0}
-  player1SpriteWeapon: {fileID: 0}
-  player2SpriteWeapon: {fileID: 0}
-  player3SpriteWeapon: {fileID: 0}
-  player4SpriteWeapon: {fileID: 0}
-  player5SpriteWeapon: {fileID: 0}
-  player6SpriteWeapon: {fileID: 0}
-  player1: {fileID: 0}
-  player2: {fileID: 0}
-  player3: {fileID: 0}
-  player4: {fileID: 0}
-  player5: {fileID: 0}
-  player6: {fileID: 0}
-  player1Text: {fileID: 0}
-  player2Text: {fileID: 0}
-  player3Text: {fileID: 0}
-  player4Text: {fileID: 0}
-  player5Text: {fileID: 0}
-  player6Text: {fileID: 0}
+  playerHatSpriteNumbers: 
+  playerBodySpriteNumbers: 
+  playerWeaponSpriteNumbers: 
+  playerSpriteHats: []
+  playerSpriteBodies: []
+  playerSpriteWeapons: []
+  players: []
+  playerTexts: []
+  connectedPlayers: 0
 --- !u!1 &2062070360
 GameObject:
   m_ObjectHideFlags: 0

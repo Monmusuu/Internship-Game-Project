@@ -90,6 +90,9 @@ private void Start()
                 playerTexts[i].SetActive(false);
             }
         }
+    }else{
+        playerNumber = 0;
+        playerReadyNumber = 0;
     }
 
     //Debug.Log("Hat " + playerHatSpriteNumbers[0]);
