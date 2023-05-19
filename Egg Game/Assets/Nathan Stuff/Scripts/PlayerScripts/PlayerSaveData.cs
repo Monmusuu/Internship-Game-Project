@@ -25,6 +25,8 @@ public class PlayerSaveData : MonoBehaviour
     public GameObject[] players;
     public GameObject[] playerTexts;
 
+    public GameObject[] playerCursors;
+
     public int connectedPlayers = 0;
 
 private void Start()
@@ -32,7 +34,7 @@ private void Start()
     Debug.Log("Players " + playerNumber);
     scene = SceneManager.GetActiveScene();
 
-    if (scene.name != "CharacterSelection")
+    if (scene.name != "CharacterSelection" && scene.name != "MapSelection")
     {
         players = new GameObject[]
         {
@@ -54,10 +56,10 @@ private void Start()
             GameObject.Find("Player Six Text")
         };
 
-        for (int i = playerNumber; i < players.Length; i++)
+        for (int i = 0; i < players.Length; i++)
         {
-            players[i].SetActive(false);
-            playerTexts[i].SetActive(false);
+            players[i].SetActive(i < playerNumber);
+            playerTexts[i].SetActive(i < playerNumber);
         }
 
         // Initialize the sprite arrays with the correct sizes
@@ -83,35 +85,30 @@ private void Start()
             players[i].transform.GetChild(2).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
             players[i].transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
             players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
-
-            if (i >= 1)
-            {
-                players[i].SetActive(false);
-                playerTexts[i].SetActive(false);
-            }
         }
-    }else{
+    }
+    else if (scene.name == "CharacterSelection")
+    {
         playerNumber = 0;
         playerReadyNumber = 0;
     }
 
-    //Debug.Log("Hat " + playerHatSpriteNumbers[0]);
-}
-
-    private void Update()
+    if (scene.name == "MapSelection")
     {
-        if (scene.name == "CharacterSelection")
-        return;
-
-        for (int i = 0; i < playerNumber; i++)
+        playerCursors = new GameObject[]
         {
-                if (players[i].activeInHierarchy)
-                {
-                players[i].transform.GetChild(2).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
-                players[i].transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
-                players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
-                }
-        }
+            GameObject.Find("Cursor"),
+            GameObject.Find("Cursor 2"),
+            GameObject.Find("Cursor 3"),
+            GameObject.Find("Cursor 4"),
+            GameObject.Find("Cursor 5"),
+            GameObject.Find("Cursor 6")
+        };
 
+        for (int i = 0; i < playerCursors.Length; i++)
+        {
+            playerCursors[i].SetActive(i < playerNumber);
+        }
     }
+}
 }

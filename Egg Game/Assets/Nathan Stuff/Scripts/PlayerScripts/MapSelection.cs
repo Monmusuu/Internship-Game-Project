@@ -12,10 +12,15 @@ public class MapSelection : MonoBehaviour
     private Vector2 velocity;
     private Vector2 moveInput;
     private EventSystem eventSystem;
+    private Button selectedButton;
+
+    public Transform pointer;
 
     private void Awake()
     {
         eventSystem = EventSystem.current;
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        UnityEngine.Cursor.visible = false;
     }
 
     private void Update()
@@ -29,6 +34,38 @@ public class MapSelection : MonoBehaviour
         clampedPos.x = Mathf.Clamp01(clampedPos.x);
         clampedPos.y = Mathf.Clamp01(clampedPos.y);
         transform.position = mainCamera.ViewportToWorldPoint(clampedPos);
+
+        // Check if any UI element is selected
+        if (eventSystem.currentSelectedGameObject == null)
+        {
+            // Cast a ray from the pointer's position
+            Vector2 pointerPos = mainCamera.WorldToScreenPoint(pointer.position);
+            PointerEventData eventData = new PointerEventData(eventSystem);
+            eventData.position = pointerPos;
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            eventSystem.RaycastAll(eventData, results);
+
+            foreach (RaycastResult result in results)
+            {
+                Button button = result.gameObject.GetComponent<Button>();
+                if (button != null)
+                {
+                    selectedButton = button;
+                    selectedButton.Select();
+                    Debug.Log("Button Selected: " + selectedButton.name);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            selectedButton = eventSystem.currentSelectedGameObject.GetComponent<Button>();
+            if (selectedButton != null)
+            {
+                Debug.Log("Button Selected: " + selectedButton.name);
+            }
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -36,37 +73,13 @@ public class MapSelection : MonoBehaviour
         moveInput = context.ReadValue<Vector2>();
     }
 
-    public void ClickButton(InputAction.CallbackContext context)
+    public void OnClick(InputAction.CallbackContext context)
     {
-        if (context.action.triggered)
+        if (context.action.triggered && selectedButton != null)
         {
-            Button[] buttons = FindObjectsOfType<Button>();
-
-            if (buttons.Length > 0)
-            {
-                Button nearestButton = buttons[0];
-                float nearestDistance = Vector3.Distance(transform.position, nearestButton.transform.position);
-
-                for (int i = 1; i < buttons.Length; i++)
-                {
-                    float distance = Vector3.Distance(transform.position, buttons[i].transform.position);
-
-                    if (distance < nearestDistance)
-                    {
-                        nearestButton = buttons[i];
-                        nearestDistance = distance;
-                    }
-                }
-
-                eventSystem.SetSelectedGameObject(nearestButton.gameObject);
-
-                // Perform additional logic with the context if needed
-                // For example, you can check if the button is clicked
-                if (context.performed)
-                {
-                    nearestButton.onClick.Invoke();
-                }
-            }
+            // Perform button click
+            selectedButton.onClick.Invoke();
+            
         }
     }
 }

@@ -1303,6 +1303,7 @@ MonoBehaviour:
   playerSpriteWeapons: []
   players: []
   playerTexts: []
+  playerCursors: []
   connectedPlayers: 0
 --- !u!1 &2062070360
 GameObject:
