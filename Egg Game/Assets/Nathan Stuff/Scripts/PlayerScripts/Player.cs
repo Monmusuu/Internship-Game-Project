@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
 
     public Player[] player;
 
+    [SerializeField] Animator animator; 
+
     public RoundControl roundControl;
 
     public GameObject BuildManager;
@@ -31,6 +33,8 @@ public class Player : MonoBehaviour
     [SerializeField] LayerMask kingLayer;
 
     [SerializeField] bool isGrounded = false;
+
+    [SerializeField] bool wasGrounded = false;
     const float groundCheckRadius = 0.2f;
 
     [SerializeField] private float m_RunSpeed = 1;
@@ -121,11 +125,26 @@ public class Player : MonoBehaviour
             GroundCheck();
 
             if(isGrounded){
+                animator.SetBool("Landed", true);
                 if(jumped){
+                    animator.SetBool("Landed", false);
                     rigid.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
+                    animator.SetTrigger("Jumped");
                     //Debug.Log("Jumped");
-                }
+                }else{
+                    // Player is running while grounded
+                    if (Mathf.Abs(rigid.velocity.x) > 0.1f)
+                    {
+                        animator.SetBool("Running", true);
+                    }
+                    else if (Mathf.Abs(rigid.velocity.x) <= 0f)
+                    {
+                       animator.SetBool("Running", false);
+                    }
+                } 
             }
+
+            wasGrounded = isGrounded;
 
             //Debug.Log(rigid.velocity.magnitude);
             if(rigid.velocity.magnitude > maxSpeed){
