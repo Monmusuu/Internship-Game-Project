@@ -12,13 +12,12 @@ GameObject:
   - component: {fileID: 1518570509379224514}
   - component: {fileID: 1518570509379224515}
   - component: {fileID: 1518570509379224541}
-  - component: {fileID: 8214482153976595385}
   - component: {fileID: 4831863904040275337}
   - component: {fileID: 7178280516231976702}
   - component: {fileID: 6262228893448327299}
   m_Layer: 0
   m_Name: Cursor
-  m_TagString: Player1
+  m_TagString: Cursor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -171,20 +170,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   voteCounts: []
   speed: 5
---- !u!114 &8214482153976595385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1518570509379224512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e076c940950564e4fa18c50aeb26d95f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerID: 0
-  startPos: {x: 0, y: 0, z: 0}
 --- !u!223 &4831863904040275337
 Canvas:
   m_ObjectHideFlags: 0
@@ -236,7 +221,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.21, y: 0.31}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}

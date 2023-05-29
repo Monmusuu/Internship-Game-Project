@@ -89,6 +89,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        animator = GetComponent<Animator>();
         isPlayer = true;
         playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
         kingSpawnLocation = GameObject.Find("KingPoint").transform;

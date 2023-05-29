@@ -16,6 +16,7 @@ TagManager:
   - Player1IMG
   - Background
   - Map
+  - Cursor
   layers:
   - Default
   - TransparentFX

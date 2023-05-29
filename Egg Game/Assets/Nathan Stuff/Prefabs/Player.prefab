@@ -527,6 +527,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerDetails: {fileID: 3651565879809642998}
   player: []
+  animator: {fileID: 0}
   roundControl: {fileID: 0}
   BuildManager: {fileID: 6232265083158212558}
   KingGrid: {fileID: 1192708395103770121}
@@ -542,6 +543,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   isGrounded: 0
+  wasGrounded: 0
   m_RunSpeed: 0.4
   Weapon: {fileID: 3219085189739878061}
   weaponCollider: {fileID: 3219085189739878054}
@@ -688,7 +690,7 @@ Animator:
   m_GameObject: {fileID: 3219085190463158601}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 783ea1d234901e84caf67c76f6f0e7c7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

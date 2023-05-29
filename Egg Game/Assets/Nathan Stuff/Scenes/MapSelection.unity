@@ -833,7 +833,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_TagString
-      value: Player4
+      value: Cursor
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224541, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: speed
@@ -923,6 +923,10 @@ PrefabInstance:
       propertyPath: voteCounts.Array.data[5]
       value: 
       objectReference: {fileID: 89962052}
+    - target: {fileID: 3761985631712499080, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+      propertyPath: playerID
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6389775789616610867, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1372,7 +1376,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_TagString
-      value: Player2
+      value: Cursor
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224541, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: speed
@@ -1466,6 +1470,10 @@ PrefabInstance:
       propertyPath: voteCounts.Array.data[5]
       value: 
       objectReference: {fileID: 89962052}
+    - target: {fileID: 3761985631712499080, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+      propertyPath: playerID
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6389775789616610867, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2030,64 +2038,6 @@ MonoBehaviour:
   mapIndex: 1
   mapName: 
   mapImage: {fileID: 0}
---- !u!1 &1108677278
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1108677280}
-  - component: {fileID: 1108677279}
-  m_Layer: 0
-  m_Name: SaveData
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1108677279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1108677278}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 966defd82d2c82147a437a29c60186a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterSelections: []
-  allHats: []
-  allBodies: []
-  allWeapons: []
-  playerHatSpriteNumbers: 
-  playerBodySpriteNumbers: 
-  playerWeaponSpriteNumbers: 
-  playerSpriteHats: []
-  playerSpriteBodies: []
-  playerSpriteWeapons: []
-  players: []
-  playerTexts: []
-  playerCursors: []
-  connectedPlayers: 0
---- !u!4 &1108677280
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1108677278}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.9934981, y: 4.292843, z: -7.362944}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1467556978
 GameObject:
   m_ObjectHideFlags: 0
@@ -2610,6 +2560,64 @@ MonoBehaviour:
   mapIndex: 0
   mapName: 
   mapImage: {fileID: 0}
+--- !u!1 &1642029344
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1642029346}
+  - component: {fileID: 1642029345}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1642029345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1642029344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 966defd82d2c82147a437a29c60186a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterSelections: []
+  allHats: []
+  allBodies: []
+  allWeapons: []
+  playerHatSpriteNumbers: 
+  playerBodySpriteNumbers: 
+  playerWeaponSpriteNumbers: 
+  playerSpriteHats: []
+  playerSpriteBodies: []
+  playerSpriteWeapons: []
+  players: []
+  playerTexts: []
+  playerCursors: []
+  connectedPlayers: 0
+--- !u!4 &1642029346
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1642029344}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -296.8003, y: 15.259358, z: -11.417322}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1712722067
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2639,7 +2647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_TagString
-      value: Player3
+      value: Cursor
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224541, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: speed
@@ -2729,6 +2737,10 @@ PrefabInstance:
       propertyPath: voteCounts.Array.data[5]
       value: 
       objectReference: {fileID: 89962052}
+    - target: {fileID: 3761985631712499080, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+      propertyPath: playerID
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6389775789616610867, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2865,7 +2877,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_TagString
-      value: Player5
+      value: Cursor
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224541, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: speed
@@ -2955,6 +2967,10 @@ PrefabInstance:
       propertyPath: voteCounts.Array.data[5]
       value: 
       objectReference: {fileID: 89962052}
+    - target: {fileID: 3761985631712499080, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+      propertyPath: playerID
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 6389775789616610867, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3472,7 +3488,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_TagString
-      value: Player6
+      value: Cursor
       objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224541, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: speed
@@ -3562,6 +3578,10 @@ PrefabInstance:
       propertyPath: voteCounts.Array.data[5]
       value: 
       objectReference: {fileID: 89962052}
+    - target: {fileID: 3761985631712499080, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+      propertyPath: playerID
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6389775789616610867, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3760,6 +3780,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+      propertyPath: m_TagString
+      value: Cursor
+      objectReference: {fileID: 0}
     - target: {fileID: 1518570509379224515, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_UIInputModule
       value: 
@@ -3880,6 +3904,10 @@ PrefabInstance:
       propertyPath: voteCounts.Array.data[5]
       value: 
       objectReference: {fileID: 89962052}
+    - target: {fileID: 3761985631712499080, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+      propertyPath: playerID
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6389775789616610867, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
