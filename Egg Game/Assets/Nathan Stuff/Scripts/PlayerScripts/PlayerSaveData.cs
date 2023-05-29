@@ -44,18 +44,37 @@ public class PlayerSaveData : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Players: " + playerNumber);
+         Debug.Log("Players: " + playerNumber);
         scene = SceneManager.GetActiveScene();
 
         if (scene.name != "CharacterSelection" && scene.name != "MapSelection")
         {
-            players = GameObject.FindGameObjectsWithTag("Player");
-            playerTexts = GameObject.FindGameObjectsWithTag("PlayerText");
-
-            for (int i = 0; i < players.Length; i++)
+            players = new GameObject[]
             {
-                players[i].SetActive(i < playerNumber);
-                playerTexts[i].SetActive(i < playerNumber);
+                GameObject.Find("Player"),
+                GameObject.Find("Player 2"),
+                GameObject.Find("Player 3"),
+                GameObject.Find("Player 4"),
+                GameObject.Find("Player 5"),
+                GameObject.Find("Player 6")
+            };
+
+            playerTexts = new GameObject[]
+            {
+                GameObject.Find("Player One Text"),
+                GameObject.Find("Player Two Text"),
+                GameObject.Find("Player Three Text"),
+                GameObject.Find("Player Four Text"),
+                GameObject.Find("Player Five Text"),
+                GameObject.Find("Player Six Text")
+            };
+
+            for (int i = playerNumber; i < players.Length; i++)
+            {
+                if (players[i] != null)
+                    players[i].SetActive(false);
+                if (playerTexts[i] != null)
+                    playerTexts[i].SetActive(false);
             }
 
             // Initialize the sprite arrays with the correct sizes
@@ -82,8 +101,7 @@ public class PlayerSaveData : MonoBehaviour
                 players[i].transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
                 players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
             }
-        }
-        else if (scene.name == "CharacterSelection")
+        }  else if (scene.name == "CharacterSelection")
         {
             playerNumber = 0;
             playerReadyNumber = 0;
@@ -113,6 +131,20 @@ public class PlayerSaveData : MonoBehaviour
             for (int i = 0; i < playerCursors.Length; i++)
             {
                 playerCursors[i].SetActive(i < playerNumber);
+            }
+
+            for (int i = 0; i < playerNumber; i++)
+            {
+                players[i].transform.GetChild(2).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
+                players[i].transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
+                players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
+                playerCursors[i].SetActive(true);
+            }
+
+            for (int i = playerNumber; i < players.Length; i++)
+            {
+                players[i].SetActive(false);
+                playerTexts[i].SetActive(false);
             }
         }
     }
