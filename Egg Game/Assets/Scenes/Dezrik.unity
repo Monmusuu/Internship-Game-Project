@@ -980,12 +980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 966defd82d2c82147a437a29c60186a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterSelection1: {fileID: 0}
-  characterSelection2: {fileID: 0}
-  characterSelection3: {fileID: 0}
-  characterSelection4: {fileID: 0}
-  characterSelection5: {fileID: 0}
-  characterSelection6: {fileID: 0}
+  characterSelections: []
   allHats:
   - {fileID: 21300000, guid: f618c5fe13b18994aa5aee8b97d8dca1, type: 3}
   - {fileID: 21300000, guid: 1f21190ca9d1e8540b2a3a2e46002685, type: 3}
@@ -993,36 +988,14 @@ MonoBehaviour:
   - {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
   allWeapons:
   - {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  player1SpriteHat: {fileID: 0}
-  player2SpriteHat: {fileID: 0}
-  player3SpriteHat: {fileID: 0}
-  player4SpriteHat: {fileID: 0}
-  player5SpriteHat: {fileID: 0}
-  player6SpriteHat: {fileID: 0}
-  player1SpriteBody: {fileID: 0}
-  player2SpriteBody: {fileID: 0}
-  player3SpriteBody: {fileID: 0}
-  player4SpriteBody: {fileID: 0}
-  player5SpriteBody: {fileID: 0}
-  player6SpriteBody: {fileID: 0}
-  player1SpriteWeapon: {fileID: 0}
-  player2SpriteWeapon: {fileID: 0}
-  player3SpriteWeapon: {fileID: 0}
-  player4SpriteWeapon: {fileID: 0}
-  player5SpriteWeapon: {fileID: 0}
-  player6SpriteWeapon: {fileID: 0}
-  player1: {fileID: 0}
-  player2: {fileID: 0}
-  player3: {fileID: 0}
-  player4: {fileID: 0}
-  player5: {fileID: 0}
-  player6: {fileID: 0}
-  player1Text: {fileID: 0}
-  player2Text: {fileID: 0}
-  player3Text: {fileID: 0}
-  player4Text: {fileID: 0}
-  player5Text: {fileID: 0}
-  player6Text: {fileID: 0}
+  playerHatSpriteNumbers: 
+  playerBodySpriteNumbers: 
+  playerWeaponSpriteNumbers: 
+  playerSpriteHats: []
+  playerSpriteBodies: []
+  playerSpriteWeapons: []
+  players: []
+  playerTexts: []
 --- !u!4 &379570543
 Transform:
   m_ObjectHideFlags: 0
@@ -3766,6 +3739,18 @@ PrefabInstance:
     - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: tileObjects.Array.data[3]
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: autoTileObjects.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: trapTileObjects.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2841130487662390108, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: blockTileObjects.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3175108449416737197, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_DefaultControlScheme

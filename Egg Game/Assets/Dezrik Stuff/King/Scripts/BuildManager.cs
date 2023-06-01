@@ -6,13 +6,16 @@ using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using static System.Net.Mime.MediaTypeNames;
 using Debug = UnityEngine.Debug;
 
 public class BuildManager : MonoBehaviour
 { 
 public Tilemap KingTilemap;
-public GameObject[] tileObjects;
-public List<GameObject> UITiles;
+    public GameObject[] autoTileObjects;
+    public GameObject[] trapTileObjects;
+    public GameObject[] blockTileObjects;
+    public List<GameObject> UITiles;
 
 public int selectedTile = 0;
 public int removeTile = 0;
@@ -27,13 +30,13 @@ private void Start()
         KingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
 
         int i = 0;
-        foreach (GameObject tileObject in tileObjects)
+        foreach (GameObject tileObject in autoTileObjects)
         {
             GameObject UITile = new GameObject("UI Tile");
             UITile.transform.parent = tileGridUI;
             UITile.transform.localScale = new Vector3(1f, 1f, 1f);
 
-            Image UIImage = UITile.AddComponent<Image>();
+            UnityEngine.UI.Image UIImage = UITile.AddComponent<UnityEngine.UI.Image>();
             SpriteRenderer spriteRenderer = tileObject.GetComponent<SpriteRenderer>();
             Sprite sprite = spriteRenderer ? spriteRenderer.sprite : null;
             UIImage.sprite = sprite;
@@ -51,6 +54,57 @@ private void Start()
 
             i++;
         }
+
+        foreach (GameObject tileObject in trapTileObjects)
+        {
+            GameObject UITile = new GameObject("UI Tile");
+            UITile.transform.parent = tileGridUI;
+            UITile.transform.localScale = new Vector3(1f, 1f, 1f);
+
+            UnityEngine.UI.Image UIImage = UITile.AddComponent<UnityEngine.UI.Image>();
+            SpriteRenderer spriteRenderer = tileObject.GetComponent<SpriteRenderer>();
+            Sprite sprite = spriteRenderer ? spriteRenderer.sprite : null;
+            UIImage.sprite = sprite;
+
+            Color tileColor = UIImage.color;
+            tileColor.a = 0.5f;
+
+            if (i == selectedTile)
+            {
+                tileColor.a = 1f;
+            }
+
+            UIImage.color = tileColor;
+            UITiles.Add(UITile);
+
+            i++;
+        }
+
+        foreach (GameObject tileObject in blockTileObjects)
+        {
+            GameObject UITile = new GameObject("UI Tile");
+            UITile.transform.parent = tileGridUI;
+            UITile.transform.localScale = new Vector3(1f, 1f, 1f);
+
+            UnityEngine.UI.Image UIImage = UITile.AddComponent<UnityEngine.UI.Image>();
+            SpriteRenderer spriteRenderer = tileObject.GetComponent<SpriteRenderer>();
+            Sprite sprite = spriteRenderer ? spriteRenderer.sprite : null;
+            UIImage.sprite = sprite;
+
+            Color tileColor = UIImage.color;
+            tileColor.a = 0.5f;
+
+            if (i == selectedTile)
+            {
+                tileColor.a = 1f;
+            }
+
+            UIImage.color = tileColor;
+            UITiles.Add(UITile);
+
+            i++;
+        }
+
     }
 
     private void Update()
@@ -93,8 +147,7 @@ private void Start()
             Vector3Int cellPosition = KingTilemap.WorldToCell(mousePosition);
             Vector3 tilePosition = KingTilemap.CellToWorld(cellPosition) + KingTilemap.cellSize / 2f;
 
-            GameObject tileObject = Instantiate(tileObjects[selectedTile], tilePosition, Quaternion.identity);
-            tileObject.transform.SetParent(KingTilemap.transform);
+            
             if (selectedTile == 0)
             {
                 Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -102,6 +155,7 @@ private void Start()
                 gameObject.layer = 7;
                 autoPlaced = true;
                 RenderUITiles();
+                GameObject tileObject = Instantiate(autoTileObjects[0], tilePosition, Quaternion.identity);
 
                 if (trapPlaced == true && blockPlaced == true)
                 {
@@ -123,6 +177,7 @@ private void Start()
                     selectedTile += 1;
                     RenderUITiles();
                 }
+
             }
             else if (selectedTile == 1)
             {
@@ -130,6 +185,7 @@ private void Start()
                 gameObject.layer = 7;
                 trapPlaced = true;
                 RenderUITiles();
+                GameObject tileObject = Instantiate(trapTileObjects[0], tilePosition, Quaternion.identity);
 
                 if (autoPlaced == true && blockPlaced == true)
                 {
@@ -157,6 +213,7 @@ private void Start()
                 gameObject.layer = 7;
                 blockPlaced = true;
                 RenderUITiles();
+                GameObject tileObject = Instantiate(blockTileObjects[0], tilePosition, Quaternion.identity);
 
                 if (trapPlaced == true && autoPlaced == true)
                 {
@@ -186,19 +243,12 @@ private void Start()
             selectedTile = 3;
         }
 
-        void OnMouseEnter()
-        {
-            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            KingTilemap.SetTile(KingTilemap.WorldToCell(position), 
-            tileObjects[selectedTile].GetComponent<TileBase>());
-        }
-
         void RenderUITiles()
         {
             int i = 0;
             foreach (GameObject tileObject in UITiles)
             {
-                Image UIImage = tileObject.GetComponent<Image>();
+                UnityEngine.UI.Image UIImage = tileObject.GetComponent<UnityEngine.UI.Image>();
                 Color tileColor = UIImage.color;
                 tileColor.a = 0.5f;
 
