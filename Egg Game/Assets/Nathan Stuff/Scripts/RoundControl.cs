@@ -5,6 +5,7 @@ using UnityEngine;
 public class RoundControl : MonoBehaviour
 {
     public Player[] player;
+    public PlayerSaveData playerSaveData;
     public float RoundTime = 10f;
     public int Round = 0;
     public bool timerOn = false;
@@ -13,92 +14,89 @@ public class RoundControl : MonoBehaviour
     public bool placingItems = false;
     public bool playerRemovingItem = false;
 
-    // Start is called before the first frame update
+// Start is called before the first frame update
     void Start()
     {
+        StartCoroutine(PopulatePlayerArray());
     }
 
-    // Update is called once per frame
+    IEnumerator PopulatePlayerArray()
+    {
+        yield return new WaitForEndOfFrame(); // Wait until the end of the frame
+
+        player = new Player[6];
+        for (int i = 0; i < 6; i++)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player" + (i + 1));
+            if (playerObj != null)
+            {
+                Player playerComponent = playerObj.GetComponent<Player>();
+                if (playerComponent != null)
+                {
+                    player[i] = playerComponent;
+                }
+                else
+                {
+                    Debug.LogError("Player component not found on game object with tag 'Player" + (i + 1) + "'!");
+                }
+            }
+            else
+            {
+                //Debug.LogError("Player game object with tag 'Player" + (i + 1) + "' not found!");
+            }
+        }
+
+        // Call a method or perform any logic that requires the 'player' array here
+        // ...
+    }
+
+// Update is called once per frame
     void Update()
     {
-        if(!placingItems){
-            if(player[0].becameKing){
-                Respawn = true;
-                Round += 1;
-                RoundTime = 10f;
-                itemsPlaced = false;
-                timerOn = false;
+        if (!placingItems)
+        {
+            for (int i = 0; i < player.Length; i++)
+            {
+                if (player[i] != null && player[i].becameKing && i == PlayerSaveData.playerNumber - 1)
+                {
+                    Respawn = true;
+                    Round += 1;
+                    RoundTime = 10f;
+                    itemsPlaced = false;
+                    timerOn = false;
+                    break; // Exit the loop since the king is found
+                }
             }
-            if(player[1].becameKing){
-                Respawn = true;
-                Round += 1;
-                RoundTime = 10f;
-                itemsPlaced = false;
-                timerOn = false;
-            }
-            if(player[2].becameKing){
-                Respawn = true;
-                Round += 1;
-                RoundTime = 10f;
-                itemsPlaced = false;
-                timerOn = false;
-            }
-            if(player[3].becameKing){
-                Respawn = true;
-                Round += 1;
-                RoundTime = 10f;
-                itemsPlaced = false;
-                timerOn = false;
-            }
-            if(player[4].becameKing){
-                Respawn = true;
-                Round += 1;
-                RoundTime = 10f;
-                itemsPlaced = false;
-                timerOn = false;
-            }
-            if(player[5].becameKing){
-                Respawn = true;
-                Round += 1;
-                RoundTime = 10f;
-                itemsPlaced = false;
-                timerOn = false;
-            }
-            
 
-            if(itemsPlaced && Round >= 1){
-                if(!playerRemovingItem){
-                    if(player[0].isKing && itemsPlaced && Round >= 1){
-                        timerOn = true;
-                    }
-                    if(player[1].isKing && itemsPlaced && Round >= 1){
-                        timerOn = true;
-                    }
-                    if(player[2].isKing && itemsPlaced && Round >= 1){
-                        timerOn = true;
-                    }
-                    if(player[3].isKing && itemsPlaced && Round >= 1){
-                        timerOn = true;
-                    }
-                    if(player[4].isKing && itemsPlaced && Round >= 1){
-                        timerOn = true;
-                    }
-                    if(player[5].isKing && itemsPlaced && Round >= 1){
-                        timerOn = true;
+            if (itemsPlaced && Round >= 1)
+            {
+                if (!playerRemovingItem)
+                {
+                    int currentPlayerNumber = PlayerSaveData.playerNumber - 1;
+                    if (currentPlayerNumber >= 0 && currentPlayerNumber < player.Length)
+                    {
+                        if (player[currentPlayerNumber].isKing && itemsPlaced)
+                        {
+                            timerOn = true;
+                        }
                     }
 
-                    if(timerOn){
+                    if (timerOn)
+                    {
                         RoundTime -= Time.deltaTime;
                     }
 
-                    if(RoundTime <= 0){
+                    if (RoundTime <= 0)
+                    {
                         Respawn = true;
                         Debug.Log("Round Over");
                         itemsPlaced = false;
                         timerOn = false;
                         RoundTime = 10f;
                     }
-                    if(RoundTime <= 10f && itemsPlaced){
+
+                    if (RoundTime <= 10f && itemsPlaced)
+                    {
                         Respawn = false;
                     }
                 }

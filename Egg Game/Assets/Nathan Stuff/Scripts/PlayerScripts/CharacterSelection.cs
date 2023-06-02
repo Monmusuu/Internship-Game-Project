@@ -63,7 +63,7 @@ public class CharacterSelection : MonoBehaviour
         }
     }
 
-    [SerializeField] private bool isReady = false;
+    public bool isReady = false;
     public bool readiedUp = false;
     [SerializeField] private bool clickedUP = false;
     [SerializeField] private bool clickedDown = false;

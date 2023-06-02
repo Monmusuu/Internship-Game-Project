@@ -409,7 +409,6 @@ GameObject:
   - component: {fileID: 3219085190463158599}
   - component: {fileID: 3219085190463158594}
   - component: {fileID: 3175108449416737197}
-  - component: {fileID: 3651565879809642998}
   - component: {fileID: 3219085190463158595}
   - component: {fileID: 3219085190463158592}
   m_Layer: 8
@@ -525,7 +524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c24240ac570a1499d9229432e10b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerDetails: {fileID: 3651565879809642998}
+  playerDetails: {fileID: 0}
   player: []
   animator: {fileID: 0}
   roundControl: {fileID: 0}
@@ -646,24 +645,10 @@ MonoBehaviour:
     m_ActionId: 4e0776ec-0923-4730-9fa5-ca103488a9c1
     m_ActionName: Player/Right
   m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: WADKeyBoard
+  m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &3651565879809642998
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3219085190463158601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e076c940950564e4fa18c50aeb26d95f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerID: 0
-  startPos: {x: 0, y: 0, z: 0}
 --- !u!70 &3219085190463158595
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -952,7 +937,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   KingTilemap: {fileID: 0}
-  tileObjects: []
+  autoTileObjects: []
+  trapTileObjects: []
+  blockTileObjects: []
   UITiles: []
   selectedTile: 0
   removeTile: 4
