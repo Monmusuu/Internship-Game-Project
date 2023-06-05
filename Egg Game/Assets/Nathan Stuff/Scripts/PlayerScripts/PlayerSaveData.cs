@@ -130,8 +130,6 @@ public class PlayerSaveData : MonoBehaviour
 
             for (int i = playerNumber; i < players.Length; i++)
             {
-                if (players[i] != null)
-                    players[i].SetActive(false);
                 if (playerTexts[i] != null)
                     playerTexts[i].SetActive(false);
             }
