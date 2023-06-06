@@ -16,6 +16,15 @@ TagManager:
   - Player1IMG
   - Background
   - Map
+  - Cursor
+  - button
+  - button0
+  - button1
+  - button2
+  - button3
+  - button4
+  - button5
+  - SpecialButton
   layers:
   - Default
   - TransparentFX

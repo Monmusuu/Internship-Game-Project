@@ -62,7 +62,6 @@ public class PlayerSaveData : MonoBehaviour
     {
         if (scene.name == "CharacterSelection")
         {
-            characterSelections = new CharacterSelection[playerNumber]; // Initialize the array
 
             for (int i = 0; i < playerNumber; i++)
             {
@@ -72,7 +71,6 @@ public class PlayerSaveData : MonoBehaviour
                     CharacterSelection characterSelection = playerObject.GetComponent<CharacterSelection>();
                     if (characterSelection != null)
                     {
-                        characterSelections[i] = characterSelection; // Add the component to the array
 
                         if (characterSelection.isReady)
                         {
@@ -106,7 +104,7 @@ public class PlayerSaveData : MonoBehaviour
             playerReadyNumber = 0;
         }
 
-        if (scene.name != "CharacterSelection" && scene.name != "MapSelection")
+        if (scene.name != "CharacterSelection" && scene.name != "MapSelection" && scene.name != "Menu")
         {
             players = new GameObject[]
             {

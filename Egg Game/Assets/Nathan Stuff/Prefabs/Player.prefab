@@ -532,7 +532,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   isGrounded: 0
-  m_RunSpeed: 0.4
+  m_RunSpeed: 15
   Weapon: {fileID: 3219085189739878061}
   weaponCollider: {fileID: 3219085189739878054}
   m_WeaponAnimator: {fileID: 3219085189739878057}
