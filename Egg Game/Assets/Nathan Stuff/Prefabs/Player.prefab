@@ -524,17 +524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c24240ac570a1499d9229432e10b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerDetails: {fileID: 0}
-  player: []
-  animator: {fileID: 0}
-  roundControl: {fileID: 0}
-  BuildManager: {fileID: 6232265083158212558}
-  KingGrid: {fileID: 1192708395103770121}
-  playerSpawnLocation: {fileID: 0}
-  kingSpawnLocation: {fileID: 0}
-  groundCheckCollider: {fileID: 3219085189834981985}
-  groundCheckCollider2: {fileID: 3219085189834981985}
-  jumpSpeed: 5
+  jumpSpeed: 11
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -542,19 +532,26 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   isGrounded: 0
-  wasGrounded: 0
   m_RunSpeed: 0.4
   Weapon: {fileID: 3219085189739878061}
   weaponCollider: {fileID: 3219085189739878054}
   m_WeaponAnimator: {fileID: 3219085189739878057}
   internalTimer: 0
   weaponCooldown: 0.8
-  knockbackStrength: 0
   isKing: 0
   becameKing: 0
   isPlayer: 0
   isflashing: 0
   healthbar: {fileID: 1526557127058223658}
+  player: []
+  playerSaveData: {fileID: 0}
+  roundControl: {fileID: 0}
+  BuildManager: {fileID: 6232265083158212558}
+  KingGrid: {fileID: 1192708395103770121}
+  playerSpawnLocation: {fileID: 0}
+  kingSpawnLocation: {fileID: 0}
+  groundCheckCollider: {fileID: 3219085189834981985}
+  groundCheckCollider2: {fileID: 3219085189834981985}
 --- !u!114 &3175108449416737197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,7 +660,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 1, y: 1.75}
   m_Direction: 0
 --- !u!95 &3219085190463158592
 Animator:

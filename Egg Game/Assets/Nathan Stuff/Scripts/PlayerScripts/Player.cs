@@ -112,7 +112,7 @@ public class Player : MonoBehaviour
                 if (jumped)
                 {
                     animator.SetBool("Landed", false);
-                    rigid.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
+                    rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
                     animator.SetTrigger("Jumped");
                 }
                 else
@@ -129,29 +129,32 @@ public class Player : MonoBehaviour
             }
 
             wasGrounded = isGrounded;
+            
+            // Limit maximum speed
+            rigid.velocity = new Vector2(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y);
 
-            if (rigid.velocity.magnitude > maxSpeed)
-            {
-                rigid.velocity = Vector2.ClampMagnitude(rigid.velocity, maxSpeed);
-            }
-
+            float targetVelocityX = 0f;
             if (left)
             {
-                rigid.AddForce(Vector2.left * m_RunSpeed, ForceMode2D.Impulse);
+                targetVelocityX = -m_RunSpeed;
                 if (!lastDirRight)
                 {
                     Flip();
                 }
             }
-
-            if (right)
+            else if (right)
             {
-                rigid.AddForce(Vector2.right * m_RunSpeed, ForceMode2D.Impulse);
+                targetVelocityX = m_RunSpeed;
                 if (lastDirRight)
                 {
                     Flip();
                 }
             }
+
+            // Apply smooth acceleration and deceleration
+            float acceleration = left || right ? 0.1f : 0.008f;
+            rigid.velocity = new Vector2(Mathf.Lerp(rigid.velocity.x, targetVelocityX, acceleration), rigid.velocity.y);
+
 
             if (attack && weaponCooldown == 0.8f && !isAttacking)
             {
