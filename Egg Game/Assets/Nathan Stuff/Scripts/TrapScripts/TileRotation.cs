@@ -12,11 +12,7 @@ public class TileRotation : MonoBehaviour
 
     public float baseRotationSpeed = 90f; // Rotation speed for the base object
     public ChildRotationInfo[] childRotationInfos; // Array of child rotation information
-
-    private void Start()
-    {
-        StartRotation();
-    }
+    public RoundControl roundControl;
 
     void StartRotation()
     {
@@ -33,13 +29,21 @@ public class TileRotation : MonoBehaviour
         RotateObject(childInfo.childTransform, childInfo.rotationSpeed);
     }
 
+    private void Start() {
+        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
+    }
+
     void Update()
     {
-        RotateObject(transform, baseRotationSpeed);
+        if(roundControl.timerOn){
+            StartRotation();
 
-        foreach (ChildRotationInfo childInfo in childRotationInfos)
-        {
-            RotateObject(childInfo.childTransform, childInfo.rotationSpeed);
+            RotateObject(transform, baseRotationSpeed);
+
+            foreach (ChildRotationInfo childInfo in childRotationInfos)
+            {
+                RotateObject(childInfo.childTransform, childInfo.rotationSpeed);
+            }
         }
     }
 

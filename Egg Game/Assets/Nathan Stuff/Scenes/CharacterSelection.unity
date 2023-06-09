@@ -434,7 +434,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: -1
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -1372,6 +1372,10 @@ PrefabInstance:
     - target: {fileID: 2184368636405090945, guid: bd9225c51aef3f147b390c61cf8e910e, type: 3}
       propertyPath: m_TagString
       value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322257025890547285, guid: bd9225c51aef3f147b390c61cf8e910e, type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5380633771854741766, guid: bd9225c51aef3f147b390c61cf8e910e, type: 3}
       propertyPath: m_Pivot.x

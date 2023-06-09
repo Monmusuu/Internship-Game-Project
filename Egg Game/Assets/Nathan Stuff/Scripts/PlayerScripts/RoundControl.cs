@@ -12,6 +12,7 @@ public class RoundControl : MonoBehaviour
     public bool Respawn = false;
     public bool itemsPlaced = false;
     public bool placingItems = false;
+    public int playersPlacedBlocks = 0;
     public bool playerRemovingItem = false;
 
 // Start is called before the first frame update

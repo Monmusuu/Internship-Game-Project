@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     private Animator animator;
     private Rigidbody2D rigid;
     private CharacterController controller;
-
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private float jumpSpeed = 5;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask kingLayer;
@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     private bool jumped = false;
     private bool attack = false;
     public bool isKing = false;
+    public bool isPause = false;
     public bool becameKing = false;
     public bool isPlayer = false;
     public bool isflashing = false;
@@ -62,6 +63,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        gameManager = GameObject.Find("GameState").GetComponent<GameManager>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
@@ -95,6 +97,14 @@ public class Player : MonoBehaviour
         attack = context.action.triggered;
     }
 
+public void OnPause(InputAction.CallbackContext context)
+{
+    if (context.performed)
+    {
+        isPause = !isPause;
+    }
+}
+
     void Update()
     {
         if (player == null || player.Length == 0)
@@ -102,98 +112,113 @@ public class Player : MonoBehaviour
             InitializePlayerArray();
         }
 
-        if (!isKing)
-        {
-            GroundCheck();
 
-            if (isGrounded)
+        if (!gameManager.GetIsPaused()) {
+            // Look for the Esc keypress and pause the game if Esc is pressed.
+            if (isPause && !gameManager.GetIsPaused()) {
+                gameManager.PauseGame();
+            }
+        } else {
+            // If the game is paused and the Esc key is pressed, unpause the game.
+            if (!isPause && gameManager.GetIsPaused()) {
+                gameManager.UnpauseGame();
+            }
+        }
+
+        //if(roundControl.timerOn){
+            if (!isKing)
             {
-                animator.SetBool("Landed", true);
-                if (jumped)
+                GroundCheck();
+
+                if (isGrounded)
                 {
-                    animator.SetBool("Landed", false);
-                    rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
-                    animator.SetTrigger("Jumped");
-                }
-                else
-                {
-                    if (Mathf.Abs(rigid.velocity.x) > 0.1f)
+                    animator.SetBool("Landed", true);
+                    if (jumped)
                     {
-                        animator.SetBool("Running", true);
+                        animator.SetBool("Landed", false);
+                        rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
+                        animator.SetTrigger("Jumped");
                     }
-                    else if (Mathf.Abs(rigid.velocity.x) <= 0f)
+                    else
                     {
-                        animator.SetBool("Running", false);
+                        if (Mathf.Abs(rigid.velocity.x) > 0.1f)
+                        {
+                            animator.SetBool("Running", true);
+                        }
+                        else if (Mathf.Abs(rigid.velocity.x) <= 0f)
+                        {
+                            animator.SetBool("Running", false);
+                        }
                     }
                 }
-            }
 
-            wasGrounded = isGrounded;
-            
-            // Limit maximum speed
-            rigid.velocity = new Vector2(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y);
+                wasGrounded = isGrounded;
+                
+                // Limit maximum speed
+                rigid.velocity = new Vector2(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y);
 
-            float targetVelocityX = 0f;
-            if (left)
-            {
-                targetVelocityX = -m_RunSpeed;
-                if (!lastDirRight)
+                float targetVelocityX = 0f;
+                if (left)
                 {
-                    Flip();
+                    targetVelocityX = -m_RunSpeed;
+                    if (!lastDirRight)
+                    {
+                        Flip();
+                    }
+                }
+                else if (right)
+                {
+                    targetVelocityX = m_RunSpeed;
+                    if (lastDirRight)
+                    {
+                        Flip();
+                    }
+                }
+
+                // Apply smooth acceleration and deceleration
+                float acceleration = left || right ? 0.1f : 0.008f;
+                rigid.velocity = new Vector2(Mathf.Lerp(rigid.velocity.x, targetVelocityX, acceleration), rigid.velocity.y);
+
+
+                if (attack && weaponCooldown == 0.8f && !isAttacking)
+                {
+                    isAttacking = true;
+                    weaponCollider.enabled = true;
+                    m_WeaponAnimator.SetTrigger("Swing");
+                }
+                if (isAttacking)
+                {
+                    internalTimer -= Time.deltaTime;
+                    if (internalTimer <= 0)
+                    {
+                        weaponCollider.enabled = false;
+                        isAttacking = false;
+                        internalTimer = weaponTimer;
+                        attackFinished = true;
+                    }
+                }
+                if (attackFinished)
+                {
+                    weaponCooldown -= Time.deltaTime;
+                }
+                if (weaponCooldown <= 0)
+                {
+                    weaponCooldown = 0.8f;
+                    attackFinished = false;
                 }
             }
-            else if (right)
-            {
-                targetVelocityX = m_RunSpeed;
-                if (lastDirRight)
-                {
-                    Flip();
-                }
-            }
 
-            // Apply smooth acceleration and deceleration
-            float acceleration = left || right ? 0.1f : 0.008f;
-            rigid.velocity = new Vector2(Mathf.Lerp(rigid.velocity.x, targetVelocityX, acceleration), rigid.velocity.y);
-
-
-            if (attack && weaponCooldown == 0.8f && !isAttacking)
+            if (becameKing)
             {
-                isAttacking = true;
-                weaponCollider.enabled = true;
-                m_WeaponAnimator.SetTrigger("Swing");
+                rigid.velocity = Vector2.zero;
+                transform.position = kingSpawnLocation.position;
             }
-            if (isAttacking)
+            if (isPlayer && roundControl.Respawn)
             {
-                internalTimer -= Time.deltaTime;
-                if (internalTimer <= 0)
-                {
-                    weaponCollider.enabled = false;
-                    isAttacking = false;
-                    internalTimer = weaponTimer;
-                    attackFinished = true;
-                }
+                rigid.velocity = Vector2.zero;
+                transform.position = playerSpawnLocation.position;
             }
-            if (attackFinished)
-            {
-                weaponCooldown -= Time.deltaTime;
-            }
-            if (weaponCooldown <= 0)
-            {
-                weaponCooldown = 0.8f;
-                attackFinished = false;
-            }
-        }
-
-        if (becameKing)
-        {
-            rigid.velocity = Vector2.zero;
-            transform.position = kingSpawnLocation.position;
-        }
-        if (isPlayer && roundControl.Respawn)
-        {
-            rigid.velocity = Vector2.zero;
-            transform.position = playerSpawnLocation.position;
-        }
+        //}
     }
 
     void InitializePlayerArray()

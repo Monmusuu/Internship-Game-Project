@@ -14,9 +14,6 @@ public class CharacterSelection : MonoBehaviour
 
     public Transform canvas;
 
-    private int[] MenuArray = new int[3];
-    private int menuPos = 0;
-
     public Sprite[] allHats;
     private int _HatValue = 0;
     public int hatValue
