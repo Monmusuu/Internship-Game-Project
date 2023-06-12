@@ -8,18 +8,23 @@ public class SawScript : MonoBehaviour
     public Transform pointB; // Second point
     public float rotationSpeed = 360f; // Rotation speed in degrees per second
     public float movementSpeed = 2f; // Movement speed in units per second
+    public RoundControl roundControl;
 
     private Vector3 targetPosition; // Current target position
 
     private void Start()
     {
+        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         targetPosition = pointB.position; // Start at point B
     }
 
     private void Update()
     {
-        RotateObject();
-        MoveObject();
+        if(roundControl.timerOn){
+            RotateObject();
+            MoveObject();
+        }
+
     }
 
     private void RotateObject()

@@ -12,10 +12,10 @@ using Debug = UnityEngine.Debug;
 public class BuildManager : MonoBehaviour
 { 
 public Tilemap KingTilemap;
-    public GameObject[] autoTileObjects;
-    public GameObject[] trapTileObjects;
-    public GameObject[] blockTileObjects;
-    public List<GameObject> UITiles;
+public GameObject[] autoTileObjects;
+public GameObject[] trapTileObjects;
+public GameObject[] blockTileObjects;
+public List<GameObject> UITiles;
 
 public int selectedTile = 0;
 public int removeTile = 0;

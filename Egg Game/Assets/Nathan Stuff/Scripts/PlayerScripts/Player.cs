@@ -45,6 +45,7 @@ public class Player : MonoBehaviour
     public PlayerSaveData playerSaveData;
     public RoundControl roundControl;
     public GameObject BuildManager;
+    public GameObject playerBlockPlacement;
     public GameObject KingGrid;
     public Transform playerSpawnLocation;
     public Transform kingSpawnLocation;
@@ -97,13 +98,13 @@ public class Player : MonoBehaviour
         attack = context.action.triggered;
     }
 
-public void OnPause(InputAction.CallbackContext context)
-{
-    if (context.performed)
+    public void OnPause(InputAction.CallbackContext context)
     {
-        isPause = !isPause;
+        if (context.performed)
+        {
+            isPause = !isPause;
+        }
     }
-}
 
     void Update()
     {
@@ -125,7 +126,13 @@ public void OnPause(InputAction.CallbackContext context)
             }
         }
 
-        //if(roundControl.timerOn){
+        if(roundControl.placingItems){
+            playerBlockPlacement.SetActive(true);
+        }else{
+            playerBlockPlacement.SetActive(false);
+        }
+
+        if(roundControl.timerOn){
             if (!isKing)
             {
                 GroundCheck();
@@ -218,7 +225,7 @@ public void OnPause(InputAction.CallbackContext context)
                 rigid.velocity = Vector2.zero;
                 transform.position = playerSpawnLocation.position;
             }
-        //}
+        }
     }
 
     void InitializePlayerArray()

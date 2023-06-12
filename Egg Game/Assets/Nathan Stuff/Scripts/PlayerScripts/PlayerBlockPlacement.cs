@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,28 +7,27 @@ using UnityEngine.UI;
 
 public class PlayerBlockPlacement : MonoBehaviour
 {
-    public Tilemap kingTilemap;
-    public GameObject[] blockTileObjects;
-    public List<GameObject> UITiles;
+public Tilemap kingTilemap;
+public GameObject[] blockTileObjects;
+public List<GameObject> UITiles;
+public int selectedTile = 0;
+public int removeTile = 0;
+public bool blockPlaced = false;
 
-    public int selectedTile = 0;
-    public int removeTile = 0;
-    public bool blockPlaced = false;
+public Transform tileGridUI;
 
-    public Transform tileGridUI;
+public PlayerInput playerInput;
+public float moveSpeed = 5f;
 
-    public PlayerInput playerInput;
-    public float moveSpeed = 5f;
+private Vector2 movementInput;
+private GameObject previewObject;
+private SpriteRenderer previewSpriteRenderer;
+private Rigidbody2D rb;
 
-    private Vector2 movementInput;
-    private GameObject previewObject;
-    private SpriteRenderer previewSpriteRenderer;
-    private Rigidbody2D rb;
-
-    public float smoothingFactor = 0.5f; // Value between 0 and 1 (0 means no smoothing, 1 means maximum smoothing)
-    private Vector2 smoothedInput;
-    private Vector3 initialPosition;
-    RoundControl roundControl;
+public float smoothingFactor = 0.5f; // Value between 0 and 1 (0 means no smoothing, 1 means maximum smoothing)
+private Vector2 smoothedInput;
+private Vector3 initialPosition;
+private RoundControl roundControl;
 
 private void Awake()
 {
@@ -76,47 +76,47 @@ private void Start()
     rb.gravityScale = 0f; // Disable gravity for the cursor
 }
 
-    private void Update()
+private void Update()
+{
+    movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
+
+    if (movementInput != Vector2.zero)
     {
-        movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
-
-        if (movementInput != Vector2.zero)
-        {
-            MoveCursor();
-        }
-
-        selectedTile = 0;
-        RenderUITiles();
-
-        if (blockPlaced == true)
-        {
-            selectedTile = 3;
-        }
-
-        if (playerInput.actions["CursorClick"].triggered)
-        {
-            OnClick();
-        }
+        MoveCursor();
     }
 
-    private void FixedUpdate()
+    selectedTile = 0;
+    RenderUITiles();
+
+    if (blockPlaced == true)
     {
-        Vector2 velocity = movementInput * moveSpeed;
-        rb.velocity = velocity;
+        selectedTile = 3;
     }
 
-    private void MoveCursor()
+    if (playerInput.actions["CursorClick"].triggered)
     {
-        Vector3Int cellPosition = kingTilemap.WorldToCell(transform.position);
-        Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
-
-        if (previewObject != null)
-        {
-            // Interpolate the movement between the current position and the target position
-            float moveDistance = moveSpeed * Time.deltaTime;
-            previewObject.transform.position = Vector3.Lerp(previewObject.transform.position, tilePosition, moveDistance);
-        }
+        OnClick();
     }
+}
+
+private void FixedUpdate()
+{
+    Vector2 velocity = movementInput * moveSpeed;
+    rb.velocity = velocity;
+}
+
+private void MoveCursor()
+{
+    Vector3Int cellPosition = kingTilemap.WorldToCell(transform.position);
+    Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
+
+    if (previewObject != null)
+    {
+        // Interpolate the movement between the current position and the target position
+        float moveDistance = moveSpeed * Time.deltaTime;
+        previewObject.transform.position = Vector3.Lerp(previewObject.transform.position, tilePosition, moveDistance);
+    }
+}
 
 public void OnClick()
 {
@@ -135,32 +135,45 @@ public void OnClick()
         Color blockColor = placedSpriteRenderer.color;
         blockColor.a = 1f; // Set the alpha value to 0 (fully transparent)
         placedSpriteRenderer.color = blockColor;
-        roundControl.playersPlacedBlocks +=1;
-        
+        roundControl.playersPlacedBlocks += 1;
     }
 
     Destroy(previewObject);
-
-
 }
 
-    void RenderUITiles()
+void RenderUITiles()
+{
+    int i = 0;
+    foreach (GameObject tileObject in UITiles)
     {
-        int i = 0;
-        foreach (GameObject tileObject in UITiles)
+        UnityEngine.UI.Image UIImage = tileObject.GetComponent<UnityEngine.UI.Image>();
+        Color tileColor = UIImage.color;
+        tileColor.a = 0.5f;
+
+        if (i == selectedTile)
         {
-            UnityEngine.UI.Image UIImage = tileObject.GetComponent<UnityEngine.UI.Image>();
-            Color tileColor = UIImage.color;
-            tileColor.a = 0.5f;
-
-            if (i == selectedTile)
-            {
-                tileColor.a = 1f;
-            }
-
-            UIImage.color = tileColor;
-
-            i++;
+            tileColor.a = 1f;
         }
+
+        UIImage.color = tileColor;
+
+        i++;
     }
+}
+
+private void OnEnable()
+{
+    if (previewObject != null)
+    {
+        previewObject.SetActive(true);
+    }
+}
+
+private void OnDisable()
+{
+    if (previewObject != null)
+    {
+        previewObject.SetActive(false);
+    }
+}
 }
