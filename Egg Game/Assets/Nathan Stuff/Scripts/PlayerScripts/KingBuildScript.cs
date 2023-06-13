@@ -89,6 +89,9 @@ public class KingBuildScript : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f; // Disable gravity for the cursor
+
+        // Reset the position to the initial position
+        transform.localPosition = initialPosition;
     }
 
     private GameObject CreateUITile(GameObject tileObject, bool isSelected)
@@ -109,24 +112,25 @@ public class KingBuildScript : MonoBehaviour
         return UITile;
     }
 
-private void CreateAllPreviews()
-{
-    if (!autoTrapPlaced && selectedTile == 0)
-        CreatePreviewObject(autoTrapTileObjects, true);
-    else if (!manualTrapPlaced && selectedTile == 1)
-        CreatePreviewObject(manualTrapTileObjects, true);
-    else if (!manualTrapPlaced2 && selectedTile == 2) // Add check for valid index
-        CreatePreviewObject(manualTrap2TileObjects, true);
-    else
-        Destroy(previewObject);
-}
+    private void CreateAllPreviews()
+    {
+        if (!autoTrapPlaced && selectedTile == 0)
+            CreatePreviewObject(autoTrapTileObjects, true);
+        else if (!manualTrapPlaced && selectedTile == 1)
+            CreatePreviewObject(manualTrapTileObjects, true);
+        else if (!manualTrapPlaced2 && selectedTile == 2 && manualTrap2TileObjects.Length > 0) // Add check for valid index
+            CreatePreviewObject(manualTrap2TileObjects, true);
+        else
+            Destroy(previewObject);
+    }
 
     private void CreatePreviewObject(GameObject[] tileObjects, bool isSelected)
     {
         if (previewObject != null)
             Destroy(previewObject);
 
-        GameObject tileObject = tileObjects[selectedTile];
+        int selectedObjectIndex = Mathf.Clamp(selectedTile, 0, tileObjects.Length - 1);
+        GameObject tileObject = tileObjects[selectedObjectIndex];
         previewObject = Instantiate(tileObject, transform.position, Quaternion.identity);
         previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
         previewSpriteRenderer.color = new Color(1f, 1f, 1f, isSelected ? 1f : 0.5f);
@@ -169,59 +173,59 @@ private void CreateAllPreviews()
         }
     }
 
-private void OnClick()
-{
-    Vector3 cursorPosition = transform.position;
-    Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
-    Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
-
-    if (selectedTile == 0 && !autoTrapPlaced)
+    private void OnClick()
     {
-        // Place auto trap
-        transform.position = initialPosition;
-        gameObject.layer = 7;
-        autoTrapPlaced = true;
-        RenderUITiles();
-        GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
-        // Set properties or perform any additional setup for the auto trap
+        Vector3 cursorPosition = transform.position;
+        Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
+        Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
 
-        // Move to the next selected object
-        selectedTile = 1;
-        CreateAllPreviews();
-    }
-    else if (selectedTile == 1 && !manualTrapPlaced)
-    {
-        // Place manual trap 1
-        transform.position = initialPosition;
-        gameObject.layer = 7;
-        manualTrapPlaced = true;
-        RenderUITiles();
-        GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
-        // Set properties or perform any additional setup for the manual trap
-
-        // Move to the next selected object
-        selectedTile = 2;
-        CreateAllPreviews();
-    }
-    else if (selectedTile == 2 && !manualTrapPlaced2)
-    {
-        if (manualTrap2TileObjects.Length > 0)  // Check array length before placing manual trap 2
+        if (selectedTile == 0 && !autoTrapPlaced)
         {
-            // Place manual trap 2
-            transform.position = initialPosition;
+            // Place auto trap
+            transform.position = transform.parent.position;
             gameObject.layer = 7;
-            manualTrapPlaced2 = true;
+            autoTrapPlaced = true;
             RenderUITiles();
-            GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
-            // Set properties or perform any additional setup for the manual trap 2
+            GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
+            // Set properties or perform any additional setup for the auto trap
 
-            selectedTile = 3;
+            // Move to the next selected object
+            selectedTile = 1;
             CreateAllPreviews();
         }
-    }
+        else if (selectedTile == 1 && !manualTrapPlaced)
+        {
+            // Place manual trap 1
+            transform.position = transform.parent.position;
+            gameObject.layer = 7;
+            manualTrapPlaced = true;
+            RenderUITiles();
+            GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
+            // Set properties or perform any additional setup for the manual trap
 
-    Destroy(previewObject);
-}
+            // Move to the next selected object
+            selectedTile = 2;
+            CreateAllPreviews();
+        }
+        else if (selectedTile == 2 && !manualTrapPlaced2)
+        {
+            if (manualTrap2TileObjects.Length > 0)  // Check array length before placing manual trap 2
+            {
+                // Place manual trap 2
+                transform.position = transform.parent.position;
+                gameObject.layer = 7;
+                manualTrapPlaced2 = true;
+                RenderUITiles();
+                GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
+                // Set properties or perform any additional setup for the manual trap 2
+
+                selectedTile = 3;
+                CreateAllPreviews();
+            }
+        }
+
+        Destroy(previewObject);
+    }
 
     private void RenderUITiles()
     {

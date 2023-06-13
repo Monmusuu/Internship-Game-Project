@@ -46,7 +46,6 @@ public class Player : MonoBehaviour
     public RoundControl roundControl;
     public GameObject BuildManager;
     public GameObject playerBlockPlacement;
-    public GameObject KingGrid;
     public Transform playerSpawnLocation;
     public Transform kingSpawnLocation;
     [SerializeField] private Transform groundCheckCollider;
@@ -72,7 +71,6 @@ public class Player : MonoBehaviour
         isPlayer = true;
         healthbar.SetMaxHealth(maxHealth);
         BuildManager.SetActive(false);
-        KingGrid.SetActive(false);
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
         controller = gameObject.GetComponent<CharacterController>();
@@ -134,10 +132,8 @@ public class Player : MonoBehaviour
 
         if(roundControl.placingItems && isKing && roundControl.Round >= 1 ){
             BuildManager.SetActive(true);
-            KingGrid.SetActive(true);
         }else{
             BuildManager.SetActive(false);
-            KingGrid.SetActive(false);
         }
 
         if(roundControl.timerOn){
