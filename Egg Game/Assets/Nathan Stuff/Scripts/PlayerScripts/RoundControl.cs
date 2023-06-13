@@ -63,7 +63,7 @@ public class RoundControl : MonoBehaviour
                 {
                     Respawn = true;
                     Round += 1;
-                    RoundTime = 10f;
+                    RoundTime = 360f;
                     itemsPlaced = false;
                     timerOn = false;
                     placingItems = true;
