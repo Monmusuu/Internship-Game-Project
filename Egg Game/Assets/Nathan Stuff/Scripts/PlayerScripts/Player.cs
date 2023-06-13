@@ -126,10 +126,18 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(roundControl.placingItems){
+        if(roundControl.placingItems && isPlayer && roundControl.Round >= 1 ){
             playerBlockPlacement.SetActive(true);
         }else{
             playerBlockPlacement.SetActive(false);
+        }
+
+        if(roundControl.placingItems && isKing && roundControl.Round >= 1 ){
+            BuildManager.SetActive(true);
+            KingGrid.SetActive(true);
+        }else{
+            BuildManager.SetActive(false);
+            KingGrid.SetActive(false);
         }
 
         if(roundControl.timerOn){
@@ -274,8 +282,6 @@ public class Player : MonoBehaviour
         {
             becameKing = true;
             isPlayer = false;
-            BuildManager.SetActive(true);
-            KingGrid.SetActive(true);
 
             if (PlayerSaveData.playerNumber == 1 && player[0].isKing)
             {

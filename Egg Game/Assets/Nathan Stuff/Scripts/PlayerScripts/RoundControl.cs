@@ -6,7 +6,7 @@ public class RoundControl : MonoBehaviour
 {
     public Player[] player;
     public PlayerSaveData playerSaveData;
-    public float RoundTime = 10f;
+    public float RoundTime = 360f;
     public int Round = 0;
     public bool timerOn = false;
     public bool Respawn = false;
@@ -19,6 +19,7 @@ public class RoundControl : MonoBehaviour
     void Start()
     {
         StartCoroutine(PopulatePlayerArray());
+        timerOn = true;
     }
 
     IEnumerator PopulatePlayerArray()
@@ -58,13 +59,14 @@ public class RoundControl : MonoBehaviour
         {
             for (int i = 0; i < player.Length; i++)
             {
-                if (player[i] != null && player[i].becameKing && i == PlayerSaveData.playerNumber - 1)
+                if (player[i] != null && player[i].becameKing)
                 {
                     Respawn = true;
                     Round += 1;
                     RoundTime = 10f;
                     itemsPlaced = false;
                     timerOn = false;
+                    placingItems = true;
                     break; // Exit the loop since the king is found
                 }
             }

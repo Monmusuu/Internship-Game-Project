@@ -124,7 +124,7 @@ public void OnClick()
     Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
     Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
 
-    if (selectedTile == 0)
+    if (selectedTile == 0 && !blockPlaced)
     {
         transform.position = initialPosition;
         gameObject.layer = 7;
