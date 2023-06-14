@@ -14,7 +14,7 @@ public class Weapon : MonoBehaviour
         direction.y = 4;
 
         if (transform.parent.CompareTag("Player1")){
-            Debug.Log("I'm Player One");
+            //Debug.Log("I'm Player One");
             if(other.gameObject.tag == "Player2"){
                 m_rigidbody.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
                 Debug.Log("Launched Player2");
@@ -38,7 +38,7 @@ public class Weapon : MonoBehaviour
         }
 
         if (transform.parent.CompareTag("Player2")){
-            Debug.Log("I'm Player Two");
+            //Debug.Log("I'm Player Two");
             if(other.gameObject.tag == "Player1"){
                 m_rigidbody.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
                 Debug.Log("Launched Player1");
@@ -62,7 +62,7 @@ public class Weapon : MonoBehaviour
         }
 
         if (transform.parent.CompareTag("Player3")){
-            Debug.Log("I'm Player Three");
+            //Debug.Log("I'm Player Three");
             if(other.gameObject.tag == "Player2"){
                 m_rigidbody.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
                 Debug.Log("Launched Player2");
@@ -86,7 +86,7 @@ public class Weapon : MonoBehaviour
         }
 
         if (transform.parent.CompareTag("Player4")){
-            Debug.Log("I'm Player Four");
+            //Debug.Log("I'm Player Four");
             if(other.gameObject.tag == "Player2"){
                 m_rigidbody.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
                 Debug.Log("Launched Player2");
@@ -110,7 +110,7 @@ public class Weapon : MonoBehaviour
         }
 
         if (transform.parent.CompareTag("Player5")){
-            Debug.Log("I'm Player Five");
+            //Debug.Log("I'm Player Five");
             if(other.gameObject.tag == "Player2"){
                 m_rigidbody.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
                 Debug.Log("Launched Player2");
@@ -134,7 +134,7 @@ public class Weapon : MonoBehaviour
         }
 
         if (transform.parent.CompareTag("Player6")){
-            Debug.Log("I'm Player Six");
+            //Debug.Log("I'm Player Six");
             if(other.gameObject.tag == "Player2"){
                 m_rigidbody.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
                 Debug.Log("Launched Player2");

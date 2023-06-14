@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 8899664161773216444}
   - component: {fileID: 8899664161773216445}
   - component: {fileID: 8899664161773216434}
-  - component: {fileID: 8899664161773216435}
-  m_Layer: 0
+  - component: {fileID: 1335723876565134258}
+  m_Layer: 7
   m_Name: Blade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,8 +102,8 @@ MonoBehaviour:
   pointB: {fileID: 8899664162347894008}
   moveSpeedDown: 11
   moveSpeedUp: 1
---- !u!60 &8899664161773216435
-PolygonCollider2D:
+--- !u!61 &1335723876565134258
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -112,7 +112,7 @@ PolygonCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -125,22 +125,9 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 0.089999996, y: -0.26}
-      - {x: 0.17999999, y: -0.22999999}
-      - {x: 0.31, y: -0.19999999}
-      - {x: 0.48, y: -0.13}
-      - {x: 0.55, y: -0.11}
-      - {x: 0.57, y: -0.089999996}
-      - {x: 0.57, y: 0.44}
-      - {x: -0.56, y: 0.44}
-      - {x: -0.57, y: 0.42999998}
-      - {x: -0.57, y: -0.44}
-      - {x: -0.48, y: -0.44}
-      - {x: -0.32999998, y: -0.39}
-      - {x: -0.19, y: -0.35999998}
-      - {x: 0.01, y: -0.28}
+  serializedVersion: 2
+  m_Size: {x: 1.14, y: 0.88}
+  m_EdgeRadius: 0
 --- !u!1 &8899664161789709419
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,7 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8899664161789709416}
   - component: {fileID: 8899664161789709417}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BackBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -234,7 +221,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8899664162347894008}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Point B
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
@@ -265,7 +252,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8899664162920358278}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Point A
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
@@ -299,7 +286,7 @@ GameObject:
   - component: {fileID: 8899664163507194897}
   - component: {fileID: 8899664163507194903}
   - component: {fileID: 8899664163507194900}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Guillotine
   m_TagString: Untagged
   m_Icon: {fileID: 0}

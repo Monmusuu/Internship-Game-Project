@@ -27,7 +27,7 @@ public string[] playerTags; // Tags of the players that can trigger the spring
                 if (collision.CompareTag(tag))
                 {
                     isAnimating = true;
-                    animator.SetTrigger("Stepped On");
+                    //animator.SetTrigger("Stepped On");
                     playerRigidbody = collision.GetComponent<Rigidbody2D>(); // Assign the player's Rigidbody2D component
                     break;
                 }

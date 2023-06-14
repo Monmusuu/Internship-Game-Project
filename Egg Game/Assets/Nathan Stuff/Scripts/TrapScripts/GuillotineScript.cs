@@ -14,11 +14,6 @@ public class GuillotineScript : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            StartMovingDown();
-        }
-
         if (isMovingDown)
         {
             MoveDown();
@@ -29,18 +24,27 @@ public class GuillotineScript : MonoBehaviour
         }
     }
 
+    public void ActivateFunction()
+    {
+        Debug.Log("ActivateFunction called");
+        StartMovingDown();
+    }
+
     private void StartMovingDown()
     {
+        //Debug.Log("StartMovingDown called");
         isMovingDown = true;
         isMovingUp = false;
     }
 
     private void MoveDown()
     {
+        //Debug.Log("MoveDown called");
         transform.position = Vector3.MoveTowards(transform.position, pointB.position, moveSpeedDown * Time.deltaTime);
 
         if (transform.position == pointB.position)
         {
+            Debug.Log("MoveDown completed");
             isMovingDown = false;
             isMovingUp = true;
         }
@@ -48,10 +52,12 @@ public class GuillotineScript : MonoBehaviour
 
     private void MoveUp()
     {
+        //Debug.Log("MoveUp called");
         transform.position = Vector3.MoveTowards(transform.position, pointA.position, moveSpeedUp * Time.deltaTime);
 
         if (transform.position == pointA.position)
         {
+            Debug.Log("MoveUp completed");
             isMovingUp = false;
         }
     }

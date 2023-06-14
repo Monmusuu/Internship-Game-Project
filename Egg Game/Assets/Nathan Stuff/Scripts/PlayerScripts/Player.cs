@@ -46,6 +46,7 @@ public class Player : MonoBehaviour
     public RoundControl roundControl;
     public GameObject BuildManager;
     public GameObject playerBlockPlacement;
+    public GameObject trapInteraction;
     public Transform playerSpawnLocation;
     public Transform kingSpawnLocation;
     [SerializeField] private Transform groundCheckCollider;
@@ -71,6 +72,7 @@ public class Player : MonoBehaviour
         isPlayer = true;
         healthbar.SetMaxHealth(maxHealth);
         BuildManager.SetActive(false);
+        trapInteraction.SetActive(false);
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
         controller = gameObject.GetComponent<CharacterController>();
@@ -134,6 +136,12 @@ public class Player : MonoBehaviour
             BuildManager.SetActive(true);
         }else{
             BuildManager.SetActive(false);
+        }
+
+        if(roundControl.timerOn && isKing && roundControl.Round >= 1){
+            trapInteraction.SetActive(true);
+        }else{
+            trapInteraction.SetActive(false);
         }
 
         if(roundControl.timerOn){
