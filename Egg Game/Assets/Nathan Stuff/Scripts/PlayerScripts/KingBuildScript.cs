@@ -32,6 +32,7 @@ public class KingBuildScript : MonoBehaviour
     private Rigidbody2D rb;
 
     private Vector3 initialPosition;
+    private RoundControl roundControl;
     
 
     private void Awake()
@@ -46,6 +47,7 @@ public class KingBuildScript : MonoBehaviour
         
         playerInput = GetComponentInParent<PlayerInput>();
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
+        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
 
         int i = 0;
 
@@ -188,7 +190,7 @@ public class KingBuildScript : MonoBehaviour
             RenderUITiles();
             GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
             // Set properties or perform any additional setup for the auto trap
-
+            roundControl.playersPlacedBlocks += 1;
             // Move to the next selected object
             selectedTile = 1;
             CreateAllPreviews();
@@ -202,7 +204,7 @@ public class KingBuildScript : MonoBehaviour
             RenderUITiles();
             GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
             // Set properties or perform any additional setup for the manual trap
-
+            roundControl.playersPlacedBlocks += 1;
             // Move to the next selected object
             selectedTile = 2;
             CreateAllPreviews();
@@ -218,7 +220,7 @@ public class KingBuildScript : MonoBehaviour
                 RenderUITiles();
                 GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
                 // Set properties or perform any additional setup for the manual trap 2
-
+                roundControl.playersPlacedBlocks += 1;
                 selectedTile = 3;
                 CreateAllPreviews();
             }

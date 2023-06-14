@@ -55,6 +55,11 @@ public class RoundControl : MonoBehaviour
 // Update is called once per frame
     void Update()
     {
+        if(playersPlacedBlocks >= PlayerSaveData.playerNumber + 3){
+            placingItems = false;
+            itemsPlaced = true;
+        }
+
         if (!placingItems)
         {
             for (int i = 0; i < player.Length; i++)
@@ -73,37 +78,31 @@ public class RoundControl : MonoBehaviour
 
             if (itemsPlaced && Round >= 1)
             {
-                if (!playerRemovingItem)
+
+                timerOn = true;
+                    
+                if (timerOn)
                 {
-                    int currentPlayerNumber = PlayerSaveData.playerNumber - 1;
-                    if (currentPlayerNumber >= 0 && currentPlayerNumber < player.Length)
-                    {
-                        if (player[currentPlayerNumber].isKing && itemsPlaced)
-                        {
-                            timerOn = true;
-                        }
-                    }
+                    RoundTime -= Time.deltaTime;
+                }
 
-                    if (timerOn)
-                    {
-                        RoundTime -= Time.deltaTime;
-                    }
+                if (RoundTime <= 0)
+                {
+                    Respawn = true;
+                    Debug.Log("Round Over");
+                    playersPlacedBlocks = 0;
+                    itemsPlaced = false;
+                    timerOn = false;
+                    RoundTime = 360f;
+                    placingItems = true;
+                }
 
-                    if (RoundTime <= 0)
-                    {
-                        Respawn = true;
-                        Debug.Log("Round Over");
-                        itemsPlaced = false;
-                        timerOn = false;
-                        RoundTime = 10f;
-                    }
-
-                    if (RoundTime <= 10f && itemsPlaced)
-                    {
-                        Respawn = false;
-                    }
+                if (RoundTime <= 360f && itemsPlaced)
+                {
+                    Respawn = false;
                 }
             }
         }
+        
     }
 }
