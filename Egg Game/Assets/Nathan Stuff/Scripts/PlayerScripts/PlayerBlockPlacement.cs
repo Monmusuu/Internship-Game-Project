@@ -166,7 +166,16 @@ private void OnEnable()
     if (previewObject != null)
     {
         previewObject.SetActive(true);
+        return; // Return early if there is a preview object already active
     }
+
+    selectedTile = 0;
+    blockPlaced = false;
+
+    int randomIndex = Random.Range(0, blockTileObjects.Length); // Randomly select an index
+    previewObject = Instantiate(blockTileObjects[randomIndex], transform.position, Quaternion.identity);
+    previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
+    previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
 }
 
 private void OnDisable()

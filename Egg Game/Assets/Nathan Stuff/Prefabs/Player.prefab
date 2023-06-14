@@ -306,10 +306,10 @@ MonoBehaviour:
   - {fileID: 1897275775830132237, guid: 60a251058c13fe04788ebd9bf40af2fa, type: 3}
   manualTrapTileObjects:
   - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
-  - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
+  - {fileID: 1998069914564895633, guid: 2326edc4d86e9a7469c44185aa17ff3e, type: 3}
   manualTrap2TileObjects:
   - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
-  - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
+  - {fileID: 2716951166115827867, guid: c09acc1db1d9ce14cb306171e20c7fdb, type: 3}
   UITiles: []
   selectedTile: 0
   removeTile: 0
