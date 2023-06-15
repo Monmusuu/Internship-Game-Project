@@ -34,6 +34,7 @@ public class KingBuildScript : MonoBehaviour
     private Vector3 initialPosition;
     private RoundControl roundControl;
     private int kingLayerValue;
+    public LayerMask borderLayer;
     
 
     private void Awake()
@@ -137,15 +138,6 @@ private void CreatePreviewObject(GameObject[] tileObjects, int selectedIndex)
     previewObject = Instantiate(tileObject, transform.position, Quaternion.identity);
     previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
     previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
-
-    // Set the layer of the preview object to the "King" layer
-    previewObject.layer = kingLayerValue;
-
-    // Change the layer of the preview object's children to the "King" layer as well
-    foreach (Transform child in previewObject.transform)
-    {
-        child.gameObject.layer = kingLayerValue;
-    }
 }
 
     private void Update()
@@ -193,57 +185,16 @@ private void OnClick()
 
     if (selectedTile == 0 && !autoTrapPlaced)
     {
-        // Place auto trap
-        transform.position = transform.parent.position;
-        gameObject.layer = 7;
-        autoTrapPlaced = true;
-        RenderUITiles();
-        GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
-        // Set the layer of the placed block to the "King" layer
-        placedBlock.layer = kingLayerValue;
-
-        // Change the layer of the placed block's children to the "King" layer as well
-        foreach (Transform child in placedBlock.transform)
+        // Check if the placement position is valid (e.g., within certain bounds or not occupied)
+        if (IsPlacementValid(cellPosition))
         {
-            child.gameObject.layer = kingLayerValue;
-        }
-        // Set properties or perform any additional setup for the auto trap
-        roundControl.playersPlacedBlocks += 1;
-        // Move to the next selected object
-        selectedTile = 1;
-        CreateAllPreviews();
-    }
-    else if (selectedTile == 1 && !manualTrapPlaced)
-    {
-        // Place manual trap 1
-        transform.position = transform.parent.position;
-        gameObject.layer = 7;
-        manualTrapPlaced = true;
-        RenderUITiles();
-        GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
-        placedBlock.layer = kingLayerValue;
-
-        // Change the layer of the placed block's children to the "King" layer as well
-        foreach (Transform child in placedBlock.transform)
-        {
-            child.gameObject.layer = kingLayerValue;
-        }
-        // Set properties or perform any additional setup for the manual trap
-        roundControl.playersPlacedBlocks += 1;
-        // Move to the next selected object
-        selectedTile = 2;
-        CreateAllPreviews();
-    }
-    else if (selectedTile == 2 && !manualTrapPlaced2)
-    {
-        if (manualTrap2TileObjects.Length > 0)  // Check array length before placing manual trap 2
-        {
-            // Place manual trap 2
+            // Place auto trap
             transform.position = transform.parent.position;
             gameObject.layer = 7;
-            manualTrapPlaced2 = true;
+            autoTrapPlaced = true;
             RenderUITiles();
-            GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
+            GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
+            // Set the layer of the placed block to the "King" layer
             placedBlock.layer = kingLayerValue;
 
             // Change the layer of the placed block's children to the "King" layer as well
@@ -251,11 +202,74 @@ private void OnClick()
             {
                 child.gameObject.layer = kingLayerValue;
             }
-            // Set properties or perform any additional setup for the manual trap 2
+            // Set properties or perform any additional setup for the auto trap
             roundControl.playersPlacedBlocks += 1;
-            selectedTile = 3;
+            // Move to the next selected object
+            selectedTile = 1;
             CreateAllPreviews();
+        }else{
+            Debug.Log("Invalid placement position!");
+            return; // Return without destroying the preview object
         }
+        
+    }
+    else if (selectedTile == 1 && !manualTrapPlaced)
+    {
+        // Check if the placement position is valid (e.g., within certain bounds or not occupied)
+        if (IsPlacementValid(cellPosition)){
+            // Place manual trap 1
+            transform.position = transform.parent.position;
+            gameObject.layer = 7;
+            manualTrapPlaced = true;
+            RenderUITiles();
+            GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
+            placedBlock.layer = kingLayerValue;
+
+            // Change the layer of the placed block's children to the "King" layer as well
+            foreach (Transform child in placedBlock.transform)
+            {
+                child.gameObject.layer = kingLayerValue;
+            }
+            // Set properties or perform any additional setup for the manual trap
+            roundControl.playersPlacedBlocks += 1;
+            // Move to the next selected object
+            selectedTile = 2;
+            CreateAllPreviews();
+        }else{
+            Debug.Log("Invalid placement position!");
+            return; // Return without destroying the preview object
+        }
+        
+    }
+    else if (selectedTile == 2 && !manualTrapPlaced2)
+    {
+        if (manualTrap2TileObjects.Length > 0)  // Check array length before placing manual trap 2
+        {
+            // Check if the placement position is valid (e.g., within certain bounds or not occupied)
+            if (IsPlacementValid(cellPosition)){
+                // Place manual trap 2
+                transform.position = transform.parent.position;
+                gameObject.layer = 7;
+                manualTrapPlaced2 = true;
+                RenderUITiles();
+                GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
+                placedBlock.layer = kingLayerValue;
+
+                // Change the layer of the placed block's children to the "King" layer as well
+                foreach (Transform child in placedBlock.transform)
+                {
+                    child.gameObject.layer = kingLayerValue;
+                }
+                // Set properties or perform any additional setup for the manual trap 2
+                roundControl.playersPlacedBlocks += 1;
+                selectedTile = 3;
+                CreateAllPreviews();
+            }else{
+                Debug.Log("Invalid placement position!");
+                return; // Return without destroying the preview object
+            }
+        }
+        
     }
 
     Destroy(previewObject);
@@ -329,6 +343,27 @@ private void OnEnable()
         if (previewObject != null)
         {
             previewObject.SetActive(false);
+        }
+    }
+
+    private bool IsPlacementValid(Vector3Int position)
+    {
+        // Convert the position to world space
+        Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
+
+        // Perform a point overlap check with the collider
+        Collider2D overlapCollider = Physics2D.OverlapPoint(positionWorld, borderLayer);
+
+        // Check if there is no overlap or if the overlap is with the current game object
+        if (overlapCollider == null || overlapCollider.gameObject == gameObject)
+        {
+            // Placement is valid
+            return true;
+        }
+        else
+        {
+            // Placement is invalid
+            return false;
         }
     }
 }

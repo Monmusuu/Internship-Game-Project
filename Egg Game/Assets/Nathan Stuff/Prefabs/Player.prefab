@@ -319,6 +319,15 @@ MonoBehaviour:
   tileGridUI: {fileID: 0}
   playerInput: {fileID: 0}
   moveSpeed: 12
+  previewLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  kingLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  borderLayer:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!1839735485 &530317279
 Tilemap:
   m_ObjectHideFlags: 0
@@ -531,6 +540,15 @@ MonoBehaviour:
   playerInput: {fileID: 0}
   moveSpeed: 12
   smoothingFactor: 0.5
+  previewLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  kingLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  borderLayer:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!1 &393148900197972436
 GameObject:
   m_ObjectHideFlags: 0
