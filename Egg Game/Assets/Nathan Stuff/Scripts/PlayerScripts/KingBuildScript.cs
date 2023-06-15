@@ -33,6 +33,7 @@ public class KingBuildScript : MonoBehaviour
 
     private Vector3 initialPosition;
     private RoundControl roundControl;
+    private int kingLayerValue;
     
 
     private void Awake()
@@ -42,7 +43,7 @@ public class KingBuildScript : MonoBehaviour
 
     private void Start()
     {
-
+        kingLayerValue = LayerMask.NameToLayer("King");
         selectedTile = 0;
         
         playerInput = GetComponentInParent<PlayerInput>();
@@ -136,6 +137,15 @@ private void CreatePreviewObject(GameObject[] tileObjects, int selectedIndex)
     previewObject = Instantiate(tileObject, transform.position, Quaternion.identity);
     previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
     previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
+
+    // Set the layer of the preview object to the "King" layer
+    previewObject.layer = kingLayerValue;
+
+    // Change the layer of the preview object's children to the "King" layer as well
+    foreach (Transform child in previewObject.transform)
+    {
+        child.gameObject.layer = kingLayerValue;
+    }
 }
 
     private void Update()
@@ -189,6 +199,14 @@ private void OnClick()
         autoTrapPlaced = true;
         RenderUITiles();
         GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
+        // Set the layer of the placed block to the "King" layer
+        placedBlock.layer = kingLayerValue;
+
+        // Change the layer of the placed block's children to the "King" layer as well
+        foreach (Transform child in placedBlock.transform)
+        {
+            child.gameObject.layer = kingLayerValue;
+        }
         // Set properties or perform any additional setup for the auto trap
         roundControl.playersPlacedBlocks += 1;
         // Move to the next selected object
@@ -203,6 +221,13 @@ private void OnClick()
         manualTrapPlaced = true;
         RenderUITiles();
         GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
+        placedBlock.layer = kingLayerValue;
+
+        // Change the layer of the placed block's children to the "King" layer as well
+        foreach (Transform child in placedBlock.transform)
+        {
+            child.gameObject.layer = kingLayerValue;
+        }
         // Set properties or perform any additional setup for the manual trap
         roundControl.playersPlacedBlocks += 1;
         // Move to the next selected object
@@ -219,6 +244,13 @@ private void OnClick()
             manualTrapPlaced2 = true;
             RenderUITiles();
             GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
+            placedBlock.layer = kingLayerValue;
+
+            // Change the layer of the placed block's children to the "King" layer as well
+            foreach (Transform child in placedBlock.transform)
+            {
+                child.gameObject.layer = kingLayerValue;
+            }
             // Set properties or perform any additional setup for the manual trap 2
             roundControl.playersPlacedBlocks += 1;
             selectedTile = 3;

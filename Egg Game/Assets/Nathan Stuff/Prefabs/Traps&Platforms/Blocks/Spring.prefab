@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6122145753119281384}
   - component: {fileID: 6122145753119281389}
   - component: {fileID: 6122145753119281388}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Spring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 808941949074459354}
   - component: {fileID: 4709109291616507723}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

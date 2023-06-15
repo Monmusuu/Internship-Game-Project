@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8899664161773216445}
   - component: {fileID: 8899664161773216434}
   - component: {fileID: 1335723876565134258}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Blade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8899664161789709416}
   - component: {fileID: 8899664161789709417}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: BackBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8899664162347894008}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Point B
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
@@ -252,7 +252,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8899664162920358278}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Point A
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
@@ -286,7 +286,7 @@ GameObject:
   - component: {fileID: 8899664163507194897}
   - component: {fileID: 8899664163507194903}
   - component: {fileID: 8899664163507194900}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Guillotine
   m_TagString: Untagged
   m_Icon: {fileID: 0}

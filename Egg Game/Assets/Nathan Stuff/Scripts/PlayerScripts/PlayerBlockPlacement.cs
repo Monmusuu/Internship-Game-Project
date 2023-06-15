@@ -29,6 +29,9 @@ private Vector2 smoothedInput;
 private Vector3 initialPosition;
 private RoundControl roundControl;
 
+public LayerMask previewLayer;
+public LayerMask kingLayer;
+
 private void Awake()
 {
     initialPosition = transform.position;
@@ -122,14 +125,22 @@ public void OnClick()
     if (selectedTile == 0 && !blockPlaced)
     {
         transform.position = initialPosition;
-        gameObject.layer = 7;
+        gameObject.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer to the "King" layer
         blockPlaced = true;
         RenderUITiles();
         GameObject placedBlock = Instantiate(previewObject, tilePosition, Quaternion.identity);
         SpriteRenderer placedSpriteRenderer = placedBlock.GetComponent<SpriteRenderer>();
         Color blockColor = placedSpriteRenderer.color;
-        blockColor.a = 1f; // Set the alpha value to 0 (fully transparent)
+        blockColor.a = 1f; // Set the alpha value to 1 (fully opaque)
         placedSpriteRenderer.color = blockColor;
+        placedBlock.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer of the placed block to the "King" layer
+
+        // Change the layer of the placed block's children to the "King" layer as well
+        foreach (Transform child in placedBlock.transform)
+        {
+            child.gameObject.layer = (int)Mathf.Log(kingLayer.value, 2);
+        }
+
         roundControl.playersPlacedBlocks += 1;
     }
 

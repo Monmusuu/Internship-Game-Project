@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8952024949810306496}
   - component: {fileID: 8952024949810306497}
   - component: {fileID: 6328860229489243104}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Platform (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 8952024950203431565}
   - component: {fileID: 8952024950203431562}
   - component: {fileID: 7388237223084237664}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Platform (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +233,7 @@ GameObject:
   - component: {fileID: 8952024950671307062}
   - component: {fileID: 8952024950671307063}
   - component: {fileID: 1820818831037303913}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 8952024951037453397}
   - component: {fileID: 8952024951037453394}
   - component: {fileID: 340510697408144598}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Platform (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -455,7 +455,7 @@ GameObject:
   - component: {fileID: 8952024951581210805}
   - component: {fileID: 8952024951581210802}
   - component: {fileID: 8952024951581210803}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Rotating Multiplatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -555,3 +555,4 @@ MonoBehaviour:
     rotationSpeed: -35
   - childTransform: {fileID: 8952024949810306496}
     rotationSpeed: -35
+  roundControl: {fileID: 0}

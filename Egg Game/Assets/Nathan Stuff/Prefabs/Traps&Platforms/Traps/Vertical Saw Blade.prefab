@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1897275775830131186}
   - component: {fileID: 1897275775830131187}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Vertical Saw Blade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 1897275775935867588}
   - component: {fileID: 1897275775935867589}
   - component: {fileID: 1897275775935867594}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Blade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,6 +188,7 @@ MonoBehaviour:
   pointB: {fileID: 1897275776998971170}
   rotationSpeed: -720
   movementSpeed: 2.5
+  roundControl: {fileID: 0}
 --- !u!1 &1897275776856827672
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,7 +198,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1897275776856827673}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Point A
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
@@ -228,7 +229,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1897275776998971170}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Point B
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}

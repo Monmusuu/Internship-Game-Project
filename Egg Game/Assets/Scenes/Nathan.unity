@@ -1883,6 +1883,14 @@ PrefabInstance:
       propertyPath: m_ColliderPaths.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1641257365, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: kingLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 1641257365, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: previewLayer.m_Bits
+      value: 1024
+      objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_RootOrder
       value: 10
@@ -9409,6 +9417,14 @@ PrefabInstance:
     - target: {fileID: 530317284, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_ColliderPaths.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1641257365, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: kingLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 1641257365, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: previewLayer.m_Bits
+      value: 1024
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_RootOrder

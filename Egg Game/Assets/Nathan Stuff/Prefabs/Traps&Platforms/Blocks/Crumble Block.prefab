@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6525572584686347501}
   - component: {fileID: 6525572584686347503}
   - component: {fileID: 6525572584686347502}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Crumble Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
