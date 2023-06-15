@@ -1043,6 +1043,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 159345215}
   m_CullTransparentMesh: 1
+--- !u!1 &252966682
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 252966684}
+  - component: {fileID: 252966683}
+  m_Layer: 11
+  m_Name: PlayerArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!61 &252966683
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 252966682}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 10, y: 10}
+  m_EdgeRadius: 0
+--- !u!4 &252966684
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 252966682}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -41.14, y: -2.22, z: -0.37996992}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 18
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &256722370
 GameObject:
   m_ObjectHideFlags: 0
@@ -1888,6 +1946,10 @@ PrefabInstance:
       value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 1641257365, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: borderLayer.m_Bits
+      value: 2048
+      objectReference: {fileID: 0}
+    - target: {fileID: 1641257365, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: previewLayer.m_Bits
       value: 1024
       objectReference: {fileID: 0}
@@ -1901,7 +1963,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.5875003
+      value: -5.87
       objectReference: {fileID: 0}
     - target: {fileID: 3219085190463158597, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2369,7 +2431,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577690650}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -41.78, y: 2.68, z: 0}
+  m_LocalPosition: {x: -41.01, y: -5.11, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3342,7 +3404,7 @@ GameObject:
   - component: {fileID: 772761250}
   - component: {fileID: 772761252}
   - component: {fileID: 772761251}
-  m_Layer: 6
+  m_Layer: 11
   m_Name: Platform (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4134,7 +4196,7 @@ GameObject:
   - component: {fileID: 972699138}
   - component: {fileID: 972699140}
   - component: {fileID: 972699139}
-  m_Layer: 6
+  m_Layer: 11
   m_Name: Platform (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4561,6 +4623,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1064218668}
   m_CullTransparentMesh: 1
+--- !u!1 &1080429776
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1080429778}
+  - component: {fileID: 1080429777}
+  m_Layer: 11
+  m_Name: KingArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!61 &1080429777
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080429776}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 10, y: 10}
+  m_EdgeRadius: 0
+--- !u!4 &1080429778
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080429776}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 38.5, y: -2.22, z: -0.37996992}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 19
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1089271851
 GameObject:
   m_ObjectHideFlags: 0
@@ -5902,7 +6022,7 @@ GameObject:
   - component: {fileID: 1376799683}
   - component: {fileID: 1376799685}
   - component: {fileID: 1376799684}
-  m_Layer: 6
+  m_Layer: 11
   m_Name: Platform (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9423,6 +9543,10 @@ PrefabInstance:
       value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 1641257365, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+      propertyPath: borderLayer.m_Bits
+      value: 2048
+      objectReference: {fileID: 0}
+    - target: {fileID: 1641257365, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
       propertyPath: previewLayer.m_Bits
       value: 1024
       objectReference: {fileID: 0}
@@ -9543,7 +9667,7 @@ GameObject:
   - component: {fileID: 2131450562}
   - component: {fileID: 2131450564}
   - component: {fileID: 2131450563}
-  m_Layer: 6
+  m_Layer: 11
   m_Name: Platform (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

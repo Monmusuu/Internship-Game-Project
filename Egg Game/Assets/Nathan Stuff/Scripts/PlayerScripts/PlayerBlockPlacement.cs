@@ -7,114 +7,115 @@ using UnityEngine.UI;
 
 public class PlayerBlockPlacement : MonoBehaviour
 {
-public Tilemap kingTilemap;
-public GameObject[] blockTileObjects;
-public List<GameObject> UITiles;
-public int selectedTile = 0;
-public int removeTile = 0;
-public bool blockPlaced = false;
+    public Tilemap kingTilemap;
+    public GameObject[] blockTileObjects;
+    public List<GameObject> UITiles;
+    public int selectedTile = 0;
+    public int removeTile = 0;
+    public bool blockPlaced = false;
 
-public Transform tileGridUI;
+    public Transform tileGridUI;
 
-public PlayerInput playerInput;
-public float moveSpeed = 5f;
+    public PlayerInput playerInput;
+    public float moveSpeed = 5f;
 
-private Vector2 movementInput;
-private GameObject previewObject;
-private SpriteRenderer previewSpriteRenderer;
-private Rigidbody2D rb;
+    private Vector2 movementInput;
+    private GameObject previewObject;
+    private SpriteRenderer previewSpriteRenderer;
+    private Rigidbody2D rb;
 
-public float smoothingFactor = 0.5f; // Value between 0 and 1 (0 means no smoothing, 1 means maximum smoothing)
-private Vector2 smoothedInput;
-private Vector3 initialPosition;
-private RoundControl roundControl;
+    public float smoothingFactor = 0.5f; // Value between 0 and 1 (0 means no smoothing, 1 means maximum smoothing)
+    private Vector2 smoothedInput;
+    private Vector3 initialPosition;
+    private RoundControl roundControl;
 
-public LayerMask previewLayer;
-public LayerMask kingLayer;
+    public LayerMask previewLayer;
+    public LayerMask kingLayer;
+    public LayerMask borderLayer;
 
-private void Awake()
-{
-    initialPosition = transform.position;
-}
-
-private void Start()
-{
-    roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
-    playerInput = GetComponentInParent<PlayerInput>();
-    kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
-
-    int i = 0;
-
-    foreach (GameObject tileObject in blockTileObjects)
+    private void Awake()
     {
-        GameObject UITile = new GameObject("UI Tile");
-        UITile.transform.parent = tileGridUI;
-        UITile.transform.localScale = new Vector3(1f, 1f, 1f);
+        initialPosition = transform.position;
+    }
 
-        UnityEngine.UI.Image UIImage = UITile.AddComponent<UnityEngine.UI.Image>();
-        SpriteRenderer spriteRenderer = tileObject.GetComponent<SpriteRenderer>();
-        Sprite sprite = spriteRenderer ? spriteRenderer.sprite : null;
-        UIImage.sprite = sprite;
+    private void Start()
+    {
+        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
+        playerInput = GetComponentInParent<PlayerInput>();
+        kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
 
-        Color tileColor = UIImage.color;
-        tileColor.a = 0.5f;
+        int i = 0;
 
-        if (i == selectedTile)
+        foreach (GameObject tileObject in blockTileObjects)
         {
-            tileColor.a = 1f;
+            GameObject UITile = new GameObject("UI Tile");
+            UITile.transform.parent = tileGridUI;
+            UITile.transform.localScale = new Vector3(1f, 1f, 1f);
+
+            UnityEngine.UI.Image UIImage = UITile.AddComponent<UnityEngine.UI.Image>();
+            SpriteRenderer spriteRenderer = tileObject.GetComponent<SpriteRenderer>();
+            Sprite sprite = spriteRenderer ? spriteRenderer.sprite : null;
+            UIImage.sprite = sprite;
+
+            Color tileColor = UIImage.color;
+            tileColor.a = 0.5f;
+
+            if (i == selectedTile)
+            {
+                tileColor.a = 1f;
+            }
+
+            UIImage.color = tileColor;
+            UITiles.Add(UITile);
+
+            i++;
         }
 
-        UIImage.color = tileColor;
-        UITiles.Add(UITile);
-
-        i++;
+        rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f; // Disable gravity for the cursor
     }
 
-    rb = GetComponent<Rigidbody2D>();
-    rb.gravityScale = 0f; // Disable gravity for the cursor
-}
-
-private void Update()
-{
-    movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
-
-    if (movementInput != Vector2.zero)
+    private void Update()
     {
-        MoveCursor();
+        movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
+
+        if (movementInput != Vector2.zero)
+        {
+            MoveCursor();
+        }
+
+        selectedTile = 0;
+        RenderUITiles();
+
+        if (blockPlaced == true)
+        {
+            selectedTile = 3;
+        }
+
+        if (playerInput.actions["CursorClick"].triggered)
+        {
+            OnClick();
+        }
     }
 
-    selectedTile = 0;
-    RenderUITiles();
-
-    if (blockPlaced == true)
+    private void FixedUpdate()
     {
-        selectedTile = 3;
+        Vector2 velocity = movementInput * moveSpeed;
+        rb.velocity = velocity;
     }
 
-    if (playerInput.actions["CursorClick"].triggered)
+    private void MoveCursor()
     {
-        OnClick();
+        Vector3Int cellPosition = kingTilemap.WorldToCell(transform.position);
+        Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
+
+        if (previewObject != null)
+        {
+            // Interpolate the movement between the current position and the target position
+            float moveDistance = moveSpeed * Time.deltaTime;
+            previewObject.transform.position = Vector3.Lerp(previewObject.transform.position, tilePosition, moveDistance);
+        }
     }
-}
-
-private void FixedUpdate()
-{
-    Vector2 velocity = movementInput * moveSpeed;
-    rb.velocity = velocity;
-}
-
-private void MoveCursor()
-{
-    Vector3Int cellPosition = kingTilemap.WorldToCell(transform.position);
-    Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
-
-    if (previewObject != null)
-    {
-        // Interpolate the movement between the current position and the target position
-        float moveDistance = moveSpeed * Time.deltaTime;
-        previewObject.transform.position = Vector3.Lerp(previewObject.transform.position, tilePosition, moveDistance);
-    }
-}
 
 public void OnClick()
 {
@@ -124,80 +125,110 @@ public void OnClick()
 
     if (selectedTile == 0 && !blockPlaced)
     {
-        transform.position = initialPosition;
-        gameObject.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer to the "King" layer
-        blockPlaced = true;
-        RenderUITiles();
-        GameObject placedBlock = Instantiate(previewObject, tilePosition, Quaternion.identity);
-        SpriteRenderer placedSpriteRenderer = placedBlock.GetComponent<SpriteRenderer>();
-        Color blockColor = placedSpriteRenderer.color;
-        blockColor.a = 1f; // Set the alpha value to 1 (fully opaque)
-        placedSpriteRenderer.color = blockColor;
-        placedBlock.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer of the placed block to the "King" layer
-
-        // Change the layer of the placed block's children to the "King" layer as well
-        foreach (Transform child in placedBlock.transform)
+        // Check if the placement position is valid (e.g., within certain bounds or not occupied)
+        if (IsPlacementValid(cellPosition))
         {
-            child.gameObject.layer = (int)Mathf.Log(kingLayer.value, 2);
-        }
+            transform.position = initialPosition;
+            gameObject.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer to the "King" layer
+            blockPlaced = true;
+            RenderUITiles();
+            GameObject placedBlock = Instantiate(previewObject, tilePosition, Quaternion.identity);
+            SpriteRenderer placedSpriteRenderer = placedBlock.GetComponent<SpriteRenderer>();
+            Color blockColor = placedSpriteRenderer.color;
+            blockColor.a = 1f; // Set the alpha value to 1 (fully opaque)
+            placedSpriteRenderer.color = blockColor;
+            placedBlock.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer of the placed block to the "King" layer
 
-        roundControl.playersPlacedBlocks += 1;
+            // Change the layer of the placed block's children to the "King" layer as well
+            foreach (Transform child in placedBlock.transform)
+            {
+                child.gameObject.layer = (int)Mathf.Log(kingLayer.value, 2);
+            }
+
+            roundControl.playersPlacedBlocks += 1;
+        }
+        else
+        {
+            Debug.Log("Invalid placement position!");
+            return; // Return without destroying the preview object
+        }
     }
 
     Destroy(previewObject);
 }
 
-void RenderUITiles()
-{
-    int i = 0;
-    foreach (GameObject tileObject in UITiles)
+    void RenderUITiles()
     {
-        UnityEngine.UI.Image UIImage = tileObject.GetComponent<UnityEngine.UI.Image>();
-        Color tileColor = UIImage.color;
-        tileColor.a = 0.5f;
-
-        if (i == selectedTile)
+        int i = 0;
+        foreach (GameObject tileObject in UITiles)
         {
-            tileColor.a = 1f;
+            UnityEngine.UI.Image UIImage = tileObject.GetComponent<UnityEngine.UI.Image>();
+            Color tileColor = UIImage.color;
+            tileColor.a = 0.5f;
+
+            if (i == selectedTile)
+            {
+                tileColor.a = 1f;
+            }
+
+            UIImage.color = tileColor;
+
+            i++;
+        }
+    }
+
+    private int previousRandomIndex = -1; // Store the previous random index
+
+    private void OnEnable()
+    {
+        if (previewObject != null)
+        {
+            previewObject.SetActive(true);
+            return; // Return early if there is a preview object already active
         }
 
-        UIImage.color = tileColor;
+        selectedTile = 0;
+        blockPlaced = false;
 
-        i++;
+        int randomIndex;
+        do
+        {
+            randomIndex = Random.Range(0, blockTileObjects.Length); // Randomly select an index
+        } while (randomIndex == previousRandomIndex); // Repeat until the index is different from the previous one
+
+        previousRandomIndex = randomIndex; // Store the current random index as the previous one
+
+        previewObject = Instantiate(blockTileObjects[randomIndex], transform.position, Quaternion.identity);
+        previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
+        previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
     }
-}
 
-private int previousRandomIndex = -1; // Store the previous random index
-
-private void OnEnable()
-{
-    if (previewObject != null)
+    private void OnDisable()
     {
-        previewObject.SetActive(true);
-        return; // Return early if there is a preview object already active
+        if (previewObject != null)
+        {
+            previewObject.SetActive(false);
+        }
     }
 
-    selectedTile = 0;
-    blockPlaced = false;
-
-    int randomIndex;
-    do
+    private bool IsPlacementValid(Vector3Int position)
     {
-        randomIndex = Random.Range(0, blockTileObjects.Length); // Randomly select an index
-    } while (randomIndex == previousRandomIndex); // Repeat until the index is different from the previous one
+        // Convert the position to world space
+        Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
 
-    previousRandomIndex = randomIndex; // Store the current random index as the previous one
+        // Perform a point overlap check with the collider
+        Collider2D overlapCollider = Physics2D.OverlapPoint(positionWorld, borderLayer);
 
-    previewObject = Instantiate(blockTileObjects[randomIndex], transform.position, Quaternion.identity);
-    previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
-    previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
-}
-
-private void OnDisable()
-{
-    if (previewObject != null)
-    {
-        previewObject.SetActive(false);
+        // Check if there is no overlap or if the overlap is with the current game object
+        if (overlapCollider == null || overlapCollider.gameObject == gameObject)
+        {
+            // Placement is valid
+            return true;
+        }
+        else
+        {
+            // Placement is invalid
+            return false;
+        }
     }
-}
 }
