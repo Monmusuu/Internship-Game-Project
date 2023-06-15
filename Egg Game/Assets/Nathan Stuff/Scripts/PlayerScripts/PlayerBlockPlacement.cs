@@ -33,6 +33,8 @@ public class PlayerBlockPlacement : MonoBehaviour
     public LayerMask kingLayer;
     public LayerMask borderLayer;
 
+    private float rotationAngle = 0f;
+
     private void Awake()
     {
         initialPosition = transform.position;
@@ -96,6 +98,12 @@ public class PlayerBlockPlacement : MonoBehaviour
         {
             OnClick();
         }
+
+        if (playerInput.actions["Rotate"].triggered)
+        {
+            RotatePreviewObject();
+        }
+
     }
 
     private void FixedUpdate()
@@ -132,7 +140,7 @@ public void OnClick()
             gameObject.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer to the "King" layer
             blockPlaced = true;
             RenderUITiles();
-            GameObject placedBlock = Instantiate(previewObject, tilePosition, Quaternion.identity);
+            GameObject placedBlock = Instantiate(previewObject, tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
             SpriteRenderer placedSpriteRenderer = placedBlock.GetComponent<SpriteRenderer>();
             Color blockColor = placedSpriteRenderer.color;
             blockColor.a = 1f; // Set the alpha value to 1 (fully opaque)
@@ -211,25 +219,36 @@ public void OnClick()
         }
     }
 
-private bool IsPlacementValid(Vector3Int position)
-{
-    // Convert the position to world space
-    Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
-
-    // Perform a point overlap check with the colliders on the king and border layers
-    Collider2D overlapColliderKing = Physics2D.OverlapPoint(positionWorld, kingLayer);
-    Collider2D overlapColliderBorder = Physics2D.OverlapPoint(positionWorld, borderLayer);
-
-    // Check if there is no overlap or if the overlap is with the current game object
-    if ((overlapColliderKing == null || overlapColliderKing.gameObject == gameObject) && overlapColliderBorder == null)
+    private bool IsPlacementValid(Vector3Int position)
     {
-        // Placement is valid
-        return true;
+        // Convert the position to world space
+        Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
+
+        // Perform a point overlap check with the colliders on the king and border layers
+        Collider2D overlapColliderKing = Physics2D.OverlapPoint(positionWorld, kingLayer);
+        Collider2D overlapColliderBorder = Physics2D.OverlapPoint(positionWorld, borderLayer);
+
+        // Check if there is no overlap or if the overlap is with the current game object
+        if ((overlapColliderKing == null || overlapColliderKing.gameObject == gameObject) && overlapColliderBorder == null)
+        {
+            // Placement is valid
+            return true;
+        }
+        else
+        {
+            // Placement is invalid
+            return false;
+        }
     }
-    else
+
+    private void RotatePreviewObject()
     {
-        // Placement is invalid
-        return false;
+        rotationAngle += 90f;
+        if (rotationAngle >= 360f)
+        {
+            rotationAngle = 0f;
+        }
+
+        previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
     }
-}
 }

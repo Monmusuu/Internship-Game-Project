@@ -67,6 +67,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "eda45738-bce0-4627-a32a-5b2f0a4747e4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -95,7 +104,7 @@
                 {
                     "name": "",
                     "id": "d40b1bad-d96a-4d5f-b54a-e285c8d0a5c9",
-                    "path": "<Keyboard>/rightShift",
+                    "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
                     "groups": "ArrowKeyBoard",
@@ -138,22 +147,22 @@
                 },
                 {
                     "name": "",
-                    "id": "cc067fc8-f985-49f8-a9da-9249186ac060",
-                    "path": "<Keyboard>/a",
+                    "id": "2cb1bc80-5421-4fa6-b04d-006dd9a69711",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "Left",
+                    "groups": "",
+                    "action": "Jumped",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "b9b7a63c-abe5-4158-8e6f-28706df5395f",
-                    "path": "<Gamepad>/leftStick/left",
+                    "id": "cc067fc8-f985-49f8-a9da-9249186ac060",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Controller",
+                    "groups": "WADKeyBoard",
                     "action": "Left",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -171,11 +180,44 @@
                 },
                 {
                     "name": "",
+                    "id": "b9b7a63c-abe5-4158-8e6f-28706df5395f",
+                    "path": "<Gamepad>/leftStick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "36188989-6563-4446-b453-fb0334043830",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "5a33360c-efb5-4998-a807-1747179a5cba",
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "WADKeyBoard",
+                    "action": "Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb5eba02-6c85-4f15-a016-9c4aa4e05f72",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "ArrowKeyBoard",
                     "action": "Right",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -193,11 +235,11 @@
                 },
                 {
                     "name": "",
-                    "id": "fb5eba02-6c85-4f15-a016-9c4aa4e05f72",
-                    "path": "<Keyboard>/rightArrow",
+                    "id": "b6ae007d-2fa0-4c02-a714-270ca335c9a9",
+                    "path": "<Gamepad>/dpad/right",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ArrowKeyBoard",
+                    "groups": "",
                     "action": "Right",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -228,6 +270,17 @@
                     "name": "",
                     "id": "ee89afdf-e3a6-44e1-824f-ed6a8502a476",
                     "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f9adcbb8-2e49-4411-92f3-c5d2d20dff55",
+                    "path": "<Gamepad>/dpad",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -347,12 +400,45 @@
                 },
                 {
                     "name": "",
+                    "id": "acc4326e-7f8b-47d2-b178-a6590026ac60",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "f5680be4-d34f-412d-b4b8-cfa6f2145b0c",
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "CursorClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "abf8a90c-de09-46df-9783-320213a5667b",
+                    "path": "<Keyboard>/#(R)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "798bc2cd-1063-4829-84c3-1883fa4a6dd8",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
