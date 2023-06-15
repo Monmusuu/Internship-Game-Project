@@ -35,6 +35,8 @@ public class KingBuildScript : MonoBehaviour
     private RoundControl roundControl;
     private int kingLayerValue;
     public LayerMask borderLayer;
+
+    private float rotationAngle = 0f;
     
 
     private void Awake()
@@ -135,7 +137,7 @@ private void CreatePreviewObject(GameObject[] tileObjects, int selectedIndex)
 
     int selectedObjectIndex = Mathf.Clamp(selectedIndex, 0, tileObjects.Length - 1);
     GameObject tileObject = tileObjects[selectedObjectIndex];
-    previewObject = Instantiate(tileObject, transform.position, Quaternion.identity);
+    previewObject = Instantiate(tileObject, transform.position, Quaternion.Euler(0f, 0f, rotationAngle)); // Set rotation
     previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
     previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
 }
@@ -155,6 +157,11 @@ private void CreatePreviewObject(GameObject[] tileObjects, int selectedIndex)
         if (playerInput.actions["CursorClick"].triggered)
         {
             OnClick();
+        }
+
+        if (playerInput.actions["Rotate"].triggered)
+        {
+            RotatePreviewObject();
         }
     }
 
@@ -194,6 +201,7 @@ private void OnClick()
             autoTrapPlaced = true;
             RenderUITiles();
             GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
+            placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
             // Set the layer of the placed block to the "King" layer
             placedBlock.layer = kingLayerValue;
 
@@ -223,6 +231,7 @@ private void OnClick()
             manualTrapPlaced = true;
             RenderUITiles();
             GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
+            placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
             placedBlock.layer = kingLayerValue;
 
             // Change the layer of the placed block's children to the "King" layer as well
@@ -253,6 +262,7 @@ private void OnClick()
                 manualTrapPlaced2 = true;
                 RenderUITiles();
                 GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
+                placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
                 placedBlock.layer = kingLayerValue;
 
                 // Change the layer of the placed block's children to the "King" layer as well
@@ -346,30 +356,45 @@ private void OnEnable()
         }
     }
 
-    private bool IsPlacementValid(Vector3Int position)
+private bool IsPlacementValid(Vector3Int position)
+{
+    Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
+
+    Collider2D overlapCollider = Physics2D.OverlapPoint(positionWorld, borderLayer);
+
+    if (overlapCollider != null)
     {
-        // Convert the position to world space
-        Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
+        // Placement is invalid if there is an overlap with the borderLayer
+        return false;
+    }
 
-        // Perform a point overlap check with the colliders
-        Collider2D[] overlapColliders = Physics2D.OverlapPointAll(positionWorld);
+    Collider2D[] overlapColliders = Physics2D.OverlapPointAll(positionWorld);
 
-        // Check if there is no overlap or if the overlap is with the current game object
-        foreach (Collider2D collider in overlapColliders)
+    foreach (Collider2D collider in overlapColliders)
+    {
+        if (collider.gameObject == gameObject)
+            continue;
+
+        if (collider.gameObject.layer == kingLayerValue)
         {
-            // Ignore the collider attached to the cursor object
-            if (collider.gameObject == gameObject)
-                continue;
+            // Placement is invalid if there is an overlap with the "King" layer
+            return false;
+        }
+    }
 
-            // Check if the overlap collider is on the "King" layer
-            if (collider.gameObject.layer == kingLayerValue)
-            {
-                // Placement is invalid
-                return false;
-            }
+    return true;
+}
+
+
+    private void RotatePreviewObject()
+    {
+        rotationAngle += 90f;
+        if (rotationAngle >= 360f)
+        {
+            rotationAngle = 0f;
         }
 
-        // Placement is valid
-        return true;
+        previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
     }
+
 }

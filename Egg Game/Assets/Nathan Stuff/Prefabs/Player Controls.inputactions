@@ -250,7 +250,7 @@
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -261,7 +261,7 @@
                     "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Controller",
                     "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -272,7 +272,7 @@
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Controller",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -283,7 +283,7 @@
                     "path": "<Gamepad>/dpad",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Controller",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -305,7 +305,7 @@
                     "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -316,7 +316,7 @@
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -327,7 +327,7 @@
                     "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -338,7 +338,7 @@
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -349,7 +349,7 @@
                     "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -360,7 +360,7 @@
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -371,7 +371,7 @@
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -382,7 +382,7 @@
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -393,7 +393,7 @@
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Controller",
                     "action": "CursorClick",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -404,7 +404,7 @@
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorClick",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -415,7 +415,7 @@
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "CursorClick",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -426,7 +426,7 @@
                     "path": "<Keyboard>/#(R)",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
