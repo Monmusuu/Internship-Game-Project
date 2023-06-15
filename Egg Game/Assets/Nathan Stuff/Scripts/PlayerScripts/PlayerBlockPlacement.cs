@@ -211,24 +211,25 @@ public void OnClick()
         }
     }
 
-    private bool IsPlacementValid(Vector3Int position)
+private bool IsPlacementValid(Vector3Int position)
+{
+    // Convert the position to world space
+    Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
+
+    // Perform a point overlap check with the colliders on the king and border layers
+    Collider2D overlapColliderKing = Physics2D.OverlapPoint(positionWorld, kingLayer);
+    Collider2D overlapColliderBorder = Physics2D.OverlapPoint(positionWorld, borderLayer);
+
+    // Check if there is no overlap or if the overlap is with the current game object
+    if ((overlapColliderKing == null || overlapColliderKing.gameObject == gameObject) && overlapColliderBorder == null)
     {
-        // Convert the position to world space
-        Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
-
-        // Perform a point overlap check with the collider
-        Collider2D overlapCollider = Physics2D.OverlapPoint(positionWorld, borderLayer);
-
-        // Check if there is no overlap or if the overlap is with the current game object
-        if (overlapCollider == null || overlapCollider.gameObject == gameObject)
-        {
-            // Placement is valid
-            return true;
-        }
-        else
-        {
-            // Placement is invalid
-            return false;
-        }
+        // Placement is valid
+        return true;
     }
+    else
+    {
+        // Placement is invalid
+        return false;
+    }
+}
 }

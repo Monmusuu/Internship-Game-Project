@@ -351,19 +351,25 @@ private void OnEnable()
         // Convert the position to world space
         Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
 
-        // Perform a point overlap check with the collider
-        Collider2D overlapCollider = Physics2D.OverlapPoint(positionWorld, borderLayer);
+        // Perform a point overlap check with the colliders
+        Collider2D[] overlapColliders = Physics2D.OverlapPointAll(positionWorld);
 
         // Check if there is no overlap or if the overlap is with the current game object
-        if (overlapCollider == null || overlapCollider.gameObject == gameObject)
+        foreach (Collider2D collider in overlapColliders)
         {
-            // Placement is valid
-            return true;
+            // Ignore the collider attached to the cursor object
+            if (collider.gameObject == gameObject)
+                continue;
+
+            // Check if the overlap collider is on the "King" layer
+            if (collider.gameObject.layer == kingLayerValue)
+            {
+                // Placement is invalid
+                return false;
+            }
         }
-        else
-        {
-            // Placement is invalid
-            return false;
-        }
+
+        // Placement is valid
+        return true;
     }
 }
