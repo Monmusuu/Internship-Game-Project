@@ -67,11 +67,6 @@ private void Start()
         i++;
     }
 
-    int randomIndex = Random.Range(0, blockTileObjects.Length); // Randomly select an index
-    previewObject = Instantiate(blockTileObjects[randomIndex], transform.position, Quaternion.identity);
-    previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
-    previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
-
     rb = GetComponent<Rigidbody2D>();
     rb.gravityScale = 0f; // Disable gravity for the cursor
 }
@@ -161,6 +156,8 @@ void RenderUITiles()
     }
 }
 
+private int previousRandomIndex = -1; // Store the previous random index
+
 private void OnEnable()
 {
     if (previewObject != null)
@@ -172,7 +169,14 @@ private void OnEnable()
     selectedTile = 0;
     blockPlaced = false;
 
-    int randomIndex = Random.Range(0, blockTileObjects.Length); // Randomly select an index
+    int randomIndex;
+    do
+    {
+        randomIndex = Random.Range(0, blockTileObjects.Length); // Randomly select an index
+    } while (randomIndex == previousRandomIndex); // Repeat until the index is different from the previous one
+
+    previousRandomIndex = randomIndex; // Store the current random index as the previous one
+
     previewObject = Instantiate(blockTileObjects[randomIndex], transform.position, Quaternion.identity);
     previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
     previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);

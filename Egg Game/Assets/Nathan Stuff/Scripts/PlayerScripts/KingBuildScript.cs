@@ -241,6 +241,10 @@ private void OnClick()
         }
     }
 
+private int previousAutoTrapIndex;
+private int previousManualTrapIndex;
+private int previousManualTrap2Index;
+
 private void OnEnable()
 {
     selectedTile = 0;
@@ -250,11 +254,26 @@ private void OnEnable()
     manualTrapPlaced2 = false;
 
     // Randomly select a new tile from the auto trap array
-    selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+    do
+    {
+        selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+    } while (selectedAutoTrapIndex == previousAutoTrapIndex);
+
     // Randomly select a new tile from the manual trap array
-    selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+    do
+    {
+        selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+    } while (selectedManualTrapIndex == previousManualTrapIndex);
+
     // Randomly select a new tile from the manual trap 2 array
-    selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+    do
+    {
+        selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+    } while (selectedManualTrap2Index == previousManualTrap2Index);
+
+    previousAutoTrapIndex = selectedAutoTrapIndex;
+    previousManualTrapIndex = selectedManualTrapIndex;
+    previousManualTrap2Index = selectedManualTrap2Index;
 
     // Check if the previewObject is null
     if (previewObject == null)
