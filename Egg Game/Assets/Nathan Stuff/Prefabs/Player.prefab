@@ -319,12 +319,6 @@ MonoBehaviour:
   tileGridUI: {fileID: 0}
   playerInput: {fileID: 0}
   moveSpeed: 12
-  previewLayer:
-    serializedVersion: 2
-    m_Bits: 1024
-  kingLayer:
-    serializedVersion: 2
-    m_Bits: 128
   borderLayer:
     serializedVersion: 2
     m_Bits: 2048
@@ -730,7 +724,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 6
   m_Sprite: {fileID: 149902712, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -928,7 +922,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 5
   m_Sprite: {fileID: 488394471, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
@@ -1141,6 +1135,10 @@ MonoBehaviour:
         m_CallState: 0
     m_ActionId: 297ef258-40af-4d59-9471-7cad4e96e119
     m_ActionName: Player/CursorMove[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: eda45738-bce0-4627-a32a-5b2f0a4747e4
+    m_ActionName: Player/Rotate[/Keyboard/r]
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -1356,7 +1354,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 6
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

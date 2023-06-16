@@ -26,7 +26,18 @@ public class CharacterSelection : MonoBehaviour
         }
     }
 
-    public Sprite[] allBodies;
+    [SerializeField] private RuntimeAnimatorController[] allAnimators;
+    private int _AnimatorValue = 0;
+    public int animatorValue
+    {
+        get => _AnimatorValue;
+        set
+        {
+            _AnimatorValue = value;
+        }
+    }
+
+    [SerializeField] public Sprite[] allBodies;
     private int _BodyValue = 0;
     public int bodyValue
     {
@@ -98,10 +109,12 @@ public class CharacterSelection : MonoBehaviour
         if (_BodyValue == 0)
         {
             _BodyValue = allBodies.Length - 1;
+            _AnimatorValue = allAnimators.Length - 1;
         }
         else
         {
             _BodyValue -= 1;
+            _AnimatorValue -=1;
         }
         playerSpriteBody = allBodies[bodyValue];
         transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;
@@ -111,10 +124,12 @@ public class CharacterSelection : MonoBehaviour
         if (_BodyValue >= allBodies.Length - 1)
         {
             _BodyValue = 0;
+            _AnimatorValue = 0;
         }
         else
         {
             _BodyValue += 1;
+            _AnimatorValue +=1;
         }
         playerSpriteBody = allBodies[bodyValue];
         transform.GetChild(0).GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBody;

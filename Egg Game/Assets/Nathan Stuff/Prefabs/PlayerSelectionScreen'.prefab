@@ -434,8 +434,12 @@ MonoBehaviour:
   - {fileID: -697750836, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   - {fileID: 1585972040, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   - {fileID: 1734291148, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  allAnimators:
+  - {fileID: 9100000, guid: 783ea1d234901e84caf67c76f6f0e7c7, type: 2}
+  - {fileID: 9100000, guid: c8e087b595453984698fe11b9a3ce378, type: 2}
   allBodies:
   - {fileID: 488394471, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1455047922, guid: 6f41fc16e7510d547a8b96eb84722b8c, type: 3}
   allWeapons:
   - {fileID: 149902712, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   - {fileID: -497650530, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}

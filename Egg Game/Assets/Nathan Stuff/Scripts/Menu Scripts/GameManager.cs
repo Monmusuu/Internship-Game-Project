@@ -7,7 +7,9 @@ public class GameManager : MonoBehaviour
     
      // public static instance of the GameManager, Initiailized to 'null' to ensure it's empty to start
     public static GameManager Instance = null;
+
     // public reference of the PauseMenu object to allow access to turn the gameobject on and off when the game is paused
+    [SerializeField]
     private GameObject m_pauseMenu;
     private bool m_isPaused;
 
@@ -33,7 +35,7 @@ public class GameManager : MonoBehaviour
         } else if (Instance != this) {
             Destroy(gameObject);
         }
-        //DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject);
     }
 
     // Function to pause the game and activate the PauseMenu object

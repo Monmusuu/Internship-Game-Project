@@ -12,16 +12,20 @@ public class PlayerSaveData : MonoBehaviour
     public Sprite[] allHats;
     public Sprite[] allBodies;
     public Sprite[] allWeapons;
+    public RuntimeAnimatorController[] allAnimators; 
+
     public static int playerNumber = 0;
     public static int playerReadyNumber = 0;
 
     public int[] playerHatSpriteNumbers;
     public int[] playerBodySpriteNumbers;
     public int[] playerWeaponSpriteNumbers;
+    public int[] playerAnimatorNumbers;
 
     public Sprite[] playerSpriteHats;
     public Sprite[] playerSpriteBodies;
     public Sprite[] playerSpriteWeapons;
+
 
     public GameObject[] players;
     public GameObject[] playerTexts;
@@ -72,7 +76,7 @@ public class PlayerSaveData : MonoBehaviour
                     if (characterSelection != null)
                     {
 
-                        if (characterSelection.isReady)
+                       if (characterSelection.isReady)
                         {
                             // Check if the arrays need resizing before accessing the indices
                             if (playerHatSpriteNumbers.Length <= i)
@@ -81,14 +85,18 @@ public class PlayerSaveData : MonoBehaviour
                                 Array.Resize(ref playerBodySpriteNumbers, i + 1);
                             if (playerWeaponSpriteNumbers.Length <= i)
                                 Array.Resize(ref playerWeaponSpriteNumbers, i + 1);
+                            if (playerAnimatorNumbers.Length <= i)
+                                Array.Resize(ref playerAnimatorNumbers, i + 1);
 
                             playerHatSpriteNumbers[i] = characterSelection.hatValue;
                             playerBodySpriteNumbers[i] = characterSelection.bodyValue;
                             playerWeaponSpriteNumbers[i] = characterSelection.weaponValue;
+                            playerAnimatorNumbers[i] = characterSelection.animatorValue;
 
                             Debug.Log("Hat " + playerHatSpriteNumbers[i]);
                             Debug.Log("Body " + playerBodySpriteNumbers[i]);
                             Debug.Log("Weapon " + playerWeaponSpriteNumbers[i]);
+                            Debug.Log("Animator " + playerAnimatorNumbers[i]);
                         }
                     }
                 }
@@ -148,10 +156,18 @@ public class PlayerSaveData : MonoBehaviour
                 playerSpriteWeapons[i] = allWeapons[playerWeaponSpriteNumbers[i]];
                 playerSpriteBodies[i] = allBodies[playerBodySpriteNumbers[i]];
 
-                players[i].transform.GetChild(2).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
-                players[i].transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
+                players[i].transform.GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
+                players[i].transform.GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
                 players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
-            }
+
+                Animator playerAnimator = players[i].GetComponent<Animator>();
+                playerAnimator.runtimeAnimatorController = allAnimators[playerAnimatorNumbers[i]];
+
+                 // Assign the sprite to a child object of the corresponding player text
+                SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
+                if (childSpriteRenderer != null)
+                    childSpriteRenderer.sprite = playerSpriteBodies[i];
+                }
         }
     }
 }
