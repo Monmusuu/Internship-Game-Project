@@ -526,6 +526,7 @@ MonoBehaviour:
   - {fileID: 501223548699330371, guid: 370f38da899bbd84b92c0d2f4947d647, type: 3}
   - {fileID: 4809789596207978441, guid: b15ad386cca8b884e8928fa5cade8062, type: 3}
   - {fileID: 6525572584686347409, guid: fe093d491171ca3458b48eeeae245633, type: 3}
+  - {fileID: 6653591027728031132, guid: a7c8017d8f0893e4c8af461daf5529f2, type: 3}
   UITiles: []
   selectedTile: 0
   removeTile: 0

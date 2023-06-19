@@ -34,6 +34,7 @@ public class PlayerBlockPlacement : MonoBehaviour
     public LayerMask borderLayer;
 
     private float rotationAngle = 0f;
+    
 
     private void Awake()
     {
@@ -154,6 +155,7 @@ public void OnClick()
             }
 
             roundControl.playersPlacedBlocks += 1;
+            rotationAngle = 0f;
         }
         else
         {

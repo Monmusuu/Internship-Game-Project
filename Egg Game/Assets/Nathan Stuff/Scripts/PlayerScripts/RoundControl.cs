@@ -55,7 +55,7 @@ public class RoundControl : MonoBehaviour
 // Update is called once per frame
     void Update()
     {
-        if(playersPlacedBlocks >= PlayerSaveData.playerNumber + 3){
+        if(playersPlacedBlocks >= PlayerSaveData.playerNumber + 2){
             placingItems = false;
             itemsPlaced = true;
         }
