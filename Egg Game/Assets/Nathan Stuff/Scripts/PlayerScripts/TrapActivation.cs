@@ -80,6 +80,11 @@ public void OnClick()
                 lightBulb.ActivateFunction(sprite);
             }
         }
+
+        OliveTurret oliveTurret = hit.collider.GetComponent<OliveTurret>();
+        if(oliveTurret != null){
+            oliveTurret.ActivateFunction();
+        }
     }
     else
     {

@@ -210,10 +210,13 @@ private void OnClick()
             {
                 child.gameObject.layer = kingLayerValue;
             }
+            
             // Set properties or perform any additional setup for the auto trap
             roundControl.playersPlacedBlocks += 1;
             // Move to the next selected object
             selectedTile = 1;
+            // Reset rotation angle to 0
+            rotationAngle = 0f;
             CreateAllPreviews();
         }else{
             Debug.Log("Invalid placement position!");
@@ -243,6 +246,8 @@ private void OnClick()
             roundControl.playersPlacedBlocks += 1;
             // Move to the next selected object
             selectedTile = 2;
+            // Reset rotation angle to 0
+            rotationAngle = 0f;
             CreateAllPreviews();
         }else{
             Debug.Log("Invalid placement position!");
@@ -273,6 +278,8 @@ private void OnClick()
                 // Set properties or perform any additional setup for the manual trap 2
                 roundControl.playersPlacedBlocks += 1;
                 selectedTile = 3;
+                // Reset rotation angle to 0
+                rotationAngle = 0f;
                 CreateAllPreviews();
             }else{
                 Debug.Log("Invalid placement position!");

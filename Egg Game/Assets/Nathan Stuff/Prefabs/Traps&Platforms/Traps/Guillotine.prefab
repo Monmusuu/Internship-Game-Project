@@ -70,6 +70,7 @@ GameObject:
   - component: {fileID: 8899664161773216445}
   - component: {fileID: 8899664161773216434}
   - component: {fileID: 1335723876565134258}
+  - component: {fileID: 5784281174991304463}
   m_Layer: 10
   m_Name: Blade
   m_TagString: Untagged
@@ -185,6 +186,32 @@ BoxCollider2D:
   m_AutoTiling: 0
   serializedVersion: 2
   m_Size: {x: 1.14, y: 0.88}
+  m_EdgeRadius: 0
+--- !u!61 &5784281174991304463
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8899664161773216447}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.03, y: -1.2}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1.14, y: 0.88}
+    newSize: {x: 1.14, y: 0.88}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.8, y: 3.73}
   m_EdgeRadius: 0
 --- !u!1 &8899664161789709419
 GameObject:

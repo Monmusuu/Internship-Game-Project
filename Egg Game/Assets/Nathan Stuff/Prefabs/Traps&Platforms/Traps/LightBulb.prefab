@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4405219156608740315}
   - component: {fileID: 443488824326183182}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: ObjectArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -68,7 +68,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2716951165106203292}
   - component: {fileID: 2716951165106203293}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Darkness
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,9 +153,9 @@ GameObject:
   - component: {fileID: 2716951166115827865}
   - component: {fileID: 2716951166115827864}
   - component: {fileID: 2716951166115827870}
-  - component: {fileID: 2716951166115827871}
   - component: {fileID: 2716951166115827868}
-  m_Layer: 7
+  - component: {fileID: 2716951166115827871}
+  m_Layer: 10
   m_Name: LightBulb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,6 +281,20 @@ PolygonCollider2D:
       - {x: -0.26, y: -0.45}
       - {x: -0.26, y: -0.53}
       - {x: -0.26999998, y: -0.53}
+--- !u!114 &2716951166115827868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2716951166115827867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10cb7fb197ae11a479b95f2392fa30f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 2716951165106203293}
+  animator: {fileID: 2716951166115827871}
 --- !u!95 &2716951166115827871
 Animator:
   serializedVersion: 5
@@ -302,17 +316,3 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2716951166115827868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2716951166115827867}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10cb7fb197ae11a479b95f2392fa30f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 2716951165106203293}
-  animator: {fileID: 2716951166115827871}
