@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     private Animator animator;
-    private Rigidbody2D rigid;
+    public Rigidbody2D rigid;
     private CharacterController controller;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private float jumpSpeed = 5;
@@ -47,7 +47,6 @@ public class Player : MonoBehaviour
     public GameObject BuildManager;
     public GameObject playerBlockPlacement;
     public GameObject trapInteraction;
-    public Transform playerSpawnLocation;
     public Transform kingSpawnLocation;
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
@@ -66,8 +65,8 @@ public class Player : MonoBehaviour
     {
         gameManager = GameObject.Find("GameState").GetComponent<GameManager>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
+        playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
-        playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
         animator = GetComponent<Animator>();
         isPlayer = true;
         healthbar.SetMaxHealth(maxHealth);
@@ -229,13 +228,9 @@ public class Player : MonoBehaviour
 
             if (becameKing)
             {
+                Debug.Log("Kingship has been claimed");
                 rigid.velocity = Vector2.zero;
                 transform.position = kingSpawnLocation.position;
-            }
-            if (isPlayer && roundControl.Respawn)
-            {
-                rigid.velocity = Vector2.zero;
-                transform.position = playerSpawnLocation.position;
             }
         }
     }
@@ -285,88 +280,6 @@ public class Player : MonoBehaviour
         if (other.gameObject.CompareTag("KingPoint"))
         {
             becameKing = true;
-            isPlayer = false;
-
-            if (PlayerSaveData.playerNumber == 1 && player[0].isKing)
-            {
-                player[0].isKing = false;
-                player[0].isPlayer = true;
-            }
-
-            if (PlayerSaveData.playerNumber == 2 && (player[0].isKing || player[1].isKing))
-            {
-                player[0].isKing = false;
-                player[0].isPlayer = true;
-
-                player[1].isKing = false;
-                player[1].isPlayer = true;
-            }
-
-            if (PlayerSaveData.playerNumber == 3 && (player[0].isKing || player[1].isKing || player[2].isKing))
-            {
-                player[0].isKing = false;
-                player[0].isPlayer = true;
-
-                player[1].isKing = false;
-                player[1].isPlayer = true;
-
-                player[2].isKing = false;
-                player[2].isPlayer = true;
-            }
-
-            if (PlayerSaveData.playerNumber == 4 && (player[0].isKing || player[1].isKing || player[2].isKing || player[3].isKing))
-            {
-                player[0].isKing = false;
-                player[0].isPlayer = true;
-
-                player[1].isKing = false;
-                player[1].isPlayer = true;
-
-                player[2].isKing = false;
-                player[2].isPlayer = true;
-
-                player[3].isKing = false;
-                player[3].isPlayer = true;
-            }
-
-            if (PlayerSaveData.playerNumber == 5 && (player[0].isKing || player[1].isKing || player[2].isKing || player[3].isKing || player[4].isKing))
-            {
-                player[0].isKing = false;
-                player[0].isPlayer = true;
-
-                player[1].isKing = false;
-                player[1].isPlayer = true;
-
-                player[2].isKing = false;
-                player[2].isPlayer = true;
-
-                player[3].isKing = false;
-                player[3].isPlayer = true;
-
-                player[4].isKing = false;
-                player[4].isPlayer = true;
-            }
-
-            if (PlayerSaveData.playerNumber == 6 && (player[0].isKing || player[1].isKing || player[2].isKing || player[3].isKing || player[4].isKing || player[5].isKing))
-            {
-                player[0].isKing = false;
-                player[0].isPlayer = true;
-
-                player[1].isKing = false;
-                player[1].isPlayer = true;
-
-                player[2].isKing = false;
-                player[2].isPlayer = true;
-
-                player[3].isKing = false;
-                player[3].isPlayer = true;
-
-                player[4].isKing = false;
-                player[4].isPlayer = true;
-
-                player[5].isKing = false;
-                player[5].isPlayer = true;
-            }
         }
 
         if (other.gameObject.CompareTag("Trap") && !isflashing)
@@ -377,14 +290,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("KingPoint"))
-        {
-            isKing = true;
-            becameKing = false;
-        }
-    }
+    // void OnTriggerStay2D(Collider2D other)
+    // {
+    //     if (other.gameObject.CompareTag("KingPoint"))
+    //     {
+    //         isKing = true;
+    //         becameKing = false;
+    //     }
+    // }
 
     IEnumerator InvincibleFlash()
     {

@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6653591027672778761}
-  - component: {fileID: 6653591027672778766}
   - component: {fileID: 6653591027672778764}
   - component: {fileID: 6653591027672778767}
-  m_Layer: 7
+  - component: {fileID: 6653591027672778766}
+  m_Layer: 10
   m_Name: Eraser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,21 +34,6 @@ Transform:
   m_Father: {fileID: 6653591027728031133}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6653591027672778766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6653591027672778763}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5e80a5c44d13614c9d77ff6cad23e2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  eraseLayer:
-    serializedVersion: 2
-    m_Bits: 128
 --- !u!212 &6653591027672778764
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -122,6 +107,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6653591027672778766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6653591027672778763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5e80a5c44d13614c9d77ff6cad23e2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eraseLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &6653591027728031132
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 6653591027728031133}
   - component: {fileID: 6653591027728031122}
   - component: {fileID: 6653591027728031123}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Eraser Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}

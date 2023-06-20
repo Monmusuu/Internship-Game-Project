@@ -14,10 +14,12 @@ public class RoundControl : MonoBehaviour
     public bool placingItems = false;
     public int playersPlacedBlocks = 0;
     public bool playerRemovingItem = false;
+    public Transform playerSpawnLocation;
 
 // Start is called before the first frame update
     void Start()
     {
+        playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
         StartCoroutine(PopulatePlayerArray());
         timerOn = true;
     }
@@ -52,13 +54,19 @@ public class RoundControl : MonoBehaviour
         // ...
     }
 
-// Update is called once per frame
     void Update()
     {
-        if(playersPlacedBlocks >= PlayerSaveData.playerNumber + 2){
-            placingItems = false;
-            itemsPlaced = true;
+        if (placingItems)
+        {
+            Respawn = false;
+
+            if (playersPlacedBlocks >= PlayerSaveData.playerNumber + 2)
+            {
+                itemsPlaced = true;
+                placingItems = false;
+            }
         }
+        
 
         if (!placingItems)
         {
@@ -66,21 +74,42 @@ public class RoundControl : MonoBehaviour
             {
                 if (player[i] != null && player[i].becameKing)
                 {
+                    // Update player flags for the current king
+                    for (int j = 0; j < player.Length; j++)
+                    {
+                        if (player[j] != null)
+                        {
+                            player[j].isKing = (j == i);
+                            player[j].isPlayer = (j != i);
+                        }
+                    }
+
+                    // Set respawn and round variables
                     Respawn = true;
                     Round += 1;
-                    RoundTime = 360f;
+                    player[i].becameKing = false;
+                    // Exit the loop since the king is found
+                    break;
+                }
+
+                if (player[i] != null && player[i].isPlayer && Respawn)
+                {
+                    player[i].rigid.velocity = Vector2.zero;
+                    player[i].transform.position = playerSpawnLocation.position;
                     itemsPlaced = false;
                     timerOn = false;
+                    RoundTime = 360f;
+                    playersPlacedBlocks = 0;
                     placingItems = true;
-                    break; // Exit the loop since the king is found
+
+                    break;
                 }
             }
 
             if (itemsPlaced && Round >= 1)
             {
-
                 timerOn = true;
-                    
+
                 if (timerOn)
                 {
                     RoundTime -= Time.deltaTime;
@@ -96,13 +125,7 @@ public class RoundControl : MonoBehaviour
                     RoundTime = 360f;
                     placingItems = true;
                 }
-
-                if (RoundTime <= 360f && itemsPlaced)
-                {
-                    Respawn = false;
-                }
             }
         }
-        
     }
 }

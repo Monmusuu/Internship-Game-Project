@@ -395,13 +395,16 @@ private bool IsPlacementValid(Vector3Int position)
 
     private void RotatePreviewObject()
     {
-        rotationAngle += 90f;
-        if (rotationAngle >= 360f)
-        {
-            rotationAngle = 0f;
+        if(selectedTile != 3){
+            rotationAngle += 90f;
+            if (rotationAngle >= 360f)
+            {
+                rotationAngle = 0f;
+            }
+
+            previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
         }
 
-        previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
     }
 
 }

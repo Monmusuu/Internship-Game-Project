@@ -245,12 +245,15 @@ public void OnClick()
 
     private void RotatePreviewObject()
     {
-        rotationAngle += 90f;
-        if (rotationAngle >= 360f)
+        if (selectedTile == 0)
         {
-            rotationAngle = 0f;
-        }
+            rotationAngle += 90f;
+            if (rotationAngle >= 360f)
+            {
+                rotationAngle = 0f;
+            }
 
-        previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
+            previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
+        }
     }
 }

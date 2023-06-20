@@ -93,10 +93,10 @@ public class PlayerSaveData : MonoBehaviour
                             playerWeaponSpriteNumbers[i] = characterSelection.weaponValue;
                             playerAnimatorNumbers[i] = characterSelection.animatorValue;
 
-                            Debug.Log("Hat " + playerHatSpriteNumbers[i]);
-                            Debug.Log("Body " + playerBodySpriteNumbers[i]);
-                            Debug.Log("Weapon " + playerWeaponSpriteNumbers[i]);
-                            Debug.Log("Animator " + playerAnimatorNumbers[i]);
+                            // Debug.Log("Hat " + playerHatSpriteNumbers[i]);
+                            // Debug.Log("Body " + playerBodySpriteNumbers[i]);
+                            // Debug.Log("Weapon " + playerWeaponSpriteNumbers[i]);
+                            // Debug.Log("Animator " + playerAnimatorNumbers[i]);
                         }
                     }
                 }

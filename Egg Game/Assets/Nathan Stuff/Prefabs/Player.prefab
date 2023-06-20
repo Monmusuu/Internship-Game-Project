@@ -123,7 +123,7 @@ MonoBehaviour:
   playerInput: {fileID: 0}
   customCursor: {fileID: 91069298}
   kingTilemap: {fileID: 0}
-  moveSpeed: 18
+  moveSpeed: 25
 --- !u!60 &91069303
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -318,7 +318,7 @@ MonoBehaviour:
   manualTrapPlaced2: 0
   tileGridUI: {fileID: 0}
   playerInput: {fileID: 0}
-  moveSpeed: 12
+  moveSpeed: 15
   borderLayer:
     serializedVersion: 2
     m_Bits: 2048
@@ -533,7 +533,7 @@ MonoBehaviour:
   blockPlaced: 0
   tileGridUI: {fileID: 0}
   playerInput: {fileID: 0}
-  moveSpeed: 12
+  moveSpeed: 15
   smoothingFactor: 0.5
   previewLayer:
     serializedVersion: 2
