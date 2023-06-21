@@ -167,7 +167,8 @@ public class PlayerSaveData : MonoBehaviour
                 SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
                 if (childSpriteRenderer != null)
                     childSpriteRenderer.sprite = playerSpriteBodies[i];
-                }
+            }
+            UnityEngine.Cursor.visible = false;
         }
     }
 }

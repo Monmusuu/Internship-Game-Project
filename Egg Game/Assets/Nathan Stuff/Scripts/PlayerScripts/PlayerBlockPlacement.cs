@@ -81,9 +81,21 @@ public class PlayerBlockPlacement : MonoBehaviour
     private void Update()
     {
         movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
+        Vector3 newPosition = transform.position + new Vector3(movementInput.x, movementInput.y, 0) * moveSpeed * Time.deltaTime;
 
-        if (movementInput != Vector2.zero)
+        if (playerInput.currentControlScheme == "WADKeyBoard")
         {
+            // Get the mouse position in world coordinates
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            // Clamp the cursor position to stay within the screen boundaries
+            ClampPosition(mousePosition);
+            MoveCursor();
+        }
+        else if (playerInput.currentControlScheme == "Controller")
+        {
+            movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
+            ClampPosition(newPosition);
             MoveCursor();
         }
 
@@ -107,6 +119,26 @@ public class PlayerBlockPlacement : MonoBehaviour
 
     }
 
+    private void ClampPosition(Vector3 position)
+    {
+        // Get the screen boundaries in world coordinates
+        float screenAspect = (float)Screen.width / Screen.height;
+        float screenHorizontalSize = Camera.main.orthographicSize * screenAspect;
+        float screenVerticalSize = Camera.main.orthographicSize;
+
+        // Get the object's dimensions
+        Renderer renderer = GetComponent<Renderer>();
+        float objectWidth = renderer.bounds.size.x;
+        float objectHeight = renderer.bounds.size.y;
+
+        // Clamp the position to stay within the screen boundaries
+        float clampedX = Mathf.Clamp(position.x, -screenHorizontalSize + objectWidth / 2f, screenHorizontalSize - objectWidth / 2f);
+        float clampedY = Mathf.Clamp(position.y, -screenVerticalSize + objectHeight / 2f, screenVerticalSize - objectHeight / 2f);
+        float clampedZ = transform.position.z;
+
+        transform.position = new Vector3(clampedX, clampedY, clampedZ);
+    }
+
     private void FixedUpdate()
     {
         Vector2 velocity = movementInput * moveSpeed;
@@ -128,6 +160,7 @@ public class PlayerBlockPlacement : MonoBehaviour
 
 public void OnClick()
 {
+
     Vector3 cursorPosition = transform.position;
     Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
     Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
@@ -166,7 +199,6 @@ public void OnClick()
 
     Destroy(previewObject);
 }
-
     void RenderUITiles()
     {
         int i = 0;

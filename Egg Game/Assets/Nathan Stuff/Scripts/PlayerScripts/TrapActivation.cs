@@ -34,8 +34,21 @@ public class TrapActivation : MonoBehaviour
     {
         movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
 
-        if (movementInput != Vector2.zero)
+        Vector3 newPosition = transform.position + new Vector3(movementInput.x, movementInput.y, 0) * moveSpeed * Time.deltaTime;
+
+        if (playerInput.currentControlScheme == "WADKeyBoard")
         {
+            // Get the mouse position in world coordinates
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            // Clamp the cursor position to stay within the screen boundaries
+            ClampPosition(mousePosition);
+            MoveCursor();
+        }
+        else if (playerInput.currentControlScheme == "Controller")
+        {
+            movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
+            ClampPosition(newPosition);
             MoveCursor();
         }
 
@@ -45,6 +58,25 @@ public class TrapActivation : MonoBehaviour
         }
     }
 
+    private void ClampPosition(Vector3 position)
+    {
+        // Get the screen boundaries in world coordinates
+        float screenAspect = (float)Screen.width / Screen.height;
+        float screenHorizontalSize = Camera.main.orthographicSize * screenAspect;
+        float screenVerticalSize = Camera.main.orthographicSize;
+
+        // Get the object's dimensions
+        Renderer renderer = GetComponent<Renderer>();
+        float objectWidth = renderer.bounds.size.x;
+        float objectHeight = renderer.bounds.size.y;
+
+        // Clamp the position to stay within the screen boundaries
+        float clampedX = Mathf.Clamp(position.x, -screenHorizontalSize + objectWidth / 2f, screenHorizontalSize - objectWidth / 2f);
+        float clampedY = Mathf.Clamp(position.y, -screenVerticalSize + objectHeight / 2f, screenVerticalSize - objectHeight / 2f);
+        float clampedZ = transform.position.z;
+
+        transform.position = new Vector3(clampedX, clampedY, clampedZ);
+    }
 public void OnClick()
 {
     Debug.Log("OnClick called");

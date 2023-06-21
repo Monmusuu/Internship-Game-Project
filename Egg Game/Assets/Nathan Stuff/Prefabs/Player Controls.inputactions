@@ -107,7 +107,7 @@
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ArrowKeyBoard",
+                    "groups": "WADKeyBoard",
                     "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -140,7 +140,7 @@
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ArrowKeyBoard",
+                    "groups": "WADKeyBoard",
                     "action": "Jumped",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -151,7 +151,7 @@
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "Jumped",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -173,7 +173,7 @@
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ArrowKeyBoard",
+                    "groups": "WADKeyBoard",
                     "action": "Left",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -195,7 +195,7 @@
                     "path": "<Gamepad>/dpad/left",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WADKeyBoard",
                     "action": "Left",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -217,7 +217,7 @@
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ArrowKeyBoard",
+                    "groups": "WADKeyBoard",
                     "action": "Right",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -239,7 +239,7 @@
                     "path": "<Gamepad>/dpad/right",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Controller",
                     "action": "Right",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -289,133 +289,12 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "WASD",
-                    "id": "e7644de9-91dc-4a37-9c99-3cd44c7a148a",
-                    "path": "Dpad",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CursorMove",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "b314364c-fe91-4552-a63e-c936434971f1",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "up",
-                    "id": "ea0f425b-ca49-4d8e-a259-7040a2c056b1",
-                    "path": "<Keyboard>/upArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "a4e61e2f-fb8d-49d8-8b31-22c8ab743bb2",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "841a7460-f530-46e9-b033-9f489d61d987",
-                    "path": "<Keyboard>/downArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "0672d9f2-5db6-4189-a428-ead800d2c4ca",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "8c98d07f-6265-44d0-b543-16d196011e19",
-                    "path": "<Keyboard>/leftArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "48674889-5be1-4169-ad55-17664985378b",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "512c31ca-d7f8-44ee-81c3-c192c223fcfd",
-                    "path": "<Keyboard>/rightArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
                     "id": "42555782-5ff6-4da4-8c43-87eff5d49d4a",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Controller",
-                    "action": "CursorClick",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "acc4326e-7f8b-47d2-b178-a6590026ac60",
-                    "path": "<Keyboard>/enter",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
-                    "action": "CursorClick",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f5680be4-d34f-412d-b4b8-cfa6f2145b0c",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "WADKeyBoard",
                     "action": "CursorClick",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -437,8 +316,63 @@
                     "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Controller",
                     "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f73a5263-63e9-4e61-adab-a3fec327e5f7",
+                    "path": "<Mouse>/backButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "WADKeyBoard",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7ad6d235-3636-4385-a76b-c5b398bc5087",
+                    "path": "<Mouse>/forwardButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "WADKeyBoard",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2f9b15a4-68c4-457c-aefc-4242064d5ab4",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "WADKeyBoard",
+                    "action": "CursorClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "afb653cc-4e48-4001-8eec-b78d6566a536",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "WADKeyBoard",
+                    "action": "CursorClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "87ed280d-172b-4797-a4f5-4634067a5618",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "WADKeyBoard",
+                    "action": "CursorMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -454,6 +388,11 @@
                     "devicePath": "<Keyboard>",
                     "isOptional": false,
                     "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
                 }
             ]
         },
@@ -463,17 +402,6 @@
             "devices": [
                 {
                     "devicePath": "<Gamepad>",
-                    "isOptional": false,
-                    "isOR": false
-                }
-            ]
-        },
-        {
-            "name": "ArrowKeyBoard",
-            "bindingGroup": "ArrowKeyBoard",
-            "devices": [
-                {
-                    "devicePath": "<Keyboard>",
                     "isOptional": false,
                     "isOR": false
                 }

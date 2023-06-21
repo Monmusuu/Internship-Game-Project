@@ -968,6 +968,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c24240ac570a1499d9229432e10b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rigid: {fileID: 0}
   gameManager: {fileID: 0}
   jumpSpeed: 11
   groundLayer:
@@ -995,7 +996,6 @@ MonoBehaviour:
   BuildManager: {fileID: 530317277}
   playerBlockPlacement: {fileID: 1641257361}
   trapInteraction: {fileID: 91069298}
-  playerSpawnLocation: {fileID: 0}
   kingSpawnLocation: {fileID: 0}
   groundCheckCollider: {fileID: 3219085189834981985}
   groundCheckCollider2: {fileID: 3219085189834981985}
@@ -1106,9 +1106,9 @@ MonoBehaviour:
     m_ActionName: Player/Pause[/Keyboard/escape]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1641257365}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerBlockPlacement, Assembly-CSharp
-        m_MethodName: OnClick
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1122,7 +1122,7 @@ MonoBehaviour:
     m_ActionName: Player/CursorClick[/Keyboard/q]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1641257361}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: 
         m_Mode: 1
