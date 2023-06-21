@@ -178,10 +178,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 700
-  selectionRadius: 0.6
   selectedColor: {r: 0, g: 1, b: 0, a: 1}
-  buttonObjects: []
-  cursorRenderer: {fileID: 191862200749692942}
+  buttonComponents: []
 --- !u!58 &1143414131
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -195,9 +193,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.17, y: 0.17}
   serializedVersion: 2
-  m_Radius: 0.62
+  m_Radius: 0.43
 --- !u!222 &5010895372424976976
 CanvasRenderer:
   m_ObjectHideFlags: 0

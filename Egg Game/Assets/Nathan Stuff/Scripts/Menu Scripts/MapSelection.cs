@@ -26,8 +26,8 @@ public class MapSelection : MonoBehaviour
             // Player has voted, stop movement
             return;
         }
-        
-       // Process movement input
+
+        // Process movement input
         Vector2 movement = movementInput.normalized;
         Vector3 newPosition = transform.position + new Vector3(movement.x, movement.y, 0) * speed * Time.deltaTime;
 
@@ -51,7 +51,7 @@ public class MapSelection : MonoBehaviour
         movementInput = context.ReadValue<Vector2>();
     }
 
-        private void ClampPosition(Vector3 position)
+    private void ClampPosition(Vector3 position)
     {
         // Get the screen boundaries in world coordinates
         float screenAspect = (float)Screen.width / Screen.height;
@@ -71,7 +71,6 @@ public class MapSelection : MonoBehaviour
         transform.position = new Vector3(clampedX, clampedY, clampedZ);
     }
 
-
     public void OnClick(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -83,12 +82,15 @@ public class MapSelection : MonoBehaviour
                 // Get the map objects with the "Map" tag
                 GameObject[] mapObjects = GameObject.FindGameObjectsWithTag("Map");
 
-                // Find the closest map index
-                int closestMapIndex = GetClosestMapIndex(mapObjects);
+                // Find the exact map index
+                int exactMapIndex = GetExactMapIndex(mapObjects);
 
-                // Vote for the selected map
-                votingSystem.Vote(playerID, closestMapIndex);
-                Debug.Log("Player " + playerID + " voted for map index: " + closestMapIndex);
+                if (exactMapIndex != -1)
+                {
+                    // Vote for the selected map
+                    votingSystem.Vote(playerID, exactMapIndex);
+                    Debug.Log("Player " + playerID + " voted for map index: " + exactMapIndex);
+                }
             }
             else
             {
@@ -98,26 +100,41 @@ public class MapSelection : MonoBehaviour
         }
     }
 
-    
+private int GetExactMapIndex(GameObject[] mapObjects)
+{
+    int mapIndex = -1;
+    Vector3 playerPosition = transform.position;
 
-    private int GetClosestMapIndex(GameObject[] mapObjects)
+    for (int i = 0; i < mapObjects.Length; i++)
     {
-        int mapIndex = -1;
-        float closestDistance = Mathf.Infinity;
-        Vector3 playerPosition = transform.position;
+        GameObject mapObject = mapObjects[i];
 
-        for (int i = 0; i < mapObjects.Length; i++)
+        // Check for CanvasRenderer
+        CanvasRenderer canvasRenderer = mapObject.GetComponent<CanvasRenderer>();
+        if (canvasRenderer != null)
         {
-            Vector3 mapObjectPosition = mapObjects[i].transform.position;
-            float distance = Vector3.Distance(playerPosition, mapObjectPosition);
-
-            if (distance < closestDistance)
+            RectTransform rectTransform = mapObject.GetComponent<RectTransform>();
+            if (rectTransform != null && RectTransformUtility.RectangleContainsScreenPoint(rectTransform, playerPosition))
             {
-                closestDistance = distance;
+                // Player is within the bounds of the current map object
                 mapIndex = i;
+                break;
             }
         }
 
-        return mapIndex;
+        // Check for SpriteRenderer
+        SpriteRenderer spriteRenderer = mapObject.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            if (spriteRenderer.bounds.Contains(playerPosition))
+            {
+                // Player is within the bounds of the current map object
+                mapIndex = i;
+                break;
+            }
+        }
     }
+
+    return mapIndex;
+}
 }

@@ -2,34 +2,40 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Linq;
+using System;
+
 public class CursorCharacterSelection : MonoBehaviour
 {
-
     PlayerSaveData playerSaveData;
     public float speed = 5f;
-    public float selectionRadius = 1f; // Radius within which objects can be selected
     public Color selectedColor = Color.green; // Color to apply to the selected object
 
     private PlayerInput playerInput;
     private Vector2 movementInput;
 
     private GameObject selectedObject; // The currently selected object
-    private CanvasRenderer selectedCanvasRenderer; // The CanvasRenderer component of the selected object
+    private Image selectedImage; // The Image component of the selected object
     private Color originalColor; // The original color of the selected object
 
-    public GameObject[] buttonObjects; // Array to store the button objects
+    [SerializeField]
+    private Button[] buttonComponents; // Array to store the Button components of the buttons
+
+    private Collider2D cursorCollider; // Collider component of the cursor object
 
     // Start is called before the first frame update
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
         PlayerSaveData.playerNumber += 1;
-        buttonObjects = GameObject.FindGameObjectsWithTag("button" + playerInput.playerIndex)
-        .Concat(GameObject.FindGameObjectsWithTag("SpecialButton"))
-        .ToArray();
+        buttonComponents = GameObject.FindGameObjectsWithTag("button" + playerInput.playerIndex)
+            .Concat(GameObject.FindGameObjectsWithTag("SpecialButton"))
+            .Select(go => go.GetComponent<Button>())
+            .Where(button => button != null && button.interactable)
+            .ToArray();
 
         UnityEngine.Cursor.visible = false;
 
+        cursorCollider = GetComponent<Collider2D>(); // Assign the collider component of the cursor object
     }
 
     private void Update()
@@ -56,7 +62,7 @@ public class CursorCharacterSelection : MonoBehaviour
         if (selectedObject != null)
         {
             // Perform selection logic on the selected object
-            selectedCanvasRenderer.SetColor(selectedColor);
+            selectedImage.color = selectedColor;
         }
     }
 
@@ -67,10 +73,10 @@ public class CursorCharacterSelection : MonoBehaviour
         float screenHorizontalSize = Camera.main.orthographicSize * screenAspect;
         float screenVerticalSize = Camera.main.orthographicSize;
 
-        // Get the object's dimensions
-        Renderer renderer = GetComponent<Renderer>();
-        float objectWidth = renderer.bounds.size.x;
-        float objectHeight = renderer.bounds.size.y;
+        // Get the object's dimensions based on the colliders
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
+        float objectWidth = colliders.Max(collider => collider.bounds.size.x);
+        float objectHeight = colliders.Max(collider => collider.bounds.size.y);
 
         // Clamp the position to stay within the screen boundaries
         float clampedX = Mathf.Clamp(position.x, -screenHorizontalSize + objectWidth / 2f, screenHorizontalSize - objectWidth / 2f);
@@ -79,7 +85,6 @@ public class CursorCharacterSelection : MonoBehaviour
 
         transform.position = new Vector3(clampedX, clampedY, clampedZ);
     }
-
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -90,73 +95,53 @@ public class CursorCharacterSelection : MonoBehaviour
     {
         if (context.performed)
         {
-            // Find the closest button index
-            int closestButtonIndex = GetClosestButtonIndex();
+            // Perform a collider-based check for button clicks
+            Collider2D[] hitColliders = new Collider2D[10]; // Adjust the size if needed
+            ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
+            int hitCount = cursorCollider.OverlapCollider(contactFilter, hitColliders);
 
-            // Handle the selection
-            HandleSelection(closestButtonIndex);
-        }
-    }
-
-    private int GetClosestButtonIndex()
-    {
-        int buttonIndex = -1;
-        float closestDistance = Mathf.Infinity;
-        Vector3 playerPosition = transform.position;
-
-        for (int i = 0; i < buttonObjects.Length; i++)
-        {
-            Button buttonComponent = buttonObjects[i].GetComponent<Button>();
-            if (buttonComponent != null && buttonComponent.interactable)
+            for (int i = 0; i < hitCount; i++)
             {
-                Vector3 buttonObjectPosition = buttonObjects[i].transform.position;
-                float distance = Vector3.Distance(playerPosition, buttonObjectPosition);
+                Collider2D hitCollider = hitColliders[i];
 
-                if (distance < closestDistance)
+                if (hitCollider.CompareTag("button" + playerInput.playerIndex))
                 {
-                    closestDistance = distance;
-                    buttonIndex = i;
+                    Button clickedButton = hitCollider.GetComponent<Button>();
+                    int buttonIndex = Array.IndexOf(buttonComponents, clickedButton);
+
+                    // Only handle selection if a valid button is clicked
+                    if (buttonIndex >= 0)
+                    {
+                        HandleSelection(buttonIndex);
+                        break;
+                    }
                 }
             }
         }
-
-        return buttonIndex;
     }
 
     private void HandleSelection(int buttonIndex)
     {
-        if (buttonIndex >= 0 && buttonIndex < buttonObjects.Length)
+        if (buttonIndex >= 0 && buttonIndex < buttonComponents.Length)
         {
             Debug.Log("Player " + playerInput.playerIndex + " selected button " + buttonIndex);
 
             // Deselect the previously selected object if there is any
             if (selectedObject != null)
             {
-                selectedCanvasRenderer.SetColor(originalColor);
+                selectedImage.color = originalColor;
             }
 
             // Select the new object
-            selectedObject = buttonObjects[buttonIndex];
-            selectedCanvasRenderer = selectedObject.GetComponent<CanvasRenderer>();
-            originalColor = selectedCanvasRenderer.GetColor();
+            selectedObject = buttonComponents[buttonIndex].gameObject;
+            selectedImage = selectedObject.GetComponent<Image>();
+            originalColor = selectedImage.color;
 
             // Apply the selected color to the new object
-            selectedCanvasRenderer.SetColor(selectedColor);
+            selectedImage.color = selectedColor;
 
             // Invoke the onClick event of the selected button object
-            Button selectedButton = selectedObject.GetComponent<Button>();
-            if (selectedButton != null)
-            {
-                selectedButton.onClick.Invoke();
-            }
-            else
-            {
-                Debug.Log("Button component not found on selected object.");
-            }
-        }
-        else
-        {
-            Debug.Log("Invalid button index.");
+            buttonComponents[buttonIndex].onClick.Invoke();
         }
     }
 }
