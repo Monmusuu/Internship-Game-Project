@@ -228,7 +228,7 @@ public class Player : MonoBehaviour
 
             if (becameKing)
             {
-                Debug.Log("Kingship has been claimed");
+                //Debug.Log("Kingship has been claimed");
                 rigid.velocity = Vector2.zero;
                 transform.position = kingSpawnLocation.position;
             }

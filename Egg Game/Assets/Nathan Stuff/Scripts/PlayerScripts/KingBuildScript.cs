@@ -9,8 +9,6 @@ public class KingBuildScript : MonoBehaviour
     public GameObject[] autoTrapTileObjects;
     public GameObject[] manualTrapTileObjects;
     public GameObject[] manualTrap2TileObjects;
-    public List<GameObject> UITiles;
-
     private int selectedAutoTrapIndex;
     private int selectedManualTrapIndex;
     private int selectedManualTrap2Index;
@@ -53,36 +51,6 @@ public class KingBuildScript : MonoBehaviour
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
 
-        int i = 0;
-
-        foreach (GameObject tileObject in autoTrapTileObjects)
-        {
-            GameObject UITile = CreateUITile(tileObject, i == selectedTile);
-            UITiles.Add(UITile);
-
-            i++;
-        }
-
-        i = 0;
-
-        foreach (GameObject tileObject in manualTrapTileObjects)
-        {
-            GameObject UITile = CreateUITile(tileObject, i == selectedTile);
-            UITiles.Add(UITile);
-
-            i++;
-        }
-
-        i = 0;
-
-        foreach (GameObject tileObject in manualTrap2TileObjects)
-        {
-            GameObject UITile = CreateUITile(tileObject, i == selectedTile);
-            UITiles.Add(UITile);
-
-            i++;
-        }
-
         // Randomly select a tile from the manual trap array
         selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
         selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
@@ -100,23 +68,6 @@ public class KingBuildScript : MonoBehaviour
         transform.localPosition = initialPosition;
     }
 
-    private GameObject CreateUITile(GameObject tileObject, bool isSelected)
-    {
-        GameObject UITile = new GameObject("UI Tile");
-        UITile.transform.parent = tileGridUI;
-        UITile.transform.localScale = new Vector3(1f, 1f, 1f);
-
-        UnityEngine.UI.Image UIImage = UITile.AddComponent<UnityEngine.UI.Image>();
-        SpriteRenderer spriteRenderer = tileObject.GetComponent<SpriteRenderer>();
-        Sprite sprite = spriteRenderer ? spriteRenderer.sprite : null;
-        UIImage.sprite = sprite;
-
-        Color tileColor = UIImage.color;
-        tileColor.a = isSelected ? 1f : 0.5f;
-        UIImage.color = tileColor;
-
-        return UITile;
-    }
 
 private void CreateAllPreviews()
 {
@@ -232,7 +183,6 @@ private void OnClick()
             transform.position = transform.parent.position;
             gameObject.layer = 7;
             autoTrapPlaced = true;
-            RenderUITiles();
             GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
             placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
             // Set the layer of the placed block to the "King" layer
@@ -265,7 +215,6 @@ private void OnClick()
             transform.position = transform.parent.position;
             gameObject.layer = 7;
             manualTrapPlaced = true;
-            RenderUITiles();
             GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
             placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
             placedBlock.layer = kingLayerValue;
@@ -298,7 +247,6 @@ private void OnClick()
                 transform.position = transform.parent.position;
                 gameObject.layer = 7;
                 manualTrapPlaced2 = true;
-                RenderUITiles();
                 GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
                 placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
                 placedBlock.layer = kingLayerValue;
@@ -324,18 +272,6 @@ private void OnClick()
 
     Destroy(previewObject);
 }
-
-    private void RenderUITiles()
-    {
-        for (int i = 0; i < UITiles.Count; i++)
-        {
-            GameObject UITile = UITiles[i];
-            UnityEngine.UI.Image UIImage = UITile.GetComponent<UnityEngine.UI.Image>();
-            Color tileColor = UIImage.color;
-            tileColor.a = (i == selectedTile) ? 1f : 0.5f;
-            UIImage.color = tileColor;
-        }
-    }
 
 private int previousAutoTrapIndex;
 private int previousManualTrapIndex;
@@ -385,7 +321,6 @@ private void OnEnable()
         previewObject.SetActive(true);
     }
 
-    RenderUITiles();
 }
 
     private void OnDisable()

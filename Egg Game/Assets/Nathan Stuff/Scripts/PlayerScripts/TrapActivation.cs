@@ -79,7 +79,7 @@ public class TrapActivation : MonoBehaviour
     }
 public void OnClick()
 {
-    Debug.Log("OnClick called");
+    //Debug.Log("OnClick called");
 
     // Calculate the cursor position in world space
     Vector3 cursorPosition = customCursor.transform.position;

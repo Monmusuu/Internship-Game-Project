@@ -9,7 +9,6 @@ public class PlayerBlockPlacement : MonoBehaviour
 {
     public Tilemap kingTilemap;
     public GameObject[] blockTileObjects;
-    public List<GameObject> UITiles;
     public int selectedTile = 0;
     public int removeTile = 0;
     public bool blockPlaced = false;
@@ -47,33 +46,6 @@ public class PlayerBlockPlacement : MonoBehaviour
         playerInput = GetComponentInParent<PlayerInput>();
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
 
-        int i = 0;
-
-        foreach (GameObject tileObject in blockTileObjects)
-        {
-            GameObject UITile = new GameObject("UI Tile");
-            UITile.transform.parent = tileGridUI;
-            UITile.transform.localScale = new Vector3(1f, 1f, 1f);
-
-            UnityEngine.UI.Image UIImage = UITile.AddComponent<UnityEngine.UI.Image>();
-            SpriteRenderer spriteRenderer = tileObject.GetComponent<SpriteRenderer>();
-            Sprite sprite = spriteRenderer ? spriteRenderer.sprite : null;
-            UIImage.sprite = sprite;
-
-            Color tileColor = UIImage.color;
-            tileColor.a = 0.5f;
-
-            if (i == selectedTile)
-            {
-                tileColor.a = 1f;
-            }
-
-            UIImage.color = tileColor;
-            UITiles.Add(UITile);
-
-            i++;
-        }
-
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f; // Disable gravity for the cursor
     }
@@ -100,7 +72,6 @@ public class PlayerBlockPlacement : MonoBehaviour
         }
 
         selectedTile = 0;
-        RenderUITiles();
 
         if (blockPlaced == true)
         {
@@ -173,7 +144,6 @@ public void OnClick()
             transform.position = initialPosition;
             gameObject.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer to the "King" layer
             blockPlaced = true;
-            RenderUITiles();
             GameObject placedBlock = Instantiate(previewObject, tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
             SpriteRenderer placedSpriteRenderer = placedBlock.GetComponent<SpriteRenderer>();
             Color blockColor = placedSpriteRenderer.color;
@@ -199,25 +169,6 @@ public void OnClick()
 
     Destroy(previewObject);
 }
-    void RenderUITiles()
-    {
-        int i = 0;
-        foreach (GameObject tileObject in UITiles)
-        {
-            UnityEngine.UI.Image UIImage = tileObject.GetComponent<UnityEngine.UI.Image>();
-            Color tileColor = UIImage.color;
-            tileColor.a = 0.5f;
-
-            if (i == selectedTile)
-            {
-                tileColor.a = 1f;
-            }
-
-            UIImage.color = tileColor;
-
-            i++;
-        }
-    }
 
     private int previousRandomIndex = -1; // Store the previous random index
 
