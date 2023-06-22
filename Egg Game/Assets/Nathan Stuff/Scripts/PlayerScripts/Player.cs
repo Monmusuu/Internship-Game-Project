@@ -65,7 +65,7 @@ public class Player : MonoBehaviour
     {
         gameManager = GameObject.Find("GameState").GetComponent<GameManager>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
-        playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
+        playerSaveData = GameObject.Find("GameState").GetComponent<PlayerSaveData>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         animator = GetComponent<Animator>();
         isPlayer = true;

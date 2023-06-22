@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.UI;
 
 public class MapSelection : MonoBehaviour
 {
@@ -11,12 +12,17 @@ public class MapSelection : MonoBehaviour
 
     private PlayerInput playerInput;
     private Vector2 movementInput;
+    [SerializeField]
+    private Button mapButton;
 
     private void Start()
     {
         votingSystem = GameObject.Find("VotingSystem").GetComponent<VotingSystem>();
         playerInput = GetComponent<PlayerInput>();
         UnityEngine.Cursor.visible = false;
+
+        // Find and assign the button object
+        mapButton = GameObject.Find("Back Button").GetComponent<Button>();
     }
 
     private void Update()
@@ -97,44 +103,51 @@ public class MapSelection : MonoBehaviour
                 // Undo the player's vote
                 votingSystem.UndoVote(playerID);
             }
+
+            // Check if the cursor is over the button
+            if (mapButton != null && RectTransformUtility.RectangleContainsScreenPoint(mapButton.GetComponent<RectTransform>(), Input.mousePosition))
+            {
+                // Handle the button click event
+                mapButton.onClick.Invoke();
+            }
         }
     }
 
-private int GetExactMapIndex(GameObject[] mapObjects)
-{
-    int mapIndex = -1;
-    Vector3 playerPosition = transform.position;
-
-    for (int i = 0; i < mapObjects.Length; i++)
+    private int GetExactMapIndex(GameObject[] mapObjects)
     {
-        GameObject mapObject = mapObjects[i];
+        int mapIndex = -1;
+        Vector3 playerPosition = transform.position;
 
-        // Check for CanvasRenderer
-        CanvasRenderer canvasRenderer = mapObject.GetComponent<CanvasRenderer>();
-        if (canvasRenderer != null)
+        for (int i = 0; i < mapObjects.Length; i++)
         {
-            RectTransform rectTransform = mapObject.GetComponent<RectTransform>();
-            if (rectTransform != null && RectTransformUtility.RectangleContainsScreenPoint(rectTransform, playerPosition))
+            GameObject mapObject = mapObjects[i];
+
+            // Check for CanvasRenderer
+            CanvasRenderer canvasRenderer = mapObject.GetComponent<CanvasRenderer>();
+            if (canvasRenderer != null)
             {
-                // Player is within the bounds of the current map object
-                mapIndex = i;
-                break;
+                RectTransform rectTransform = mapObject.GetComponent<RectTransform>();
+                if (rectTransform != null && RectTransformUtility.RectangleContainsScreenPoint(rectTransform, playerPosition))
+                {
+                    // Player is within the bounds of the current map object
+                    mapIndex = i;
+                    break;
+                }
+            }
+
+            // Check for SpriteRenderer
+            SpriteRenderer spriteRenderer = mapObject.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                if (spriteRenderer.bounds.Contains(playerPosition))
+                {
+                    // Player is within the bounds of the current map object
+                    mapIndex = i;
+                    break;
+                }
             }
         }
 
-        // Check for SpriteRenderer
-        SpriteRenderer spriteRenderer = mapObject.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            if (spriteRenderer.bounds.Contains(playerPosition))
-            {
-                // Player is within the bounds of the current map object
-                mapIndex = i;
-                break;
-            }
-        }
+        return mapIndex;
     }
-
-    return mapIndex;
-}
 }

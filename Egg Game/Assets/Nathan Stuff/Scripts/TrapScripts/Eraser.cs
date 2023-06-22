@@ -4,7 +4,6 @@ using System.Collections;
 public class Eraser : MonoBehaviour
 {
     public LayerMask eraseLayer;
-    private bool canDestroy = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -27,36 +26,28 @@ public class Eraser : MonoBehaviour
     private void Update()
     {
         Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.parent.position, transform.parent.localScale / 2f, transform.parent.rotation.eulerAngles.z);
+        bool isEraserOnEraserLayer = eraseLayer == (eraseLayer | (1 << transform.parent.gameObject.layer));
+        //bool shouldSelfDestruct = false;
+
         foreach (Collider2D collider in colliders)
         {
-            if (eraseLayer == (eraseLayer | (1 << collider.gameObject.layer)) && collider.gameObject != transform.parent.gameObject)
+            if (isEraserOnEraserLayer && eraseLayer == (eraseLayer | (1 << collider.gameObject.layer)) && collider.gameObject != transform.parent.gameObject)
             {
                 Debug.Log("Overlap: Destroying " + collider.gameObject.name);
-                StartCoroutine(DelayedDestroy(2f, collider.gameObject));
+                Destroy(collider.gameObject);
             }
         }
 
-        if (canDestroy)
+        if (isEraserOnEraserLayer)
         {
-            Debug.Log("Self-Destruct: Destroying " + transform.parent.gameObject.name);
-            Destroy(transform.parent.gameObject);
-        }
-        else
-        {
-            StartCoroutine(DelayedDestroy(2f, transform.parent.gameObject)); // Delayed destroy for the eraser's parent object
+            StartCoroutine(DelayedSelfDestruct(2f));
         }
     }
 
-    private IEnumerator DelayedDestroy(float delay, GameObject objectToDestroy)
+    private IEnumerator DelayedSelfDestruct(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (objectToDestroy == transform.parent.gameObject)
-        {
-            canDestroy = true;
-        }
-        else
-        {
-            Destroy(objectToDestroy); // Destroy the colliding game object
-        }
+        Debug.Log("Self-Destruct: Destroying " + transform.parent.gameObject.name);
+        Destroy(transform.parent.gameObject);
     }
 }

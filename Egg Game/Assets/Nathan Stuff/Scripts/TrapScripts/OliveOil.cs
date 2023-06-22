@@ -12,6 +12,12 @@ public class OliveOil : MonoBehaviour
         direction = dir;
     }
 
+    void Start()
+    {
+        // Destroy the projectile after 3 seconds
+        Destroy(gameObject, 8f);
+    }
+
     void Update()
     {
         // Move the projectile in the specified direction

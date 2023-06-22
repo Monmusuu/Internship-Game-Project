@@ -117,6 +117,11 @@ public void OnClick()
         if(oliveTurret != null){
             oliveTurret.ActivateFunction();
         }
+
+        TrapMicrophone trapMicrophone = hit.collider.GetComponent<TrapMicrophone>();
+        if(trapMicrophone != null){
+            trapMicrophone.ActivateFunction();
+        }
     }
     else
     {
