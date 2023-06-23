@@ -46,7 +46,7 @@ public class Eraser : MonoBehaviour
 
     private bool ShouldDestroyObject(GameObject obj)
     {
-        return eraseLayer == (eraseLayer | (1 << obj.layer)) && obj != transform.parent.gameObject;
+        return obj.layer == transform.parent.gameObject.layer && obj != transform.parent.gameObject;
     }
 
     private IEnumerator DestroyHierarchy(GameObject obj, float delay)

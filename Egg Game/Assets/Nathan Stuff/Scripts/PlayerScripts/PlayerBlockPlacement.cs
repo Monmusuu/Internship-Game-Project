@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -33,6 +32,8 @@ public class PlayerBlockPlacement : MonoBehaviour
     public LayerMask borderLayer;
 
     private float rotationAngle = 0f;
+
+    private int selectedBlockTileIndex = 0;
     
 
     private void Awake()
@@ -139,7 +140,7 @@ public void OnClick()
     if (selectedTile == 0 && !blockPlaced)
     {
         // Check if the placement position is valid (e.g., within certain bounds or not occupied)
-        if (IsPlacementValid(cellPosition))
+        if (IsPlacementValid(cellPosition) || (selectedBlockTileIndex == 5) || (selectedBlockTileIndex == 6))
         {
             transform.position = initialPosition;
             gameObject.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer to the "King" layer
@@ -190,6 +191,7 @@ public void OnClick()
         } while (randomIndex == previousRandomIndex); // Repeat until the index is different from the previous one
 
         previousRandomIndex = randomIndex; // Store the current random index as the previous one
+        selectedBlockTileIndex = randomIndex; // Assign the selected block tile index
 
         previewObject = Instantiate(blockTileObjects[randomIndex], transform.position, Quaternion.identity);
         previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
@@ -228,7 +230,7 @@ public void OnClick()
 
     private void RotatePreviewObject()
     {
-        if (selectedTile == 0)
+        if (selectedTile == 0 && (selectedBlockTileIndex != 0) && (selectedBlockTileIndex != 5))
         {
             rotationAngle += 90f;
             if (rotationAngle >= 360f)
@@ -237,6 +239,8 @@ public void OnClick()
             }
 
             previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
+        }else{
+            Debug.Log("this object can't rotate");
         }
     }
 }
