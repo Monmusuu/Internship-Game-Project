@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpringScript : MonoBehaviour
 {
-public string[] playerTags; // Tags of the players that can trigger the spring
+    public string[] playerTags; // Tags of the players that can trigger the spring
     public float launchForce = 10f; // Magnitude of the upward force to be applied
 
     public BoxCollider2D childCollider; // Reference to the child collider to be moved
@@ -27,7 +27,7 @@ public string[] playerTags; // Tags of the players that can trigger the spring
                 if (collision.CompareTag(tag))
                 {
                     isAnimating = true;
-                    //animator.SetTrigger("Stepped On");
+                    animator.SetTrigger("Stepped On");
                     playerRigidbody = collision.GetComponent<Rigidbody2D>(); // Assign the player's Rigidbody2D component
                     break;
                 }
@@ -72,8 +72,10 @@ public string[] playerTags; // Tags of the players that can trigger the spring
         if (playerRigidbody != null)
         {
             Debug.Log("Launching player!");
-            // Apply an upward force to the player
-            playerRigidbody.AddForce(Vector2.up * launchForce, ForceMode2D.Impulse);
+            // Calculate the launch direction based on the spring's rotation
+            Vector2 launchDirection = transform.up;
+            // Apply an upward force to the player along the launch direction
+            playerRigidbody.AddForce(launchDirection * launchForce, ForceMode2D.Impulse);
         }
         else
         {
@@ -85,6 +87,6 @@ public string[] playerTags; // Tags of the players that can trigger the spring
 
     public void ResetObject()
     {
-        animator.SetTrigger("Sprung"); 
+        animator.SetTrigger("Sprung");
     }
 }
