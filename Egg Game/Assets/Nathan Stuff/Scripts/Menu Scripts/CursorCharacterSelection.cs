@@ -18,7 +18,7 @@ public class CursorCharacterSelection : MonoBehaviour
     private Color originalColor; // The original color of the selected object
 
     [SerializeField]
-    private Button[] buttonComponents; // Array to store the Button components of the buttons
+    private ClickableImage[] clickableImages; // Array to store the ClickableImage components
 
     private Collider2D cursorCollider; // Collider component of the cursor object
 
@@ -27,10 +27,10 @@ public class CursorCharacterSelection : MonoBehaviour
     {
         playerInput = GetComponent<PlayerInput>();
         PlayerSaveData.playerNumber += 1;
-        buttonComponents = GameObject.FindGameObjectsWithTag("button" + playerInput.playerIndex)
+        clickableImages = GameObject.FindGameObjectsWithTag("button" + playerInput.playerIndex)
             .Concat(GameObject.FindGameObjectsWithTag("SpecialButton"))
-            .Select(go => go.GetComponent<Button>())
-            .Where(button => button != null && button.interactable)
+            .Select(go => go.GetComponent<ClickableImage>())
+            .Where(clickableImage => clickableImage != null)
             .ToArray();
 
         UnityEngine.Cursor.visible = false;
@@ -91,57 +91,55 @@ public class CursorCharacterSelection : MonoBehaviour
         movementInput = context.ReadValue<Vector2>();
     }
 
-    public void OnClick(InputAction.CallbackContext context)
+public void OnClick(InputAction.CallbackContext context)
+{
+    if (context.performed)
     {
-        if (context.performed)
+        // Perform a collider-based check for object clicks
+        Collider2D[] hitColliders = new Collider2D[10]; // Adjust the size if needed
+        ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
+        int hitCount = cursorCollider.OverlapCollider(contactFilter, hitColliders);
+
+        for (int i = 0; i < hitCount; i++)
         {
-            // Perform a collider-based check for button clicks
-            Collider2D[] hitColliders = new Collider2D[10]; // Adjust the size if needed
-            ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
-            int hitCount = cursorCollider.OverlapCollider(contactFilter, hitColliders);
+            Collider2D hitCollider = hitColliders[i];
 
-            for (int i = 0; i < hitCount; i++)
+            ClickableImage clickedImage = hitCollider.GetComponent<ClickableImage>();
+            int imageIndex = Array.IndexOf(clickableImages, clickedImage);
+
+            // Only handle selection if a valid image is clicked
+            if (imageIndex >= 0)
             {
-                Collider2D hitCollider = hitColliders[i];
-
-                if (hitCollider.CompareTag("button" + playerInput.playerIndex))
-                {
-                    Button clickedButton = hitCollider.GetComponent<Button>();
-                    int buttonIndex = Array.IndexOf(buttonComponents, clickedButton);
-
-                    // Only handle selection if a valid button is clicked
-                    if (buttonIndex >= 0)
-                    {
-                        HandleSelection(buttonIndex);
-                        break;
-                    }
-                }
+                HandleSelection(imageIndex);
+                break;
             }
         }
     }
+}
 
-    private void HandleSelection(int buttonIndex)
+
+private void HandleSelection(int imageIndex)
+{
+    if (imageIndex >= 0 && imageIndex < clickableImages.Length)
     {
-        if (buttonIndex >= 0 && buttonIndex < buttonComponents.Length)
+        Debug.Log("Player " + playerInput.playerIndex + " selected image " + imageIndex);
+
+        // Deselect the previously selected object if there is any
+        if (selectedObject != null)
         {
-            Debug.Log("Player " + playerInput.playerIndex + " selected button " + buttonIndex);
-
-            // Deselect the previously selected object if there is any
-            if (selectedObject != null)
-            {
-                selectedImage.color = originalColor;
-            }
-
-            // Select the new object
-            selectedObject = buttonComponents[buttonIndex].gameObject;
-            selectedImage = selectedObject.GetComponent<Image>();
-            originalColor = selectedImage.color;
-
-            // Apply the selected color to the new object
-            selectedImage.color = selectedColor;
-
-            // Invoke the onClick event of the selected button object
-            buttonComponents[buttonIndex].onClick.Invoke();
+            selectedImage.color = originalColor;
         }
+
+        // Select the new object
+        selectedObject = clickableImages[imageIndex].gameObject;
+        selectedImage = selectedObject.GetComponent<Image>();
+        originalColor = selectedImage.color;
+
+        // Apply the selected color to the new object
+        selectedImage.color = selectedColor;
+
+        // Simulate the click event
+        clickableImages[imageIndex].onClick.Invoke();
     }
+}
 }
