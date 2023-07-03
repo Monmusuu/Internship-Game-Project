@@ -3,8 +3,9 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Linq;
 using System;
+using Mirror;
 
-public class CursorCharacterSelection : MonoBehaviour
+public class CursorCharacterSelection : NetworkBehaviour
 {
     PlayerSaveData playerSaveData;
     public float speed = 5f;
@@ -40,6 +41,7 @@ public class CursorCharacterSelection : MonoBehaviour
 
     private void Update()
     {
+
         // Process movement input
         Vector2 movement = movementInput.normalized;
         Vector3 newPosition = transform.position + new Vector3(movement.x, movement.y, 0) * speed * Time.deltaTime;
@@ -122,7 +124,7 @@ private void HandleSelection(int imageIndex)
 {
     if (imageIndex >= 0 && imageIndex < clickableImages.Length)
     {
-        Debug.Log("Player " + playerInput.playerIndex + " selected image " + imageIndex);
+        //Debug.Log("Player " + playerInput.playerIndex + " selected image " + imageIndex);
 
         // Deselect the previously selected object if there is any
         if (selectedObject != null)
