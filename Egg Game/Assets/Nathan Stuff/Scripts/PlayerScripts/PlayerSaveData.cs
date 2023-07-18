@@ -4,8 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
+using Mirror;
 
-public class PlayerSaveData : MonoBehaviour
+public struct ChangeSceneMessage : NetworkMessage
+{
+    public string sceneName;
+}
+
+public class PlayerSaveData : NetworkBehaviour
 {
     private Scene scene;
     public CharacterSelection[] characterSelections;
@@ -14,8 +20,12 @@ public class PlayerSaveData : MonoBehaviour
     public Sprite[] allWeapons;
     public RuntimeAnimatorController[] allAnimators; 
 
-    public static int playerNumber = 0;
-    public static int playerReadyNumber = 0;
+    [SyncVar]
+    public int playerNumber;
+
+    [SyncVar(hook = nameof(OnPlayerReadyNumberChanged))]
+    public int playerReadyNumber = 0;
+
 
     public int[] playerHatSpriteNumbers;
     public int[] playerBodySpriteNumbers;
@@ -30,6 +40,8 @@ public class PlayerSaveData : MonoBehaviour
     public GameObject[] players;
     public GameObject[] playerTexts;
     public GameObject[] playerCursors;
+
+    private bool isSceneChanging = false;
 
     private static PlayerSaveData instance;
     public static PlayerSaveData Instance { get { return instance; } }
@@ -62,6 +74,11 @@ public class PlayerSaveData : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+
+    private void OnPlayerReadyNumberChanged(int oldValue, int newValue)
+    {
+        // Handle the playerReadyNumber change, if needed
+    }
     private void Update()
     {
         if (scene.name == "CharacterSelection")
@@ -88,10 +105,10 @@ public class PlayerSaveData : MonoBehaviour
                             if (playerAnimatorNumbers.Length <= i)
                                 Array.Resize(ref playerAnimatorNumbers, i + 1);
 
-                            playerHatSpriteNumbers[i] = characterSelection.hatValue;
-                            playerBodySpriteNumbers[i] = characterSelection.bodyValue;
-                            playerWeaponSpriteNumbers[i] = characterSelection.weaponValue;
-                            playerAnimatorNumbers[i] = characterSelection.animatorValue;
+                            // playerHatSpriteNumbers[i] = characterSelection.hatValue;
+                            // playerBodySpriteNumbers[i] = characterSelection.bodyValue;
+                            // playerWeaponSpriteNumbers[i] = characterSelection.weaponValue;
+                            // playerAnimatorNumbers[i] = characterSelection.animatorValue;
 
                             // Debug.Log("Hat " + playerHatSpriteNumbers[i]);
                             // Debug.Log("Body " + playerBodySpriteNumbers[i]);
@@ -101,11 +118,46 @@ public class PlayerSaveData : MonoBehaviour
                     }
                 }
             }
+
+            if (playerReadyNumber == playerNumber && playerReadyNumber >= 1 && !isSceneChanging)
+            {
+                isSceneChanging = true; // Set the flag to indicate a scene change is in progress
+                StartCoroutine(ChangeSceneCoroutine());
+            }
         }
     }
 
+    private IEnumerator ChangeSceneCoroutine()
+    {
+        yield return new WaitForSeconds(1f); // Delay the scene change to allow time for other network operations
+
+        // Perform the scene change
+        if (NetworkServer.active)
+        {
+            CustomNetworkManager customNetworkManager = FindObjectOfType<CustomNetworkManager>();
+            if (customNetworkManager != null)
+            {
+                customNetworkManager.ServerChangeScene("MapSelection");
+            }
+        }
+        else if (NetworkClient.active)
+        {
+            CustomNetworkManager customNetworkManager = FindObjectOfType<CustomNetworkManager>();
+            if (customNetworkManager != null)
+            {
+                NetworkClient.connection.Send(new ChangeSceneMessage { sceneName = "MapSelection" });
+            }
+        }
+    }
+
+
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (NetworkClient.active && scene.name == "MapSelection")
+        {
+            StartCoroutine(ChangeSceneCoroutine());
+        }
         if (scene.name == "CharacterSelection")
         {
             playerNumber = 0;

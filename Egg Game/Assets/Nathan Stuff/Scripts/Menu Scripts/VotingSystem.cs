@@ -12,10 +12,12 @@ public class VotingSystem : MonoBehaviour
     private Dictionary<int, bool> hasVoted; // Dictionary to track whether each player has voted
     private Dictionary<int, int> selectedMapIndex; // Dictionary to store the selected map index for each player
     private int[] voteCounts; // Array to store the vote counts for each map
+    public PlayerSaveData playerSaveData;
 
     private void Start()
     {
         InitializeVotingSystem();
+        playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
     }
 
     public void Vote(int playerID, int mapIndex)
@@ -83,7 +85,7 @@ public class VotingSystem : MonoBehaviour
         voteCounts = new int[numMaps];
 
         // Initialize each player's vote status and selected map index
-        for (int i = 0; i < PlayerSaveData.playerNumber; i++)
+        for (int i = 0; i < playerSaveData.playerNumber; i++)
         {
             hasVoted.Add(i, false);
             selectedMapIndex.Add(i, -1);

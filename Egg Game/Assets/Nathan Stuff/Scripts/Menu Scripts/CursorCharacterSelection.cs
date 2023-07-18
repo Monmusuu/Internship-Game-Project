@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Linq;
 using System;
@@ -7,64 +6,65 @@ using Mirror;
 
 public class CursorCharacterSelection : NetworkBehaviour
 {
-    PlayerSaveData playerSaveData;
+    // Serialized fields
     public float speed = 5f;
-    public Color selectedColor = Color.green; // Color to apply to the selected object
+    public Color selectedColor = Color.green;
 
-    private PlayerInput playerInput;
-    private Vector2 movementInput;
-
-    private GameObject selectedObject; // The currently selected object
-    private Image selectedImage; // The Image component of the selected object
-    private Color originalColor; // The original color of the selected object
+    // Selection variables
+    private GameObject selectedObject;
+    private Image selectedImage;
+    private Color originalColor;
 
     [SerializeField]
-    private ClickableImage[] clickableImages; // Array to store the ClickableImage components
+    private ClickableImage[] clickableImages;
 
-    private Collider2D cursorCollider; // Collider component of the cursor object
+    private Collider2D cursorCollider;
 
-    // Start is called before the first frame update
-    void Start()
+    // Game focus variable
+    private bool isGameFocused = true;
+
+    public PlayerSaveData playerSaveData;
+
+    private void Awake()
     {
-        playerInput = GetComponent<PlayerInput>();
-        PlayerSaveData.playerNumber += 1;
-        clickableImages = GameObject.FindGameObjectsWithTag("button" + playerInput.playerIndex)
-            .Concat(GameObject.FindGameObjectsWithTag("SpecialButton"))
-            .Select(go => go.GetComponent<ClickableImage>())
-            .Where(clickableImage => clickableImage != null)
-            .ToArray();
+        clickableImages = GameObject.FindObjectsOfType<ClickableImage>();
 
-        UnityEngine.Cursor.visible = false;
+        cursorCollider = GetComponent<Collider2D>();
 
-        cursorCollider = GetComponent<Collider2D>(); // Assign the collider component of the cursor object
+        Application.focusChanged += OnGameFocusChanged;
+    }
+
+    private void OnGameFocusChanged(bool hasFocus)
+    {
+        isGameFocused = hasFocus;
+
+        // If the game lost focus, reset the movement input
+        if (!isGameFocused)
+        {
+            ResetMovementInput();
+        }
     }
 
     private void Update()
     {
+        if (!isGameFocused) return; // Only process input if the game is focused
 
-        // Process movement input
-        Vector2 movement = movementInput.normalized;
-        Vector3 newPosition = transform.position + new Vector3(movement.x, movement.y, 0) * speed * Time.deltaTime;
+        // Process movement input based on the mouse position
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
 
-        // Update the cursor position based on input
-        if (playerInput.currentControlScheme == "Keyboard&Mouse")
+        // Clamp the cursor position to stay within the screen boundaries
+        ClampPosition(newPosition);
+
+        if (isLocalPlayer && NetworkClient.ready)
         {
-            // Get the mouse position in world coordinates
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            // Clamp the cursor position to stay within the screen boundaries
-            ClampPosition(mousePosition);
-        }
-        else if (playerInput.currentControlScheme == "Gamepad")
-        {
-            ClampPosition(newPosition);
+            CmdMoveCursor(transform.position);
         }
 
-        // Check for selection
-        if (selectedObject != null)
+        // Process mouse click
+        if (isLocalPlayer && Input.GetMouseButtonDown(0))
         {
-            // Perform selection logic on the selected object
-            selectedImage.color = selectedColor;
+            HandleMouseClick();
         }
     }
 
@@ -76,9 +76,8 @@ public class CursorCharacterSelection : NetworkBehaviour
         float screenVerticalSize = Camera.main.orthographicSize;
 
         // Get the object's dimensions based on the colliders
-        Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
-        float objectWidth = colliders.Max(collider => collider.bounds.size.x);
-        float objectHeight = colliders.Max(collider => collider.bounds.size.y);
+        float objectWidth = cursorCollider.bounds.size.x;
+        float objectHeight = cursorCollider.bounds.size.y;
 
         // Clamp the position to stay within the screen boundaries
         float clampedX = Mathf.Clamp(position.x, -screenHorizontalSize + objectWidth / 2f, screenHorizontalSize - objectWidth / 2f);
@@ -88,14 +87,26 @@ public class CursorCharacterSelection : NetworkBehaviour
         transform.position = new Vector3(clampedX, clampedY, clampedZ);
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    public override void OnStartAuthority()
     {
-        movementInput = context.ReadValue<Vector2>();
+        // Enable input handling for the local player
+        enabled = true;
     }
 
-public void OnClick(InputAction.CallbackContext context)
-{
-    if (context.performed)
+    public override void OnStopAuthority()
+    {
+        // Disable input handling for non-local players
+        enabled = false;
+    }
+
+    [Command]
+    private void CmdMoveCursor(Vector3 position)
+    {
+        // Update the cursor position on the server
+        transform.position = position;
+    }
+
+    private void HandleMouseClick()
     {
         // Perform a collider-based check for object clicks
         Collider2D[] hitColliders = new Collider2D[10]; // Adjust the size if needed
@@ -112,36 +123,48 @@ public void OnClick(InputAction.CallbackContext context)
             // Only handle selection if a valid image is clicked
             if (imageIndex >= 0)
             {
-                HandleSelection(imageIndex);
+                // Deselect the previously selected object if there is any
+                if (selectedObject != null)
+                {
+                    DeselectObject();
+                }
+
+                // Select the new object
+                selectedObject = clickableImages[imageIndex].gameObject;
+                selectedImage = selectedObject.GetComponent<Image>();
+                originalColor = selectedImage.color;
+
+                // Apply the selected color to the new object
+                selectedImage.color = selectedColor;
+
+                // Simulate the click event
+                clickableImages[imageIndex].onClick.Invoke();
+
+                // Debug message
+                Debug.Log("Selected object: " + selectedObject.name);
+
                 break;
             }
         }
     }
-}
 
-
-private void HandleSelection(int imageIndex)
-{
-    if (imageIndex >= 0 && imageIndex < clickableImages.Length)
+    private void DeselectObject()
     {
-        //Debug.Log("Player " + playerInput.playerIndex + " selected image " + imageIndex);
+        // Deselect the previously selected object
+        selectedImage.color = originalColor;
 
-        // Deselect the previously selected object if there is any
-        if (selectedObject != null)
-        {
-            selectedImage.color = originalColor;
-        }
+        // Clear the selection variables
+        selectedObject = null;
+        selectedImage = null;
+        originalColor = Color.white;
 
-        // Select the new object
-        selectedObject = clickableImages[imageIndex].gameObject;
-        selectedImage = selectedObject.GetComponent<Image>();
-        originalColor = selectedImage.color;
-
-        // Apply the selected color to the new object
-        selectedImage.color = selectedColor;
-
-        // Simulate the click event
-        clickableImages[imageIndex].onClick.Invoke();
+        // Debug message
+        Debug.Log("Deselected object.");
     }
-}
+
+    private void ResetMovementInput()
+    {
+        // Reset the movement input
+        Vector2 movementInput = Vector2.zero;
+    }
 }

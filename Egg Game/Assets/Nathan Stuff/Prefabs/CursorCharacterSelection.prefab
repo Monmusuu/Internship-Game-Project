@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 191862200749692943}
   - component: {fileID: 191862200749692942}
-  - component: {fileID: 191862200749692944}
-  - component: {fileID: 191862200749692945}
   - component: {fileID: 191862200749692947}
   - component: {fileID: 1143414131}
   - component: {fileID: 5010895372424976976}
@@ -91,82 +89,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &191862200749692944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 191862200749692940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 554c1a8c996e9924b96fcf43a4352b18, type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 191862200749692947}
-        m_TargetAssemblyTypeName: CursorCharacterSelection, Assembly-CSharp
-        m_MethodName: OnMove
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 5e7bd374-a014-4c04-a31b-c10016bdb7c0
-    m_ActionName: Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 191862200749692947}
-        m_TargetAssemblyTypeName: CursorCharacterSelection, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 8266c236-7712-46bb-aed0-84d763138c64
-    m_ActionName: Player/Click[/Keyboard/q]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
---- !u!114 &191862200749692945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 191862200749692940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e076c940950564e4fa18c50aeb26d95f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerID: 0
-  startPos: {x: 0, y: 0, z: 0}
 --- !u!114 &191862200749692947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,7 +101,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e1e838a500979a40bdfb40514851750, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 700
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  speed: 200
   selectedColor: {r: 0, g: 1, b: 0, a: 1}
   clickableImages: []
 --- !u!58 &1143414131
@@ -192,7 +117,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.17, y: 0.17}
@@ -242,7 +167,7 @@ MonoBehaviour:
   clientAuthority: 0
   syncPosition: 1
   syncRotation: 1
-  syncScale: 1
+  syncScale: 0
   interpolatePosition: 1
   interpolateRotation: 1
   interpolateScale: 1

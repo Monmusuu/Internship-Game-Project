@@ -13,7 +13,7 @@ public class AutoJoinPlayerPlayScene : MonoBehaviour
     void Awake()
     {
         // Get the current player count from PlayerSaveData
-        int playerCount = PlayerSaveData.playerNumber;
+        int playerCount = playerSaveData.playerNumber;
 
         // Spawn players based on the player count
         for (int i = 0; i < playerCount; i++)

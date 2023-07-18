@@ -60,7 +60,7 @@ public class RoundControl : MonoBehaviour
         {
             Respawn = false;
 
-            if (playersPlacedBlocks >= PlayerSaveData.playerNumber + 2)
+            if (playersPlacedBlocks >= playerSaveData.playerNumber + 2)
             {
                 itemsPlaced = true;
                 placingItems = false;
