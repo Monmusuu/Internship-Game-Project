@@ -156,7 +156,7 @@ public class PlayerSaveData : NetworkBehaviour
     {
         if (NetworkClient.active && scene.name == "MapSelection")
         {
-            StartCoroutine(ChangeSceneCoroutine());
+            //StartCoroutine(ChangeSceneCoroutine());
         }
         if (scene.name == "CharacterSelection")
         {
