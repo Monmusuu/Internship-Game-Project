@@ -192,6 +192,7 @@ GameObject:
   - component: {fileID: 530317279}
   - component: {fileID: 530317283}
   - component: {fileID: 530317284}
+  - component: {fileID: 1492924014955289541}
   m_Layer: 8
   m_Name: KingPlaceCursor
   m_TagString: Untagged
@@ -299,6 +300,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a04cebd5b2de9243a3f45c18aa25b9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   kingTilemap: {fileID: 0}
   autoTrapTileObjects:
   - {fileID: 1897275775830132237, guid: 6322957afb2b5ae49b6634699ad3e7c3, type: 3}
@@ -312,11 +316,6 @@ MonoBehaviour:
   - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
   - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
   - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
-  selectedTile: 0
-  removeTile: 0
-  autoTrapPlaced: 0
-  manualTrapPlaced: 0
-  manualTrapPlaced2: 0
   tileGridUI: {fileID: 0}
   playerInput: {fileID: 0}
   moveSpeed: 15
@@ -401,6 +400,40 @@ CompositeCollider2D:
     m_Paths: []
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
+--- !u!114 &1492924014955289541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 530317277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 530317278}
+  clientAuthority: 0
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChange: 1
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  compressRotation: 0
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &1641257361
 GameObject:
   m_ObjectHideFlags: 0
@@ -821,6 +854,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c75d69333e20bd46ba66d96c2687e91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   knockbackStrength: 10
 --- !u!50 &3219085189739878055
 Rigidbody2D:
@@ -889,6 +925,9 @@ GameObject:
   - component: {fileID: 3175108449416737197}
   - component: {fileID: 3219085190463158595}
   - component: {fileID: 3219085190463158592}
+  - component: {fileID: -3116542750361915830}
+  - component: {fileID: -1306996281108006186}
+  - component: {fileID: 1333769293629814017}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player1
@@ -1003,6 +1042,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c24240ac570a1499d9229432e10b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   rigid: {fileID: 3219085190463158599}
   gameManager: {fileID: 0}
   jumpSpeed: 11
@@ -1023,7 +1065,6 @@ MonoBehaviour:
   isPause: 0
   becameKing: 0
   isPlayer: 0
-  isflashing: 0
   healthbar: {fileID: 1526557127058223658}
   player: []
   playerSaveData: {fileID: 0}
@@ -1217,6 +1258,74 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-3116542750361915830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3219085190463158601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3392503721
+  serverOnly: 0
+  visible: 0
+  hasSpawned: 0
+--- !u!114 &-1306996281108006186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3219085190463158601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 3219085190463158597}
+  clientAuthority: 0
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChange: 1
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  compressRotation: 0
+  positionPrecision: 0.01
+  scalePrecision: 0.01
+--- !u!114 &1333769293629814017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3219085190463158601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 3219085190463158592}
 --- !u!1 &5988289339147122484
 GameObject:
   m_ObjectHideFlags: 0

@@ -204,21 +204,21 @@ public class PlayerSaveData : NetworkBehaviour
 
             for (int i = 0; i < playerNumber; i++)
             {
-                playerSpriteHats[i] = allHats[playerHatSpriteNumbers[i]];
-                playerSpriteWeapons[i] = allWeapons[playerWeaponSpriteNumbers[i]];
-                playerSpriteBodies[i] = allBodies[playerBodySpriteNumbers[i]];
+                // playerSpriteHats[i] = allHats[playerHatSpriteNumbers[i]];
+                // playerSpriteWeapons[i] = allWeapons[playerWeaponSpriteNumbers[i]];
+                // playerSpriteBodies[i] = allBodies[playerBodySpriteNumbers[i]];
 
-                players[i].transform.GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
-                players[i].transform.GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
-                players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
+                // players[i].transform.GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
+                // players[i].transform.GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
+                // players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
 
-                Animator playerAnimator = players[i].GetComponent<Animator>();
-                playerAnimator.runtimeAnimatorController = allAnimators[playerAnimatorNumbers[i]];
+                // Animator playerAnimator = players[i].GetComponent<Animator>();
+                // playerAnimator.runtimeAnimatorController = allAnimators[playerAnimatorNumbers[i]];
 
-                 // Assign the sprite to a child object of the corresponding player text
-                SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
-                if (childSpriteRenderer != null)
-                    childSpriteRenderer.sprite = playerSpriteBodies[i];
+                //  // Assign the sprite to a child object of the corresponding player text
+                // SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
+                // if (childSpriteRenderer != null)
+                //     childSpriteRenderer.sprite = playerSpriteBodies[i];
             }
             UnityEngine.Cursor.visible = false;
         }
