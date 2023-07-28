@@ -48,17 +48,11 @@ public class MultiTargetCamera : NetworkBehaviour
         // If the camera is not attached to the local player (host-side), follow the center point of all players
         if (!isLocalPlayer)
         {
-            if (players.Count == 0)
-                return;
-
             Move();
             Zoom();
         }
         else // If the camera is attached to the local player (client-side), follow the local player
         {
-            if (players.Count == 0)
-                return;
-
             if (roundControl.placingItems)
             {
                 ZoomOutToSeeMap();
@@ -66,7 +60,7 @@ public class MultiTargetCamera : NetworkBehaviour
             else
             {
                 Move();
-                Zoom();
+                // Zoom(); // We won't call the Zoom function on the client side.
             }
         }
     }
@@ -96,6 +90,10 @@ public class MultiTargetCamera : NetworkBehaviour
         targetSize = Mathf.Max(targetSize, Mathf.Max(minZoom, maxZoom / cam.aspect * customAspectRatio));
         cam.orthographicSize = targetSize;
         transform.position = customBounds.center + offset;
+
+        // Synchronize camera zoom level and target position for clients
+        currentZoomLevel = targetSize;
+        cameraTargetPosition = transform.position;
     }
 
     void Zoom()
@@ -111,6 +109,9 @@ public class MultiTargetCamera : NetworkBehaviour
         newZoom = Mathf.Max(newZoom, Mathf.Min(maxZoomInWidth / cam.aspect, maxZoomInHeight));
 
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
+
+        // Synchronize camera zoom level for clients
+        currentZoomLevel = cam.orthographicSize;
     }
 
     void Move()
@@ -125,6 +126,9 @@ public class MultiTargetCamera : NetworkBehaviour
         float newY = Mathf.Clamp(centerPoint.y, minPositionY, maxPositionY);
         Vector3 newPosition = new Vector3(newX, newY, initialZ) + offset;
         transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
+
+        // Synchronize camera target position for clients
+        cameraTargetPosition = transform.position;
     }
 
     float GetGreatestDistance()
@@ -150,5 +154,24 @@ public class MultiTargetCamera : NetworkBehaviour
             bounds.Encapsulate(players[i].transform.position);
         }
         return bounds.center;
+    }
+
+    // SyncVars for camera zoom level and target position
+    [SyncVar(hook = nameof(OnZoomLevelUpdated))]
+    private float currentZoomLevel;
+
+    [SyncVar(hook = nameof(OnCameraTargetPositionUpdated))]
+    private Vector3 cameraTargetPosition;
+
+    // Hook method for the camera zoom level sync var update.
+    private void OnZoomLevelUpdated(float oldZoomLevel, float newZoomLevel)
+    {
+        cam.orthographicSize = newZoomLevel;
+    }
+
+    // Hook method for the camera target position sync var update.
+    private void OnCameraTargetPositionUpdated(Vector3 oldPosition, Vector3 newPosition)
+    {
+        transform.position = newPosition;
     }
 }
