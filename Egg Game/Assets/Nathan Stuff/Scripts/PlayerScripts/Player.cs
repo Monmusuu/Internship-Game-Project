@@ -31,9 +31,12 @@ public class Player : NetworkBehaviour
     private bool right = false;
     private bool jumped = false;
     private bool attack = false;
+    [SyncVar]
     public bool isKing = false;
     public bool isPause = false;
+    [SyncVar]
     public bool becameKing = false;
+    [SyncVar]
     public bool isPlayer = false;
     [SyncVar(hook = nameof(OnIsFlashingChanged))]
     private bool isflashing = false;
@@ -78,7 +81,6 @@ public class Player : NetworkBehaviour
         isPlayer = true;
         healthbar.SetMaxHealth(maxHealth);
         playerBlockPlacement.SetActive(false);
-        BuildManager.SetActive(false);
         trapInteraction.SetActive(false);
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
@@ -131,14 +133,14 @@ public class Player : NetworkBehaviour
             }
         }
 
-        if (roundControl.placingItems && isPlayer && roundControl.Round >= 1)
-        {
-            playerBlockPlacement.SetActive(true);
-        }
-        else
-        {
-            playerBlockPlacement.SetActive(false);
-        }
+        // if (roundControl.placingItems && isPlayer && roundControl.Round >= 1)
+        // {
+        //     playerBlockPlacement.SetActive(true);
+        // }
+        // else
+        // {
+        //     playerBlockPlacement.SetActive(false);
+        // }
 
         if (roundControl.placingItems && isKing && roundControl.Round >= 1)
         {

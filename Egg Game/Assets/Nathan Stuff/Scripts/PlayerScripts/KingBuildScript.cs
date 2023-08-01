@@ -24,7 +24,6 @@ public class KingBuildScript : NetworkBehaviour
     private bool manualTrapPlaced2 = false;
 
     public Transform tileGridUI;
-    public PlayerInput playerInput;
     public float moveSpeed = 5f;
 
     private Vector2 movementInput;
@@ -32,6 +31,7 @@ public class KingBuildScript : NetworkBehaviour
     private SpriteRenderer previewSpriteRenderer;
     private Rigidbody2D rb;
     private Vector3 initialPosition;
+    [SerializeField]
     private RoundControl roundControl;
     private int kingLayerValue;
     public LayerMask borderLayer;
@@ -49,19 +49,10 @@ public class KingBuildScript : NetworkBehaviour
     {
         kingLayerValue = LayerMask.NameToLayer("King");
         selectedTile = 0;
-        playerInput = GetComponentInParent<PlayerInput>();
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
 
-        // Randomly select a tile from the manual trap array
-        selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
-        selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
-        selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
-
-        // Set the randomly selected tiles as the initial preview objects
-        CreatePreviewObject(autoTrapTileObjects, selectedAutoTrapIndex);
-        CreatePreviewObject(manualTrapTileObjects, selectedManualTrapIndex);
-        CreatePreviewObject(manualTrap2TileObjects, selectedManualTrap2Index);
+        Application.focusChanged += OnApplicationFocus;
 
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f; // Disable gravity for the cursor
@@ -117,13 +108,16 @@ public class KingBuildScript : NetworkBehaviour
 
     private void OnDisable()
     {
+        // Unsubscribe from the application focus event
+        Application.focusChanged += OnApplicationFocus;
+
         if (previewObject != null)
         {
             previewObject.SetActive(false);
         }
     }
 
-    private void OnGameFocusChanged(bool hasFocus)
+    private void OnApplicationFocus(bool hasFocus)
     {
         isGameFocused = hasFocus;
 
@@ -136,6 +130,8 @@ public class KingBuildScript : NetworkBehaviour
 
     private void Update()
     {
+        if (!isLocalPlayer) return;
+        
         if (!isGameFocused) return; // Only process input if the game is focused
 
         // Process movement input based on the mouse position
@@ -163,7 +159,10 @@ public class KingBuildScript : NetworkBehaviour
         // Check for mouse click to place the trap
         if (isLocalPlayer && Input.GetMouseButtonDown(0))
         {
-            OnClick();
+            Vector3 cursorPosition = transform.position;
+            Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
+            Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
+            CmdPlaceTrap(tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
         }
     }
 
@@ -202,8 +201,13 @@ public class KingBuildScript : NetworkBehaviour
         previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
         previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
 
-        // NetworkSpawn the preview object so that it's visible to all clients
-        NetworkServer.Spawn(previewObject);
+        // Get the NetworkIdentity component of the preview object
+        NetworkIdentity previewObjectNetworkIdentity = previewObject.GetComponent<NetworkIdentity>();
+        if (previewObjectNetworkIdentity != null)
+        {
+            // Spawn the preview object on the server so that it's visible to all clients
+            NetworkServer.Spawn(previewObject);
+        }
     }
 
     [Command]
@@ -354,6 +358,50 @@ public class KingBuildScript : NetworkBehaviour
 
         Destroy(previewObject);
     }
+
+    [Command]
+    private void CmdPlaceTrap(Vector3 tilePosition, Quaternion rotation)
+    {
+        // Place the trap on the server
+        GameObject placedBlock;
+        if (selectedTile == 0 && !autoTrapPlaced)
+        {
+            autoTrapPlaced = true;
+            placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, rotation);
+        }
+        else if (selectedTile == 1 && !manualTrapPlaced)
+        {
+            manualTrapPlaced = true;
+            placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, rotation);
+        }
+        else if (selectedTile == 2 && !manualTrapPlaced2 && manualTrap2TileObjects.Length > 0)
+        {
+            manualTrapPlaced2 = true;
+            placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, rotation);
+        }
+        else
+        {
+            return;
+        }
+
+        // Set properties or perform any additional setup for the placed trap
+        roundControl.playersPlacedBlocks += 1;
+
+        // Spawn the placed trap on the server so that it's visible to all clients
+        NetworkServer.Spawn(placedBlock);
+        placedBlock.layer = kingLayerValue;
+
+        // Change the layer of the placed block's children to the "King" layer as well
+        foreach (Transform child in placedBlock.transform)
+        {
+            child.gameObject.layer = kingLayerValue;
+        }
+
+        // Move to the next selected object
+        selectedTile = (selectedTile + 1) % 4;
+        CreateAllPreviews();
+    }
+
 
     private bool IsPlacementValid(Vector3Int position)
     {
