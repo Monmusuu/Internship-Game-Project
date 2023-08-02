@@ -11,14 +11,19 @@ public class KingBuildScript : NetworkBehaviour
     public GameObject[] autoTrapTileObjects;
     public GameObject[] manualTrapTileObjects;
     public GameObject[] manualTrap2TileObjects;
+
+    [SyncVar(hook = nameof(OnSelectedAutoTrapIndexChanged))]
     private int selectedAutoTrapIndex;
+    [SyncVar(hook = nameof(OnSelectedManualTrapIndexChanged))]
     private int selectedManualTrapIndex;
+    [SyncVar(hook = nameof(OnSelectedManualTrap2IndexChanged))]
     private int selectedManualTrap2Index;
+
     private int previousAutoTrapIndex;
     private int previousManualTrapIndex;
     private int previousManualTrap2Index;
+    [SyncVar(hook = nameof(OnSelectedTileChanged))]
     private int selectedTile = 0;
-    //private int removeTile = 0;
     private bool autoTrapPlaced = false;
     private bool manualTrapPlaced = false;
     private bool manualTrapPlaced2 = false;
@@ -29,7 +34,6 @@ public class KingBuildScript : NetworkBehaviour
     private Vector2 movementInput;
     private GameObject previewObject;
     private SpriteRenderer previewSpriteRenderer;
-    private Rigidbody2D rb;
     private Vector3 initialPosition;
     [SerializeField]
     private RoundControl roundControl;
@@ -38,6 +42,34 @@ public class KingBuildScript : NetworkBehaviour
     private Collider2D cursorCollider;
     private float rotationAngle = 0f;
     private bool isGameFocused = true;
+
+
+    private void OnSelectedTileChanged(int oldValue, int newValue)
+    {
+        // When the selectedTile changes on the server, update it on the clients
+        selectedTile = newValue;
+
+        // Create or destroy the preview based on the selectedTile
+        CreateAllPreviews();
+    }
+    
+        private void OnSelectedAutoTrapIndexChanged(int oldValue, int newValue)
+    {
+        selectedAutoTrapIndex = newValue;
+        CreateAllPreviews();
+    }
+
+    private void OnSelectedManualTrapIndexChanged(int oldValue, int newValue)
+    {
+        selectedManualTrapIndex = newValue;
+        CreateAllPreviews();
+    }
+
+    private void OnSelectedManualTrap2IndexChanged(int oldValue, int newValue)
+    {
+        selectedManualTrap2Index = newValue;
+        CreateAllPreviews();
+    }
 
     private void Awake()
     {
@@ -54,11 +86,10 @@ public class KingBuildScript : NetworkBehaviour
 
         Application.focusChanged += OnApplicationFocus;
 
-        rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0f; // Disable gravity for the cursor
-
-        // Reset the position to the initial position
-        transform.localPosition = initialPosition;
+        if (isLocalPlayer)
+        {
+            CmdInitializeSelectedIndexes();
+        }
     }
 
     private void OnEnable()
@@ -69,40 +100,32 @@ public class KingBuildScript : NetworkBehaviour
         manualTrapPlaced = false;
         manualTrapPlaced2 = false;
 
-        // Randomly select a new tile from the auto trap array
-        do
+        if (isLocalPlayer)
         {
-            selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
-        } while (selectedAutoTrapIndex == previousAutoTrapIndex);
+            // Randomly select a new tile from the auto trap array
+            do
+            {
+                selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+            } while (selectedAutoTrapIndex == previousAutoTrapIndex);
 
-        // Randomly select a new tile from the manual trap array
-        do
-        {
-            selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
-        } while (selectedManualTrapIndex == previousManualTrapIndex);
+            // Randomly select a new tile from the manual trap array
+            do
+            {
+                selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+            } while (selectedManualTrapIndex == previousManualTrapIndex);
 
-        // Randomly select a new tile from the manual trap 2 array
-        do
-        {
-            selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
-        } while (selectedManualTrap2Index == previousManualTrap2Index);
+            // Randomly select a new tile from the manual trap 2 array
+            do
+            {
+                selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+            } while (selectedManualTrap2Index == previousManualTrap2Index);
 
-        previousAutoTrapIndex = selectedAutoTrapIndex;
-        previousManualTrapIndex = selectedManualTrapIndex;
-        previousManualTrap2Index = selectedManualTrap2Index;
+            previousAutoTrapIndex = selectedAutoTrapIndex;
+            previousManualTrapIndex = selectedManualTrapIndex;
+            previousManualTrap2Index = selectedManualTrap2Index;
 
-        // Check if the previewObject is null
-        if (previewObject == null)
-        {
-            // Set the randomly selected tiles as the initial preview objects
-            CreatePreviewObject(autoTrapTileObjects, selectedAutoTrapIndex);
-            CreatePreviewObject(manualTrapTileObjects, selectedManualTrapIndex);
-            CreatePreviewObject(manualTrap2TileObjects, selectedManualTrap2Index);
-        }
-        else
-        {
-            // If the previewObject already exists, set it active again
-            previewObject.SetActive(true);
+            // Use a command to sync the selected indexes with the server
+            CmdSyncSelectedIndexes(selectedAutoTrapIndex, selectedManualTrapIndex, selectedManualTrap2Index);
         }
     }
 
@@ -166,12 +189,6 @@ public class KingBuildScript : NetworkBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        Vector2 velocity = movementInput * moveSpeed;
-        rb.velocity = velocity;
-    }
-
     private void ResetMovementInput()
     {
         // Reset the movement input
@@ -180,16 +197,19 @@ public class KingBuildScript : NetworkBehaviour
 
     private void CreateAllPreviews()
     {
-        if (!autoTrapPlaced && selectedTile == 0)
-            CreatePreviewObject(autoTrapTileObjects, selectedAutoTrapIndex);
-        else if (!manualTrapPlaced && selectedTile == 1)
-            CreatePreviewObject(manualTrapTileObjects, selectedManualTrapIndex);
-        else if (!manualTrapPlaced2 && selectedTile == 2 && manualTrap2TileObjects.Length > 0)
-            CreatePreviewObject(manualTrap2TileObjects, selectedManualTrap2Index);
-        else
-            Destroy(previewObject);
+        if (isLocalPlayer)
+        {
+            if (!autoTrapPlaced && selectedTile == 0)
+                CreatePreviewObject(autoTrapTileObjects, selectedAutoTrapIndex);
+            else if (!manualTrapPlaced && selectedTile == 1)
+                CreatePreviewObject(manualTrapTileObjects, selectedManualTrapIndex);
+            else if (!manualTrapPlaced2 && selectedTile == 2 && manualTrap2TileObjects.Length > 0)
+                CreatePreviewObject(manualTrap2TileObjects, selectedManualTrap2Index);
+            else
+                Destroy(previewObject);
+        }
     }
-
+    
     private void CreatePreviewObject(GameObject[] tileObjects, int selectedIndex)
     {
         if (previewObject != null)
@@ -201,13 +221,15 @@ public class KingBuildScript : NetworkBehaviour
         previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
         previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
 
-        // Get the NetworkIdentity component of the preview object
-        NetworkIdentity previewObjectNetworkIdentity = previewObject.GetComponent<NetworkIdentity>();
-        if (previewObjectNetworkIdentity != null)
+        // Add NetworkIdentity component to the preview object
+        var networkIdentity = previewObject.GetComponent<NetworkIdentity>();
+        if (networkIdentity == null)
         {
-            // Spawn the preview object on the server so that it's visible to all clients
-            NetworkServer.Spawn(previewObject);
+            networkIdentity = previewObject.AddComponent<NetworkIdentity>();
         }
+
+        // Network-instantiate the preview object
+        NetworkServer.Spawn(previewObject);
     }
 
     [Command]
@@ -247,121 +269,17 @@ public class KingBuildScript : NetworkBehaviour
         }
     }
 
-    private void OnClick()
-    {
-        Vector3 cursorPosition = transform.position;
-        Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
-        Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
-
-        if (selectedTile == 0 && !autoTrapPlaced)
-        {
-            // Check if the placement position is valid (e.g., within certain bounds or not occupied)
-            if (IsPlacementValid(cellPosition))
-            {
-                // Place auto trap
-                transform.position = transform.parent.position;
-                gameObject.layer = 7;
-                autoTrapPlaced = true;
-                GameObject placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, Quaternion.identity);
-                placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
-                NetworkServer.Spawn(placedBlock);
-                placedBlock.layer = kingLayerValue;
-
-                // Change the layer of the placed block's children to the "King" layer as well
-                foreach (Transform child in placedBlock.transform)
-                {
-                    child.gameObject.layer = kingLayerValue;
-                }
-
-                // Set properties or perform any additional setup for the auto trap
-                roundControl.playersPlacedBlocks += 1;
-                // Move to the next selected object
-                selectedTile = 1;
-                // Reset rotation angle to 0
-                rotationAngle = 0f;
-                CreateAllPreviews();
-            }
-            else
-            {
-                Debug.Log("Invalid placement position!");
-                return; // Return without destroying the preview object
-            }
-        }
-        else if (selectedTile == 1 && !manualTrapPlaced)
-        {
-            // Check if the placement position is valid (e.g., within certain bounds or not occupied)
-            if (IsPlacementValid(cellPosition))
-            {
-                // Place manual trap 1
-                transform.position = transform.parent.position;
-                gameObject.layer = 7;
-                manualTrapPlaced = true;
-                GameObject placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, Quaternion.identity);
-                placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
-                NetworkServer.Spawn(placedBlock);
-                placedBlock.layer = kingLayerValue;
-
-                // Change the layer of the placed block's children to the "King" layer as well
-                foreach (Transform child in placedBlock.transform)
-                {
-                    child.gameObject.layer = kingLayerValue;
-                }
-                // Set properties or perform any additional setup for the manual trap
-                roundControl.playersPlacedBlocks += 1;
-                // Move to the next selected object
-                selectedTile = 2;
-                // Reset rotation angle to 0
-                rotationAngle = 0f;
-                CreateAllPreviews();
-            }
-            else
-            {
-                Debug.Log("Invalid placement position!");
-                return; // Return without destroying the preview object
-            }
-        }
-        else if (selectedTile == 2 && !manualTrapPlaced2)
-        {
-            if (manualTrap2TileObjects.Length > 0) // Check array length before placing manual trap 2
-            {
-                // Check if the placement position is valid (e.g., within certain bounds or not occupied)
-                if (IsPlacementValid(cellPosition))
-                {
-                    // Place manual trap 2
-                    transform.position = transform.parent.position;
-                    gameObject.layer = 7;
-                    manualTrapPlaced2 = true;
-                    GameObject placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, Quaternion.identity);
-                    placedBlock.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle); // Apply rotation
-                    NetworkServer.Spawn(placedBlock);
-                    placedBlock.layer = kingLayerValue;
-
-                    // Change the layer of the placed block's children to the "King" layer as well
-                    foreach (Transform child in placedBlock.transform)
-                    {
-                        child.gameObject.layer = kingLayerValue;
-                    }
-                    // Set properties or perform any additional setup for the manual trap 2
-                    roundControl.playersPlacedBlocks += 1;
-                    selectedTile = 3;
-                    // Reset rotation angle to 0
-                    rotationAngle = 0f;
-                    CreateAllPreviews();
-                }
-                else
-                {
-                    Debug.Log("Invalid placement position!");
-                    return; // Return without destroying the preview object
-                }
-            }
-        }
-
-        Destroy(previewObject);
-    }
-
     [Command]
     private void CmdPlaceTrap(Vector3 tilePosition, Quaternion rotation)
     {
+        // Check if the placement position is valid (e.g., within certain bounds or not occupied)
+        Vector3Int cellPosition = kingTilemap.WorldToCell(tilePosition);
+        if (!IsPlacementValid(cellPosition))
+        {
+            Debug.Log("Invalid placement position!");
+            return;
+        }
+
         // Place the trap on the server
         GameObject placedBlock;
         if (selectedTile == 0 && !autoTrapPlaced)
@@ -384,6 +302,13 @@ public class KingBuildScript : NetworkBehaviour
             return;
         }
 
+        // Add NetworkIdentity component to the placed block object
+        var networkIdentity = placedBlock.GetComponent<NetworkIdentity>();
+        if (networkIdentity == null)
+        {
+            networkIdentity = placedBlock.AddComponent<NetworkIdentity>();
+        }
+
         // Set properties or perform any additional setup for the placed trap
         roundControl.playersPlacedBlocks += 1;
 
@@ -400,6 +325,24 @@ public class KingBuildScript : NetworkBehaviour
         // Move to the next selected object
         selectedTile = (selectedTile + 1) % 4;
         CreateAllPreviews();
+    }
+
+    [Command]
+    private void CmdInitializeSelectedIndexes()
+    {
+        // Initialize the selected indexes on the server for this player
+        selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+        selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+        selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+    }
+
+    [Command]
+    private void CmdSyncSelectedIndexes(int autoTrapIndex, int manualTrapIndex, int manualTrap2Index)
+    {
+        // Sync the selected indexes with the server
+        selectedAutoTrapIndex = autoTrapIndex;
+        selectedManualTrapIndex = manualTrapIndex;
+        selectedManualTrap2Index = manualTrap2Index;
     }
 
 
