@@ -22,11 +22,14 @@ public class RoundControl : NetworkBehaviour
     [SyncVar]
     public bool placingItems = false;
 
-    [SyncVar]
+    [SerializeField][SyncVar]
     public int playersPlacedBlocks = 0;
 
     public bool playerRemovingItem = false;
     public Transform playerSpawnLocation;
+    [SerializeField]
+    private CustomNetworkManager customNetworkManager;
+
 
     // Start is called before the first frame update
 
@@ -51,6 +54,7 @@ public class RoundControl : NetworkBehaviour
 
     private void Start()
     {
+        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
         playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
     }
 
@@ -60,6 +64,11 @@ public class RoundControl : NetworkBehaviour
         {
             Respawn = false;
             timerOn = false;
+
+            if(playersPlacedBlocks >= customNetworkManager.playerCount +2){
+                itemsPlaced = true;
+            }
+            
         }
 
         if (!placingItems)

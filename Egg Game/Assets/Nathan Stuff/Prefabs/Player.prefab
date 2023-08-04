@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &91069299
 Transform:
   m_ObjectHideFlags: 0
@@ -199,7 +199,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &530317278
 Transform:
   m_ObjectHideFlags: 0
@@ -300,7 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a04cebd5b2de9243a3f45c18aa25b9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0
   kingTilemap: {fileID: 0}
@@ -317,8 +317,8 @@ MonoBehaviour:
   - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
   - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
   tileGridUI: {fileID: 0}
-  playerInput: {fileID: 0}
-  moveSpeed: 15
+  moveSpeed: 5
+  roundControl: {fileID: 0}
   borderLayer:
     serializedVersion: 2
     m_Bits: 2048
@@ -393,9 +393,7 @@ CompositeCollider2D:
   m_GeometryType: 0
   m_GenerationType: 0
   m_EdgeRadius: 0
-  m_ColliderPaths:
-  - m_Collider: {fileID: 530317283}
-    m_ColliderPaths: []
+  m_ColliderPaths: []
   m_CompositePaths:
     m_Paths: []
   m_VertexDistance: 0.0005
@@ -452,7 +450,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1641257362
 Transform:
   m_ObjectHideFlags: 0
@@ -1042,7 +1040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c24240ac570a1499d9229432e10b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0
   rigid: {fileID: 3219085190463158599}
@@ -1069,6 +1067,7 @@ MonoBehaviour:
   player: []
   playerSaveData: {fileID: 0}
   roundControl: {fileID: 0}
+  multiTargetCamera: {fileID: 0}
   BuildManager: {fileID: 530317277}
   playerBlockPlacement: {fileID: 1641257361}
   trapInteraction: {fileID: 91069298}

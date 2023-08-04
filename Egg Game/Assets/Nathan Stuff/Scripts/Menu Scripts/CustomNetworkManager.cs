@@ -16,6 +16,9 @@ public class CustomNetworkManager : NetworkManager
     public ScenePlayerPrefabs[] scenePlayerPrefabs;
     private int currentPlayerPrefabIndex = 0;
 
+    [SerializeField]
+    public int playerCount = 0; // This variable will store the current player count.
+
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         string sceneName = SceneManager.GetActiveScene().name;
@@ -43,6 +46,9 @@ public class CustomNetworkManager : NetworkManager
                 // Increment the player prefab index for the next player
                 currentPlayerPrefabIndex = (currentPlayerPrefabIndex + 1) % scenePlayerPrefabs.Length;
 
+                // Increment the player count when a new player joins.
+                playerCount++;
+
                 return;
             }
         }
@@ -54,6 +60,7 @@ public class CustomNetworkManager : NetworkManager
     {
         base.OnServerChangeScene(newSceneName);
 
+        playerCount = 0;
         currentPlayerPrefabIndex = 0; // Reset the player prefab index when changing scenes
     }
 
@@ -61,10 +68,11 @@ public class CustomNetworkManager : NetworkManager
     {
         base.OnServerDisconnect(conn);
 
-        currentPlayerPrefabIndex = 0; // Reset the player prefab index when a player disconnects
+        // Decrease the player count when a player disconnects.
+        playerCount--;
     }
 
-public void ClientChangeScene(string sceneName)
+    public void ClientChangeScene(string sceneName)
     {
         if (NetworkClient.isConnected)
         {
@@ -95,5 +103,6 @@ public void ClientChangeScene(string sceneName)
         }
     }
 }
+
 
 

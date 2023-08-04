@@ -26,7 +26,6 @@ public class PlayerSaveData : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlayerReadyNumberChanged))]
     public int playerReadyNumber = 0;
 
-
     public int[] playerHatSpriteNumbers;
     public int[] playerBodySpriteNumbers;
     public int[] playerWeaponSpriteNumbers;
@@ -36,10 +35,12 @@ public class PlayerSaveData : NetworkBehaviour
     public Sprite[] playerSpriteBodies;
     public Sprite[] playerSpriteWeapons;
 
-
     public GameObject[] players;
     public GameObject[] playerTexts;
     public GameObject[] playerCursors;
+
+    [SerializeField]
+    private CustomNetworkManager customNetworkManager;
 
     private bool isSceneChanging = false;
 
@@ -60,7 +61,8 @@ public class PlayerSaveData : NetworkBehaviour
 
     private void Start()
     {
-        Debug.Log("Players: " + playerNumber);
+        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+        Debug.Log("Players: " + customNetworkManager.playerCount);
         scene = SceneManager.GetActiveScene();
 
     }
@@ -119,7 +121,7 @@ public class PlayerSaveData : NetworkBehaviour
                 }
             }
 
-            if (playerReadyNumber == playerNumber && playerReadyNumber >= 1 && !isSceneChanging)
+            if (playerReadyNumber == customNetworkManager.playerCount && playerReadyNumber >= 1 && !isSceneChanging)
             {
                 isSceneChanging = true; // Set the flag to indicate a scene change is in progress
                 StartCoroutine(ChangeSceneCoroutine());
@@ -160,7 +162,6 @@ public class PlayerSaveData : NetworkBehaviour
         }
         if (scene.name == "CharacterSelection")
         {
-            playerNumber = 0;
             playerReadyNumber = 0;
         }
 

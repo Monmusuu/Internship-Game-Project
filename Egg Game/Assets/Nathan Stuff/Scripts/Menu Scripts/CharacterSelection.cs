@@ -51,8 +51,6 @@ public class CharacterSelection : NetworkBehaviour
         canvas = GameObject.Find("Canvas").transform;
         this.transform.SetParent(canvas.transform);
         playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
-        playerSaveData.playerNumber += 1;
-        Debug.Log(playerSaveData.playerNumber);
 
         hatRenderer = transform.GetChild(0).GetChild(3).GetComponent<SpriteRenderer>();
         bodyRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
