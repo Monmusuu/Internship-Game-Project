@@ -66,7 +66,10 @@ public class KingBuildScript : NetworkBehaviour
 
         Application.focusChanged += OnApplicationFocus;
 
-        CmdInitializeSelectedIndexes();
+        if (!isOwned)
+        {
+            CmdInitializeSelectedIndexes();
+        }
     }
 
     private void OnEnable()
@@ -117,6 +120,8 @@ public class KingBuildScript : NetworkBehaviour
     {
         if (!isGameFocused) return; // Only process input if the game is focused
 
+        if (!isLocalPlayer) return;
+
         // Process movement input based on the mouse position
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
@@ -124,30 +129,18 @@ public class KingBuildScript : NetworkBehaviour
         // Clamp the cursor position to stay within the screen boundaries
         ClampPosition(newPosition);
 
-        if (isLocalPlayer)
+        // Check for scroll wheel input to rotate the trap preview
+        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        
+        if (scrollInput != 0f)
         {
-            // Check for scroll wheel input to rotate the trap preview
-            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-            
-            if (scrollInput != 0f)
-            {
-                RotatePreviewObject(scrollInput);
-            }
+            RotatePreviewObject(scrollInput);
         }
 
         CmdMoveCursor(transform.position);
 
-        if (isServer)
-        {
-            // On the client side, call the command instead of directly invoking RpcCreateAllPreviews()
-            CmdCreateAllPreviews();
-        }
-        else
-        {
-            CmdCreateAllPreviews();
-
-        }
-
+        CmdCreateAllPreviews();
+        
         // Check for mouse click to place the trap
         if (Input.GetMouseButtonDown(0))
         {
@@ -156,6 +149,7 @@ public class KingBuildScript : NetworkBehaviour
             Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
             CmdPlaceTrap(tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
         }
+    
     }
 
     private void OnApplicationFocus(bool hasFocus)

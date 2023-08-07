@@ -107,6 +107,19 @@ public class Player : NetworkBehaviour
         RpcActivateBuildManager(activate);
     }
 
+    [ClientRpc]
+    private void RpcActivatePlayerPlacement(bool activate)
+    {
+        playerBlockPlacement.SetActive(activate);
+    }
+
+    [Server]
+    private void ActivatePlayerPlacement()
+    {
+        bool activate = roundControl.placingItems && isPlayer && roundControl.Round >= 1;
+        RpcActivatePlayerPlacement(activate);
+    }
+
     // OnDestroy is called when the player GameObject is destroyed
     void OnDestroy()
     {
@@ -148,14 +161,7 @@ public class Player : NetworkBehaviour
 
         ActivateBuildManager();
 
-        // if (roundControl.placingItems && isPlayer && roundControl.Round >= 1)
-        // {
-        //     playerBlockPlacement.SetActive(true);
-        // }
-        // else
-        // {
-        //     playerBlockPlacement.SetActive(false);
-        // }
+        ActivatePlayerPlacement();
 
         // if (roundControl.timerOn && isKing && roundControl.Round >= 1)
         // {
