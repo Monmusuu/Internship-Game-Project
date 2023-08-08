@@ -100,6 +100,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8aaddf703860ca4f9754f8e93b677fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   speed: 15
 --- !u!60 &6601797149735987108
 PolygonCollider2D:
@@ -174,7 +177,7 @@ MonoBehaviour:
   clientAuthority: 0
   syncPosition: 1
   syncRotation: 1
-  syncScale: 0
+  syncScale: 1
   interpolatePosition: 1
   interpolateRotation: 1
   interpolateScale: 1

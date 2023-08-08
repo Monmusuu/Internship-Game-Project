@@ -10,7 +10,6 @@ public class PlayerBlockPlacement : NetworkBehaviour
     public Tilemap kingTilemap;
     public GameObject[] blockTileObjects;
     public Transform tileGridUI;
-    public float moveSpeed = 5f;
 
     private Collider2D cursorCollider;
     private int kingLayerValue;

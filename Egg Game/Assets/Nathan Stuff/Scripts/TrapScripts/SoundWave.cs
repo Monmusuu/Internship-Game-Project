@@ -1,11 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class SoundWave : MonoBehaviour
+public class SoundWave : NetworkBehaviour
 {
     public float speed = 15f; // Adjust the speed as desired
     private Vector2 direction;
+
+    [SyncVar]
+    private Vector3 syncScale;
+
+    [SyncVar]
+    private Vector3 syncPosition;
 
     private Collider2D soundWaveCollider;
 
@@ -14,20 +21,43 @@ public class SoundWave : MonoBehaviour
         direction = dir;
     }
 
-    void Start()
+    private void Awake()
     {
         soundWaveCollider = GetComponentInChildren<Collider2D>(); // Use the child collider of the SoundWave object
+    }
+
+    private void Start()
+    {
+        if (isServer)
+        {
+            syncScale = transform.localScale;
+            syncPosition = transform.position;
+        }
+
         StartCoroutine(IncreaseSizeAndDestroy());
     }
 
-    void Update()
+    private void Update()
     {
-        // Move the projectile in the specified direction
-        transform.Translate(direction.normalized * speed * Time.deltaTime);
+        if (isServer)
+        {
+            // Move the projectile in the specified direction
+            syncPosition += (Vector3)(direction.normalized * speed * Time.deltaTime);
+
+        }
+
+        if (isClient)
+        {
+            transform.localScale = syncScale;
+            transform.position = syncPosition;
+        }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!isServer)
+            return;
+
         if (soundWaveCollider != null && (other.CompareTag("Player1") ||
             other.CompareTag("Player2") || other.CompareTag("Player3") ||
             other.CompareTag("Player4") || other.CompareTag("Player5") ||
@@ -44,7 +74,7 @@ public class SoundWave : MonoBehaviour
         }
     }
 
-    IEnumerator IncreaseSizeAndDestroy()
+    private IEnumerator IncreaseSizeAndDestroy()
     {
         float elapsedTime = 0f;
         Vector3 initialScale = soundWaveCollider.transform.localScale;
@@ -54,11 +84,11 @@ public class SoundWave : MonoBehaviour
         while (elapsedTime < duration)
         {
             float t = elapsedTime / duration;
-            soundWaveCollider.transform.localScale = Vector3.Lerp(initialScale, targetScale, t);
+            syncScale = Vector3.Lerp(initialScale, targetScale, t);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        Destroy(gameObject);
+        NetworkServer.Destroy(gameObject);
     }
 }

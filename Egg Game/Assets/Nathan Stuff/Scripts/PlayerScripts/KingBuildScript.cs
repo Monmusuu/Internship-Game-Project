@@ -12,7 +12,6 @@ public class KingBuildScript : NetworkBehaviour
     public GameObject[] manualTrapTileObjects;
     public GameObject[] manualTrap2TileObjects;
     public Transform tileGridUI;
-    public float moveSpeed = 5f;
     
     private Collider2D cursorCollider;
     private int kingLayerValue;
@@ -66,10 +65,7 @@ public class KingBuildScript : NetworkBehaviour
 
         Application.focusChanged += OnApplicationFocus;
 
-        if (!isOwned)
-        {
-            CmdInitializeSelectedIndexes();
-        }
+        CmdInitializeSelectedIndexes();
     }
 
     private void OnEnable()

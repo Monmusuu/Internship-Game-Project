@@ -60,6 +60,7 @@ public class RoundControl : NetworkBehaviour
 
     void Update()
     {
+
         if (placingItems)
         {
             Respawn = false;
@@ -67,6 +68,7 @@ public class RoundControl : NetworkBehaviour
 
             if(playersPlacedBlocks >= customNetworkManager.playerCount +2){
                 itemsPlaced = true;
+                placingItems = false;
             }
             
         }

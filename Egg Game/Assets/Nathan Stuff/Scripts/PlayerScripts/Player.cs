@@ -96,28 +96,42 @@ public class Player : NetworkBehaviour
 
     [ClientRpc]
     private void RpcActivateBuildManager(bool activate)
-    {
+    {   
         BuildManager.SetActive(activate);
     }
 
-    [Server]
-    private void ActivateBuildManager()
-    {
-        bool activate = roundControl.placingItems && isKing && roundControl.Round >= 1;
-        RpcActivateBuildManager(activate);
-    }
-
+ 
     [ClientRpc]
     private void RpcActivatePlayerPlacement(bool activate)
     {
         playerBlockPlacement.SetActive(activate);
     }
 
-    [Server]
+    [ClientRpc]
+    private void RpcActivateTrapInteraction(bool activate)
+    {
+        trapInteraction.SetActive(activate);
+    }
+
+    [Client]
+    private void ActivateBuildManager()
+    {
+        bool activate = roundControl.placingItems && isKing && roundControl.Round >= 1;
+        RpcActivateBuildManager(activate);
+    }
+
+    [Client]
     private void ActivatePlayerPlacement()
     {
         bool activate = roundControl.placingItems && isPlayer && roundControl.Round >= 1;
         RpcActivatePlayerPlacement(activate);
+    }
+
+    [Client]
+    private void ActivateTrapInteraction()
+    {
+        bool activate = roundControl.timerOn && isKing && roundControl.Round >= 1;
+        RpcActivateTrapInteraction(activate);
     }
 
     // OnDestroy is called when the player GameObject is destroyed
@@ -160,17 +174,9 @@ public class Player : NetworkBehaviour
         }
 
         ActivateBuildManager();
-
         ActivatePlayerPlacement();
+        ActivateTrapInteraction();
 
-        // if (roundControl.timerOn && isKing && roundControl.Round >= 1)
-        // {
-        //     trapInteraction.SetActive(true);
-        // }
-        // else
-        // {
-        //     trapInteraction.SetActive(false);
-        // }
         if(!roundControl.placingItems){
             if (roundControl.timerOn)
             {
