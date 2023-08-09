@@ -1,34 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class SpringScript : MonoBehaviour
+public class SpringScript : NetworkBehaviour
 {
-    public string[] playerTags; // Tags of the players that can trigger the spring
-    public float launchForce = 10f; // Magnitude of the upward force to be applied
+    public string[] playerTags;
+    public float launchForce = 10f;
+    public BoxCollider2D childCollider;
 
-    public BoxCollider2D childCollider; // Reference to the child collider to be moved
-
+    [SyncVar]
     private bool isAnimating;
-    private Animator animator;
-    private Rigidbody2D playerRigidbody; // Reference to the player's Rigidbody2D component
+
+    private NetworkAnimator networkAnimator;
+    private Rigidbody2D playerRigidbody;
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
+        networkAnimator = GetComponent<NetworkAnimator>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!isAnimating)
+        if (isServer && !isAnimating)
         {
             foreach (string tag in playerTags)
             {
                 if (collision.CompareTag(tag))
                 {
                     isAnimating = true;
-                    animator.SetTrigger("Stepped On");
-                    playerRigidbody = collision.GetComponent<Rigidbody2D>(); // Assign the player's Rigidbody2D component
+                    networkAnimator.SetTrigger("Stepped On");
+                    playerRigidbody = collision.GetComponent<Rigidbody2D>();
+                    LaunchPlayer();
                     break;
                 }
             }
@@ -37,7 +40,6 @@ public class SpringScript : MonoBehaviour
 
     private void Update()
     {
-        // Update the position of the child collider to match the top of the sprite
         UpdateChildColliderPosition();
     }
 
@@ -67,15 +69,16 @@ public class SpringScript : MonoBehaviour
         return Vector2.zero;
     }
 
+    [Server]
     public void LaunchPlayer()
     {
         if (playerRigidbody != null)
         {
             Debug.Log("Launching player!");
-            // Calculate the launch direction based on the spring's rotation
             Vector2 launchDirection = transform.up;
-            // Apply an upward force to the player along the launch direction
             playerRigidbody.AddForce(launchDirection * launchForce, ForceMode2D.Impulse);
+
+            RpcLaunchPlayer(); // Call the Rpc to perform the same action on clients
         }
         else
         {
@@ -85,8 +88,28 @@ public class SpringScript : MonoBehaviour
         isAnimating = false;
     }
 
+    [ClientRpc]
+    private void RpcLaunchPlayer()
+    {
+        if (!isServer)
+        {
+            LaunchPlayer();
+        }
+    }
+
+    [Server]
     public void ResetObject()
     {
-        animator.SetTrigger("Sprung");
+        networkAnimator.SetTrigger("Sprung");
+        RpcResetObject();
+    }
+
+    [ClientRpc]
+    private void RpcResetObject()
+    {
+        if (!isServer)
+        {
+            networkAnimator.SetTrigger("Sprung");
+        }
     }
 }

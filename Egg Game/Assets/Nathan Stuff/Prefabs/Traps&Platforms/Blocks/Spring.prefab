@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6122145753119281388}
   - component: {fileID: 6685425699732828660}
   - component: {fileID: 8311725794378505138}
+  - component: {fileID: 7310135147490327584}
   m_Layer: 10
   m_Name: Spring
   m_TagString: Untagged
@@ -231,6 +232,23 @@ MonoBehaviour:
   compressRotation: 0
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &7310135147490327584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6122145753119281300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 6122145753119281385}
 --- !u!1 &6337469572045543919
 GameObject:
   m_ObjectHideFlags: 0

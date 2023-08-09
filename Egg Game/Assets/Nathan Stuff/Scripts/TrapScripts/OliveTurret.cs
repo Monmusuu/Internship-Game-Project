@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class OliveTurret : MonoBehaviour
+public class OliveTurret : NetworkBehaviour
 {
     public Transform projectileSpawnPoint;
     public GameObject projectilePrefab;
     public Animator animator;
 
+    [Server]
     public void ActivateFunction()
     {
         animator.SetTrigger("Activate");
@@ -26,6 +28,8 @@ public class OliveTurret : MonoBehaviour
 
             direction = rotation * direction;
             projectileScript.SetDirection(direction);
+
+            NetworkServer.Spawn(projectile);
         }
         else
         {

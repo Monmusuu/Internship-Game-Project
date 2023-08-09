@@ -1,26 +1,61 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class OliveOil : MonoBehaviour
+public class OliveOil : NetworkBehaviour
 {
     public float speed = 10f; // Adjust the speed as desired
-    private Vector3 direction;
+    private Vector2 direction;
 
-    public void SetDirection(Vector3 dir)
+
+    [SyncVar]
+    private Vector3 syncPosition;
+
+
+    public void SetDirection(Vector2 dir)
     {
         direction = dir;
     }
 
-    void Start()
+
+    private void Start()
     {
-        // Destroy the projectile after 3 seconds
-        Destroy(gameObject, 8f);
+        if (isServer)
+        {
+            syncPosition = transform.position;
+        }
+
+        StartCoroutine(IncreaseSizeAndDestroy());
     }
 
-    void Update()
+    private void Update()
     {
-        // Move the projectile in the specified direction
-        transform.Translate(direction.normalized * speed * Time.deltaTime);
+        if (isServer)
+        {
+            // Move the projectile in the specified direction
+            syncPosition += (Vector3)(direction.normalized * speed * Time.deltaTime);
+
+        }
+
+        if (isClient)
+        {
+            transform.position = syncPosition;
+        }
+    }
+
+    private IEnumerator IncreaseSizeAndDestroy()
+    {
+        float elapsedTime = 0f;
+        float duration = 2f;
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        NetworkServer.Destroy(gameObject);
     }
 }
