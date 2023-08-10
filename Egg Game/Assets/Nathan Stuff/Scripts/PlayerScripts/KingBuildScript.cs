@@ -249,6 +249,8 @@ public class KingBuildScript : NetworkBehaviour
             child.gameObject.layer = kingLayerValue;
         }
 
+        RpcChangeTrapLayer(placedBlock, kingLayerValue);
+
         // Move to the next selected object
         selectedTile = (selectedTile + 1) % 4;
         RpcChangeSelectedTile(selectedTile);
@@ -259,6 +261,17 @@ public class KingBuildScript : NetworkBehaviour
     {
         // Update the selectedTile on all clients
         selectedTile = newTile;
+    }
+
+    [ClientRpc]
+    private void RpcChangeTrapLayer(GameObject trapObject, int newLayer)
+    {
+        // Change the layer of the placed block and its children on the client side
+        trapObject.layer = newLayer;
+        foreach (Transform child in trapObject.transform)
+        {
+            child.gameObject.layer = newLayer;
+        }
     }
 
     [Command]
@@ -435,6 +448,8 @@ public class KingBuildScript : NetworkBehaviour
             }
         }
     }
+
+    
 
     private void OnRotationAngleChanged(float oldValue, float newValue)
     {

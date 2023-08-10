@@ -195,6 +195,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
             child.gameObject.layer = kingLayerValue;
         }
 
+        RpcChangeBlockLayer(placedBlock, kingLayerValue);
+
         // Move to the next selected object
         selectedTile = (selectedTile + 1) % 4;
         RpcChangeSelectedTile(selectedTile);
@@ -205,6 +207,17 @@ public class PlayerBlockPlacement : NetworkBehaviour
     {
         // Update the selectedTile on all clients
         selectedTile = newTile;
+    }
+
+    [ClientRpc]
+    private void RpcChangeBlockLayer(GameObject blockObject, int newLayer)
+    {
+        // Change the layer of the placed block and its children on the client side
+        blockObject.layer = newLayer;
+        foreach (Transform child in blockObject.transform)
+        {
+            child.gameObject.layer = newLayer;
+        }
     }
 
     [Command]

@@ -295,6 +295,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cb7fb197ae11a479b95f2392fa30f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
   spriteRenderer: {fileID: 2716951165106203293}
   animator: {fileID: 2716951166115827871}
 --- !u!95 &2716951166115827871

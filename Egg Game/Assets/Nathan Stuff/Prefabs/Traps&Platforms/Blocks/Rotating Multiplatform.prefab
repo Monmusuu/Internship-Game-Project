@@ -70,6 +70,7 @@ GameObject:
   - component: {fileID: 8952024949810306497}
   - component: {fileID: 6328860229489243104}
   - component: {fileID: 753944165773331619}
+  - component: {fileID: 6625834429641850160}
   m_Layer: 10
   m_Name: Platform (3)
   m_TagString: Untagged
@@ -182,6 +183,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63689f8e39f0a1445a777650628d5fd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &6625834429641850160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8952024949810306499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 6525572584686347410, guid: fe093d491171ca3458b48eeeae245633, type: 3}
+  clientAuthority: 0
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChange: 1
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  compressRotation: 0
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &8952024950203431564
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,6 +232,7 @@ GameObject:
   - component: {fileID: 8952024950203431562}
   - component: {fileID: 7388237223084237664}
   - component: {fileID: 3145239997686790398}
+  - component: {fileID: 7447274002477241077}
   m_Layer: 10
   m_Name: Platform (2)
   m_TagString: Untagged
@@ -306,6 +345,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63689f8e39f0a1445a777650628d5fd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &7447274002477241077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8952024950203431564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 6525572584686347410, guid: fe093d491171ca3458b48eeeae245633, type: 3}
+  clientAuthority: 0
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChange: 1
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  compressRotation: 0
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &8952024950671307065
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,6 +394,7 @@ GameObject:
   - component: {fileID: 8952024950671307063}
   - component: {fileID: 1820818831037303913}
   - component: {fileID: 2457736952056203495}
+  - component: {fileID: 1540740667902203284}
   m_Layer: 10
   m_Name: Platform
   m_TagString: Untagged
@@ -430,6 +507,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63689f8e39f0a1445a777650628d5fd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &1540740667902203284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8952024950671307065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 6525572584686347410, guid: fe093d491171ca3458b48eeeae245633, type: 3}
+  clientAuthority: 0
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChange: 1
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  compressRotation: 0
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &8952024951037453396
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,6 +556,7 @@ GameObject:
   - component: {fileID: 8952024951037453394}
   - component: {fileID: 340510697408144598}
   - component: {fileID: 7845173795279562105}
+  - component: {fileID: 4642564110223608538}
   m_Layer: 10
   m_Name: Platform (1)
   m_TagString: Untagged
@@ -554,6 +669,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63689f8e39f0a1445a777650628d5fd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &4642564110223608538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8952024951037453396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 6525572584686347410, guid: fe093d491171ca3458b48eeeae245633, type: 3}
+  clientAuthority: 0
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChange: 1
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  compressRotation: 0
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &8952024951581210804
 GameObject:
   m_ObjectHideFlags: 0
@@ -658,6 +810,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df1f04af1cedd694f98a364357b037ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
   baseRotationSpeed: 35
   childRotationInfos:
   - childTransform: {fileID: 8952024950671307062}
