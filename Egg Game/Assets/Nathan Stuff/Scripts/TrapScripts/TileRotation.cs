@@ -1,54 +1,74 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
+using Mirror;
 
-public class TileRotation : MonoBehaviour
+public class TileRotation : NetworkBehaviour
 {
-    [System.Serializable]
-    public class ChildRotationInfo
-    {
-        public Transform childTransform; // Reference to the child transform
-        public float rotationSpeed = -90f; // Rotation speed for the child
-    }
-
-    public float baseRotationSpeed = 90f; // Rotation speed for the base object
-    public ChildRotationInfo[] childRotationInfos; // Array of child rotation information
     public RoundControl roundControl;
+    private bool rotationRequested = false;
+    private float parentRotationSpeed = 35f;
+    private float childRotationSpeed = -35f;
 
-    void StartRotation()
+    [SyncVar(hook = nameof(OnRotationStateChanged))]
+    private float currentRotation = 0f;
+
+    private void Start()
     {
-        RotateObject(transform, baseRotationSpeed);
-
-        foreach (ChildRotationInfo childInfo in childRotationInfos)
-        {
-            StartChildRotation(childInfo);
-        }
-    }
-
-    void StartChildRotation(ChildRotationInfo childInfo)
-    {
-        RotateObject(childInfo.childTransform, childInfo.rotationSpeed);
-    }
-
-    private void Start() {
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
     }
 
-    void Update()
+    [ServerCallback]
+    private void Update()
     {
-        if(roundControl.timerOn){
-            StartRotation();
-
-            RotateObject(transform, baseRotationSpeed);
-
-            foreach (ChildRotationInfo childInfo in childRotationInfos)
-            {
-                RotateObject(childInfo.childTransform, childInfo.rotationSpeed);
-            }
+        if (roundControl.timerOn)
+        {
+            rotationRequested = true;
+            currentRotation = parentRotationSpeed;
         }
     }
 
-    void RotateObject(Transform objectTransform, float rotationSpeed)
+    [ClientRpc]
+    void RpcRotateOnClients(float speed)
     {
-        objectTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+        parentRotationSpeed = speed;
+        childRotationSpeed = -speed;
+        rotationRequested = true;
+        currentRotation = speed;
+    }
+
+    void UpdateRotation(Transform transformToRotate, float rotationSpeed)
+    {
+        if (rotationRequested)
+        {
+            transformToRotate.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+        }
+    }
+
+    private void OnRotationStateChanged(float oldRotation, float newRotation)
+    {
+        parentRotationSpeed = newRotation;
+        childRotationSpeed = -newRotation;
+        rotationRequested = true;
+        currentRotation = newRotation;
+
+        transform.rotation = Quaternion.Euler(0f, 0f, currentRotation);
+        foreach (Transform childTransform in transform)
+        {
+            childTransform.rotation = Quaternion.Euler(0f, 0f, -currentRotation);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (isServer)
+        {
+            RpcRotateOnClients(parentRotationSpeed);
+        }
+
+        UpdateRotation(transform, parentRotationSpeed);
+
+        foreach (Transform childTransform in transform)
+        {
+            UpdateRotation(childTransform, childRotationSpeed);
+        }
     }
 }
