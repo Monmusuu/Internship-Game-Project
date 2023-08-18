@@ -16,15 +16,7 @@ public class TrapMicrophone : NetworkBehaviour
         if (projectileScript != null)
         {
             // Set the direction of the projectile based on the trap microphone's rotation
-            Vector3 direction = projectileSpawnPoint.up;
-            Quaternion rotation = Quaternion.Euler(0f, 0f, transform.rotation.eulerAngles.z);
-
-            if (Mathf.Approximately(rotation.eulerAngles.z, 90f) || Mathf.Approximately(rotation.eulerAngles.z, 270f))
-            {
-                direction = -direction; // Reverse direction if z rotation is 90 or 270 degrees
-            }
-
-            direction = rotation * direction;
+            Vector3 direction = projectileSpawnPoint.transform.up; // Use the upward direction of the projectileSpawnPoint
             projectileScript.SetDirection(direction);
 
             // Set the z rotation of the projectile to match the trap microphone's z rotation

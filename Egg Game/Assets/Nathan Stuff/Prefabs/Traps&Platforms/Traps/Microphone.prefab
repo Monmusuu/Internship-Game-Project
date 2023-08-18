@@ -23,14 +23,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5701593313564924354}
-  m_LocalRotation: {x: -0, y: -0, z: 0.34067923, w: 0.94017965}
-  m_LocalPosition: {x: -0.44, y: 0.3, z: -0.082268655}
+  m_LocalRotation: {x: -0, y: -0, z: 0.40213493, w: 0.91558045}
+  m_LocalPosition: {x: -0.39000005, y: 0.36100006, z: -0.082268655}
   m_LocalScale: {x: 0.33333328, y: 0.33333328, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5701593315406794894}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 39.837}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 47.423}
 --- !u!1 &5701593315406794892
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,7 +60,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5701593315406794892}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.68, y: 10.32, z: 0}
+  m_LocalPosition: {x: 7.806774, y: 10.406805, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -119,7 +119,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!114 &5701593315406794929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,6 +132,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 455f97d67338e6e4e92897128baef7fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   projectileSpawnPoint: {fileID: 5701593313564924357}
   projectilePrefab: {fileID: 9078389444590924029, guid: 6ff7841d27388364c8a2e78a3a853b73, type: 3}
 --- !u!58 &5701593315406794928

@@ -26,7 +26,7 @@ public class OliveOil : NetworkBehaviour
             syncPosition = transform.position;
         }
 
-        StartCoroutine(IncreaseSizeAndDestroy());
+        StartCoroutine(Destroy());
     }
 
     private void Update()
@@ -44,7 +44,7 @@ public class OliveOil : NetworkBehaviour
         }
     }
 
-    private IEnumerator IncreaseSizeAndDestroy()
+    private IEnumerator Destroy()
     {
         float elapsedTime = 0f;
         float duration = 2f;

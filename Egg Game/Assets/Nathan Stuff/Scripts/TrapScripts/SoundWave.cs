@@ -16,6 +16,9 @@ public class SoundWave : NetworkBehaviour
 
     private Collider2D soundWaveCollider;
 
+    [SyncVar]
+    private Vector2 pushDirection;
+
     public void SetDirection(Vector2 dir)
     {
         direction = dir;
@@ -43,6 +46,7 @@ public class SoundWave : NetworkBehaviour
         {
             // Move the projectile in the specified direction
             syncPosition += (Vector3)(direction.normalized * speed * Time.deltaTime);
+            pushDirection = direction.normalized * speed; // Set push direction for synchronization
 
         }
 
@@ -53,25 +57,28 @@ public class SoundWave : NetworkBehaviour
         }
     }
 
+    [ServerCallback] // Only runs on the server
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!isServer)
-            return;
-
         if (soundWaveCollider != null && (other.CompareTag("Player1") ||
             other.CompareTag("Player2") || other.CompareTag("Player3") ||
             other.CompareTag("Player4") || other.CompareTag("Player5") ||
             other.CompareTag("Player6")))
         {
-            Rigidbody2D otherRigidbody = other.gameObject.GetComponent<Rigidbody2D>();
-            if (otherRigidbody != null)
-            {
-                Vector2 pushDirection = direction.normalized;
-                otherRigidbody.AddForce(pushDirection * speed, ForceMode2D.Impulse);
-            }
-
-            Debug.Log("SoundWave collided with: " + other.gameObject.name);
+            RpcApplyPushEffect(other.gameObject, pushDirection);
         }
+    }
+
+    [ClientRpc] // Synchronized across all clients
+    private void RpcApplyPushEffect(GameObject playerObject, Vector2 pushDir)
+    {
+        Rigidbody2D otherRigidbody = playerObject.GetComponent<Rigidbody2D>();
+        if (otherRigidbody != null)
+        {
+            otherRigidbody.AddForce(pushDir, ForceMode2D.Impulse);
+        }
+
+        Debug.Log("SoundWave collided with: " + playerObject.name);
     }
 
     private IEnumerator IncreaseSizeAndDestroy()
