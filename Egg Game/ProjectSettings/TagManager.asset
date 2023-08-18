@@ -24,6 +24,7 @@ TagManager:
   - button4
   - button5
   - SpecialButton
+  - Platform
   layers:
   - Default
   - TransparentFX

@@ -201,7 +201,7 @@ MonoBehaviour:
   onlineScene: Assets/Nathan Stuff/Scenes/CharacterSelection.unity
   transport: {fileID: 452488198}
   networkAddress: 142.177.27.102
-  maxConnections: 100
+  maxConnections: 6
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 1583603190512241176, guid: bd9225c51aef3f147b390c61cf8e910e, type: 3}
   autoCreatePlayer: 1
@@ -227,6 +227,7 @@ MonoBehaviour:
   - {fileID: 9078389444590924029, guid: 6ff7841d27388364c8a2e78a3a853b73, type: 3}
   - {fileID: 1998069914564895633, guid: 2326edc4d86e9a7469c44185aa17ff3e, type: 3}
   - {fileID: 1897275775830132237, guid: 60a251058c13fe04788ebd9bf40af2fa, type: 3}
+  - {fileID: 4675326826205994913, guid: 629e005fc793e054d81fa71d888a01a4, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     catchupNegativeThreshold: -1
@@ -245,6 +246,7 @@ MonoBehaviour:
     playerPrefab: {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
   - sceneName: Nathan
     playerPrefab: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+  playerCount: 0
 --- !u!4 &452488201
 Transform:
   m_ObjectHideFlags: 0
