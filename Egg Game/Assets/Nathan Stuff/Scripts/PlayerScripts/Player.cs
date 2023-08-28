@@ -56,6 +56,13 @@ public class Player : NetworkBehaviour
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
 
+    [SerializeField] private SpriteRenderer hatRenderer;
+    [SerializeField] private SpriteRenderer bodyRenderer;
+    [SerializeField] private SpriteRenderer weaponRenderer;
+
+    [SerializeField]
+    private CustomNetworkManager customNetworkManager;
+
     private bool isRunningLocal = false; // Local variable to handle isRunning
     [SyncVar(hook = nameof(OnRunningChanged))]
     private bool isRunning = false; // Synced variable to handle isRunning
@@ -72,10 +79,11 @@ public class Player : NetworkBehaviour
 
     void Start()
     {
+        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
         gameManager = GameObject.Find("GameState").GetComponent<GameManager>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         multiTargetCamera = GameObject.Find("Main Camera").GetComponent<MultiTargetCamera>();
-        playerSaveData = GameObject.Find("GameState").GetComponent<PlayerSaveData>();
+        playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         animator = GetComponent<Animator>();
         isPlayer = true;
@@ -84,6 +92,10 @@ public class Player : NetworkBehaviour
         trapInteraction.SetActive(false);
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
+        hatRenderer = gameObject.transform.GetChild(5).gameObject.GetComponent<SpriteRenderer>();
+        bodyRenderer = gameObject.GetComponent<SpriteRenderer>();
+        weaponRenderer = gameObject.transform.GetChild(4).gameObject.GetComponent<SpriteRenderer>();
+
 
         if (isServer)
         {
@@ -150,6 +162,9 @@ public class Player : NetworkBehaviour
 
     void Update()
     {
+        //int playerIndex = connectionToClient.connectionId;
+        //CmdSetPlayerSprites(playerIndex);
+
         left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
         right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
         jumped = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
@@ -157,7 +172,7 @@ public class Player : NetworkBehaviour
 
         if (player == null || player.Length == 0)
         {
-            InitializePlayerArray();
+            //InitializePlayerArray();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -286,26 +301,6 @@ public class Player : NetworkBehaviour
 
     }
 
-    void InitializePlayerArray()
-    {
-        List<Player> playerList = new List<Player>();
-
-        for (int i = 1; i <= 6; i++)
-        {
-            GameObject playerObject = GameObject.FindGameObjectWithTag("Player" + i);
-            if (playerObject != null)
-            {
-                Player playerComponent = playerObject.GetComponent<Player>();
-                if (playerComponent != null)
-                {
-                    playerList.Add(playerComponent);
-                }
-            }
-        }
-
-        player = playerList.ToArray();
-    }
-
     void GroundCheck()
     {
         isGrounded = false;
@@ -386,6 +381,31 @@ public class Player : NetworkBehaviour
     {
         // Perform any visual/sound effects related to the attack on the clients here, if needed.
         m_WeaponAnimator.SetTrigger("Swing"); // Assuming you have a common trigger "Swing" for both host and client
+    }
+
+    // [Command]
+    // public void CmdSetPlayerSprites(int playerIndex)
+    // {
+    //     RpcSetPlayerSprites(playerIndex);
+    // }
+
+    [ClientRpc]
+    public void RpcSetPlayerSprites(int playerIndex){
+        if (playerIndex >= 0 && playerIndex < customNetworkManager.playerCount)
+        {
+            playerSaveData.playerSpriteHats[playerIndex] = playerSaveData.allHats[playerSaveData.playerHatSpriteNumbers[playerIndex]];
+            playerSaveData.playerSpriteWeapons[playerIndex] = playerSaveData.allWeapons[playerSaveData.playerWeaponSpriteNumbers[playerIndex]];
+            playerSaveData.playerSpriteBodies[playerIndex] = playerSaveData.allBodies[playerSaveData.playerBodySpriteNumbers[playerIndex]];
+
+            Debug.Log("Player " + playerIndex + " hat: " + playerSaveData.playerSpriteHats[playerIndex]);
+
+            hatRenderer.sprite = playerSaveData.playerSpriteHats[playerIndex];
+            bodyRenderer.sprite = playerSaveData.playerSpriteBodies[playerIndex];
+            weaponRenderer.sprite = playerSaveData.playerSpriteWeapons[playerIndex];
+            animator.runtimeAnimatorController = playerSaveData.allAnimators[playerSaveData.playerAnimatorNumbers[playerIndex]];
+        }else{
+            Debug.Log("Not Working");
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
