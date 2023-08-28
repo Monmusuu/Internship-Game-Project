@@ -29,11 +29,6 @@ public class CustomNetworkManager : NetworkManager
             {
                 GameObject playerPrefab = scenePrefabs.playerPrefab;
                 GameObject player = Instantiate(playerPrefab);
-
-                // Add the connection ID + 1 to the player's tag
-                int playerId = conn.connectionId + 1;
-                player.tag = "Player" + playerId;
-                
                 NetworkServer.AddPlayerForConnection(conn, player);
 
                 // Set the player's position based on the round-robin logic
@@ -47,14 +42,6 @@ public class CustomNetworkManager : NetworkManager
                 {
                     player.transform.position = Vector3.zero;
                 }
-
-                // if(NetworkServer.active){
-                //     Player playerScript = player.GetComponent<Player>();
-                //     if (playerScript != null)
-                //     {
-                //         playerScript.RpcSetPlayerSprites(conn.connectionId);
-                //     }
-                // }
 
                 // Increment the player prefab index for the next player
                 currentPlayerPrefabIndex = (currentPlayerPrefabIndex + 1) % scenePlayerPrefabs.Length;
@@ -75,8 +62,6 @@ public class CustomNetworkManager : NetworkManager
 
         playerCount = 0;
         currentPlayerPrefabIndex = 0; // Reset the player prefab index when changing scenes
-
-
     }
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)

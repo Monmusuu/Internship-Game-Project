@@ -588,7 +588,7 @@ GameObject:
   - component: {fileID: 1130663893635291606}
   m_Layer: 5
   m_Name: PlayerSelectionScreen'
-  m_TagString: Player1
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -630,10 +630,6 @@ MonoBehaviour:
   syncDirection: 1
   syncMode: 0
   syncInterval: 0
-  _hatValue: 0
-  _animatorValue: 0
-  _bodyValue: 0
-  _weaponValue: 0
   allHats:
   - {fileID: 0}
   - {fileID: -1746037780, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}

@@ -8,18 +8,17 @@ using Mirror;
 
 public class CharacterSelection : NetworkBehaviour
 {
-    
     [SyncVar(hook = nameof(OnHatValueChanged))]
-    public int _hatValue = 0;
+    private int _hatValue = 0;
 
     [SyncVar(hook = nameof(OnAnimatorValueChanged))]
-    public int _animatorValue = 0;
+    private int _animatorValue = 0;
 
     [SyncVar(hook = nameof(OnBodyValueChanged))]
-    public int _bodyValue = 0;
+    private int _bodyValue = 0;
 
     [SyncVar(hook = nameof(OnWeaponValueChanged))]
-    public int _weaponValue = 0;
+    private int _weaponValue = 0;
 
     [SyncVar(hook = nameof(OnReadyStateChanged))]
     private bool _isReady = false;
