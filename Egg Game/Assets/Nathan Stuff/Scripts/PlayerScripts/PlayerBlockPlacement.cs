@@ -2,93 +2,279 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
-using UnityEngine.UI;
+using Mirror;
 
-public class PlayerBlockPlacement : MonoBehaviour
+public class PlayerBlockPlacement : NetworkBehaviour
 {
+    // Variables
     public Tilemap kingTilemap;
     public GameObject[] blockTileObjects;
-    public int selectedTile = 0;
-    public int removeTile = 0;
-    public bool blockPlaced = false;
-
     public Transform tileGridUI;
 
-    public PlayerInput playerInput;
-    public float moveSpeed = 5f;
-
-    private Vector2 movementInput;
-    private GameObject previewObject;
-    private SpriteRenderer previewSpriteRenderer;
-    private Rigidbody2D rb;
-
-    public float smoothingFactor = 0.5f; // Value between 0 and 1 (0 means no smoothing, 1 means maximum smoothing)
-    private Vector2 smoothedInput;
-    private Vector3 initialPosition;
+    private Collider2D cursorCollider;
+    private int kingLayerValue;
+    private LayerMask borderLayer;
     private RoundControl roundControl;
+    private Vector2 movementInput;
 
-    public LayerMask previewLayer;
-    public LayerMask kingLayer;
-    public LayerMask borderLayer;
+    [SyncVar(hook = nameof(OnSelectedTileChanged))]
+    private int selectedTile = 0;
 
+    [SyncVar(hook = nameof(OnSelectedBlockIndexChanged))]
+    private int selectedBlockIndex;
+
+    [SyncVar(hook = nameof(OnPreviewOpacityChanged))]
+    private float previewOpacity = 0.5f;
+
+    [SyncVar(hook = nameof(OnRotationAngleChanged))]
     private float rotationAngle = 0f;
 
-    private int selectedBlockTileIndex = 0;
-    
+    private int previousBlockIndex;
+
+    private bool blockPlaced = false;
+
+    private GameObject previewObject;
+    private SpriteRenderer previewSpriteRenderer;
+    private Vector3 initialPosition;
+    private bool isGameFocused = true;
 
     private void Awake()
     {
+        cursorCollider = GetComponent<Collider2D>();
         initialPosition = transform.position;
     }
 
     private void Start()
     {
-        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
-        playerInput = GetComponentInParent<PlayerInput>();
+        kingLayerValue = LayerMask.NameToLayer("King");
+        selectedTile = 0;
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
+        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
 
-        rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0f; // Disable gravity for the cursor
+        Application.focusChanged += OnApplicationFocus;
+
+        CmdInitializeSelectedIndexes();
+    }
+
+    private void OnEnable()
+    {
+        selectedTile = 0;
+
+        blockPlaced = false;
+
+        do
+        {
+            selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+        } while (selectedBlockIndex == previousBlockIndex);
+
+        previousBlockIndex = selectedBlockIndex;
+
+        // Use a command to sync the selected indexes with the server
+        CmdSyncSelectedIndexes(selectedBlockIndex);
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from the application focus event
+        Application.focusChanged -= OnApplicationFocus;
+
+        if (previewObject != null)
+        {
+            DestroyPreviewObject();
+        }
     }
 
     private void Update()
     {
-        movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
-        Vector3 newPosition = transform.position + new Vector3(movementInput.x, movementInput.y, 0) * moveSpeed * Time.deltaTime;
+        if (!isGameFocused) return; // Only process input if the game is focused
 
-        if (playerInput.currentControlScheme == "WADKeyBoard")
+        if (!isLocalPlayer) return;
+
+        // Process movement input based on the mouse position
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
+
+        // Clamp the cursor position to stay within the screen boundaries
+        ClampPosition(newPosition);
+        
+        // Check for scroll wheel input to rotate the trap preview
+        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+
+        if (scrollInput != 0f)
         {
-            // Get the mouse position in world coordinates
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            // Clamp the cursor position to stay within the screen boundaries
-            ClampPosition(mousePosition);
-            MoveCursor();
-        }
-        else if (playerInput.currentControlScheme == "Controller")
-        {
-            movementInput = playerInput.actions["CursorMove"].ReadValue<Vector2>();
-            ClampPosition(newPosition);
-            MoveCursor();
-        }
-
-        selectedTile = 0;
-
-        if (blockPlaced == true)
-        {
-            selectedTile = 3;
+            RotatePreviewObject(scrollInput);
         }
 
-        if (playerInput.actions["CursorClick"].triggered)
+        CmdMoveCursor(transform.position);
+
+        CmdCreateAllPreviews();
+
+        // Check for mouse click to place the trap
+        if (Input.GetMouseButtonDown(0))
         {
-            OnClick();
+            Vector3 cursorPosition = transform.position;
+            Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
+            Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
+            CmdPlaceBlock(tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
+        }
+        
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        isGameFocused = hasFocus;
+
+        // If the game lost focus, reset the movement input
+        if (!isGameFocused)
+        {
+            ResetMovementInput();
+        }
+    }
+
+    [Command]
+    private void CmdCreateAllPreviews()
+    {
+        if (!blockPlaced && selectedTile == 0)
+        {
+            CreatePreviewObject(blockTileObjects, selectedBlockIndex);
+
+            // Manually synchronize the preview opacity on the server and all clients
+            RpcUpdatePreviewOpacity(previewObject, previewOpacity);
+        }
+        else
+        {
+            DestroyPreviewObject();
+        }
+    }
+
+    [Command]
+    private void CmdMoveCursor(Vector3 position)
+    {
+        // Update the cursor position on the server
+        transform.position = position;
+    }
+
+    [Command]
+    private void CmdPlaceBlock(Vector3 tilePosition, Quaternion rotation)
+    {
+        // Check if the placement position is valid (e.g., within certain bounds or not occupied)
+        Vector3Int cellPosition = kingTilemap.WorldToCell(tilePosition);
+        if (!IsPlacementValid(cellPosition))
+        {
+            Debug.Log("Invalid placement position!");
+            return;
         }
 
-        if (playerInput.actions["Rotate"].triggered)
+        // Place the block on the server
+        GameObject placedBlock;
+        if (selectedTile == 0 && !blockPlaced)
         {
-            RotatePreviewObject();
+            blockPlaced = true;
+            placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
+            roundControl.playersPlacedBlocks += 1;
+        }
+        else
+        {
+            return;
         }
 
+        // Add NetworkIdentity component to the placed block object
+        var networkIdentity = placedBlock.GetComponent<NetworkIdentity>();
+        if (networkIdentity == null)
+        {
+            networkIdentity = placedBlock.AddComponent<NetworkIdentity>();
+        }
+
+        // Spawn the placed block on the server so that it's visible to all clients
+        NetworkServer.Spawn(placedBlock);
+        placedBlock.layer = kingLayerValue;
+
+        // Change the layer of the placed block's children to the "King" layer as well
+        foreach (Transform child in placedBlock.transform)
+        {
+            child.gameObject.layer = kingLayerValue;
+        }
+
+        RpcChangeBlockLayer(placedBlock, kingLayerValue);
+
+        // Move to the next selected object
+        selectedTile = (selectedTile + 1) % 4;
+        RpcChangeSelectedTile(selectedTile);
+    }
+
+    [ClientRpc]
+    private void RpcChangeSelectedTile(int newTile)
+    {
+        // Update the selectedTile on all clients
+        selectedTile = newTile;
+    }
+
+    [ClientRpc]
+    private void RpcChangeBlockLayer(GameObject blockObject, int newLayer)
+    {
+        // Change the layer of the placed block and its children on the client side
+        blockObject.layer = newLayer;
+        foreach (Transform child in blockObject.transform)
+        {
+            child.gameObject.layer = newLayer;
+        }
+    }
+
+    [Command]
+    private void CmdInitializeSelectedIndexes()
+    {
+        // Initialize the selected indexes on the server for this player
+        selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+    }
+
+    [Command]
+    private void CmdSyncSelectedIndexes(int blockIndex)
+    {
+        // Sync the selected indexes with the server
+        selectedBlockIndex = blockIndex;
+    }
+
+    private void ResetMovementInput()
+    {
+        // Reset the movement input
+        movementInput = Vector2.zero;
+    }
+
+    private void CreatePreviewObject(GameObject[] tileObjects, int selectedIndex)
+    {
+        if (previewObject != null)
+            DestroyPreviewObject();
+
+        int selectedObjectIndex = Mathf.Clamp(selectedIndex, 0, tileObjects.Length - 1);
+        GameObject tileObject = tileObjects[selectedObjectIndex];
+        previewObject = Instantiate(tileObject, transform.position, Quaternion.Euler(0f, 0f, rotationAngle)); // Set rotation
+
+        // Set the initial opacity
+        OnPreviewOpacityChanged(0f, previewOpacity);
+
+        // Add NetworkIdentity component to the preview object
+        var networkIdentity = previewObject.GetComponent<NetworkIdentity>();
+        if (networkIdentity == null)
+        {
+            networkIdentity = previewObject.AddComponent<NetworkIdentity>();
+        }
+
+        // Network-instantiate the preview object
+        NetworkServer.Spawn(previewObject);
+    }
+
+    private void DestroyPreviewObject()
+    {
+        if (previewObject != null)
+        {
+            Destroy(previewObject);
+
+            // Unspawn the preview object on the server
+            NetworkServer.UnSpawn(previewObject);
+
+            // Set previewObject to null
+            previewObject = null;
+        }
     }
 
     private void ClampPosition(Vector3 position)
@@ -98,10 +284,9 @@ public class PlayerBlockPlacement : MonoBehaviour
         float screenHorizontalSize = Camera.main.orthographicSize * screenAspect;
         float screenVerticalSize = Camera.main.orthographicSize;
 
-        // Get the object's dimensions
-        Renderer renderer = GetComponent<Renderer>();
-        float objectWidth = renderer.bounds.size.x;
-        float objectHeight = renderer.bounds.size.y;
+        // Get the object's dimensions based on the colliders
+        float objectWidth = cursorCollider.bounds.size.x;
+        float objectHeight = cursorCollider.bounds.size.y;
 
         // Clamp the position to stay within the screen boundaries
         float clampedX = Mathf.Clamp(position.x, -screenHorizontalSize + objectWidth / 2f, screenHorizontalSize - objectWidth / 2f);
@@ -111,136 +296,96 @@ public class PlayerBlockPlacement : MonoBehaviour
         transform.position = new Vector3(clampedX, clampedY, clampedZ);
     }
 
-    private void FixedUpdate()
+    private void RotatePreviewObject(float scrollInput)
     {
-        Vector2 velocity = movementInput * moveSpeed;
-        rb.velocity = velocity;
-    }
-
-    private void MoveCursor()
-    {
-        Vector3Int cellPosition = kingTilemap.WorldToCell(transform.position);
-        Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
-
-        if (previewObject != null)
+        if (selectedTile != 3)
         {
-            // Interpolate the movement between the current position and the target position
-            float moveDistance = moveSpeed * Time.deltaTime;
-            previewObject.transform.position = Vector3.Lerp(previewObject.transform.position, tilePosition, moveDistance);
-        }
-    }
+            rotationAngle += scrollInput * 90f;
+            rotationAngle %= 360f;
 
-public void OnClick()
-{
-
-    Vector3 cursorPosition = transform.position;
-    Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
-    Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
-
-    if (selectedTile == 0 && !blockPlaced)
-    {
-        // Check if the placement position is valid (e.g., within certain bounds or not occupied)
-        if (IsPlacementValid(cellPosition) || (selectedBlockTileIndex == 5) || (selectedBlockTileIndex == 6))
-        {
-            transform.position = initialPosition;
-            gameObject.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer to the "King" layer
-            blockPlaced = true;
-            GameObject placedBlock = Instantiate(previewObject, tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
-            SpriteRenderer placedSpriteRenderer = placedBlock.GetComponent<SpriteRenderer>();
-            Color blockColor = placedSpriteRenderer.color;
-            blockColor.a = 1f; // Set the alpha value to 1 (fully opaque)
-            placedSpriteRenderer.color = blockColor;
-            placedBlock.layer = (int)Mathf.Log(kingLayer.value, 2); // Set the layer of the placed block to the "King" layer
-
-            // Change the layer of the placed block's children to the "King" layer as well
-            foreach (Transform child in placedBlock.transform)
-            {
-                child.gameObject.layer = (int)Mathf.Log(kingLayer.value, 2);
-            }
-
-            roundControl.playersPlacedBlocks += 1;
-            rotationAngle = 0f;
-        }
-        else
-        {
-            Debug.Log("Invalid placement position!");
-            return; // Return without destroying the preview object
-        }
-    }
-
-    Destroy(previewObject);
-}
-
-    private int previousRandomIndex = -1; // Store the previous random index
-
-    private void OnEnable()
-    {
-        if (previewObject != null)
-        {
-            previewObject.SetActive(true);
-            return; // Return early if there is a preview object already active
-        }
-
-        selectedTile = 0;
-        blockPlaced = false;
-
-        int randomIndex;
-        do
-        {
-            randomIndex = Random.Range(0, blockTileObjects.Length); // Randomly select an index
-        } while (randomIndex == previousRandomIndex); // Repeat until the index is different from the previous one
-
-        previousRandomIndex = randomIndex; // Store the current random index as the previous one
-        selectedBlockTileIndex = randomIndex; // Assign the selected block tile index
-
-        previewObject = Instantiate(blockTileObjects[randomIndex], transform.position, Quaternion.identity);
-        previewSpriteRenderer = previewObject.GetComponent<SpriteRenderer>();
-        previewSpriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
-    }
-
-    private void OnDisable()
-    {
-        if (previewObject != null)
-        {
-            previewObject.SetActive(false);
+            if (previewObject != null)
+                previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
         }
     }
 
     private bool IsPlacementValid(Vector3Int position)
     {
-        // Convert the position to world space
         Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
+        Collider2D overlapCollider = Physics2D.OverlapPoint(positionWorld, borderLayer);
 
-        // Perform a point overlap check with the colliders on the king and border layers
-        Collider2D overlapColliderKing = Physics2D.OverlapPoint(positionWorld, kingLayer);
-        Collider2D overlapColliderBorder = Physics2D.OverlapPoint(positionWorld, borderLayer);
-
-        // Check if there is no overlap or if the overlap is with the current game object
-        if ((overlapColliderKing == null || overlapColliderKing.gameObject == gameObject) && overlapColliderBorder == null)
+        if (overlapCollider != null)
         {
-            // Placement is valid
-            return true;
-        }
-        else
-        {
-            // Placement is invalid
+            // Placement is invalid if there is an overlap with the borderLayer
             return false;
+        }
+
+        Collider2D[] overlapColliders = Physics2D.OverlapPointAll(positionWorld);
+
+        foreach (Collider2D collider in overlapColliders)
+        {
+            if (collider.gameObject == gameObject)
+                continue;
+
+            if (collider.gameObject.layer == kingLayerValue)
+            {
+                // Placement is invalid if there is an overlap with the "King" layer
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void OnSelectedTileChanged(int oldValue, int newValue)
+    {
+        // When the selectedTile changes on the server, update it on the clients
+        selectedTile = newValue;
+    }
+
+    private void OnSelectedBlockIndexChanged(int oldValue, int newValue)
+    {
+        selectedBlockIndex = newValue;
+    }
+
+    private void OnPreviewOpacityChanged(float oldValue, float newValue)
+    {
+        // When the previewOpacity changes on the server, update it on the clients
+        previewOpacity = newValue;
+
+        if (previewObject != null)
+        {
+            // Update the opacity of all children's SpriteRenderers in the preview object
+            SpriteRenderer[] childSpriteRenderers = previewObject.GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer spriteRenderer in childSpriteRenderers)
+            {
+                Color newColor = spriteRenderer.color;
+                newColor.a = previewOpacity;
+                spriteRenderer.color = newColor;
+            }
         }
     }
 
-    private void RotatePreviewObject()
+    [ClientRpc]
+    private void RpcUpdatePreviewOpacity(GameObject previewObject, float newOpacity)
     {
-        if (selectedTile == 0 && (selectedBlockTileIndex != 0) && (selectedBlockTileIndex != 5))
+        if (previewObject != null)
         {
-            rotationAngle += 90f;
-            if (rotationAngle >= 360f)
+            // Update the opacity of all children's SpriteRenderers in the preview object on the client-side
+            SpriteRenderer[] childSpriteRenderers = previewObject.GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer spriteRenderer in childSpriteRenderers)
             {
-                rotationAngle = 0f;
+                Color newColor = spriteRenderer.color;
+                newColor.a = newOpacity;
+                spriteRenderer.color = newColor;
             }
-
-            previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
-        }else{
-            Debug.Log("this object can't rotate");
         }
+    }
+
+    private void OnRotationAngleChanged(float oldValue, float newValue)
+    {
+        // Apply the synchronized rotation angle to the preview object on the client
+        rotationAngle = newValue;
+        if (previewObject != null)
+            previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
     }
 }

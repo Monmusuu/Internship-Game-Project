@@ -1,107 +1,100 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class RoundControl : MonoBehaviour
+public class RoundControl : NetworkBehaviour
 {
-    public Player[] player;
-    public PlayerSaveData playerSaveData;
+    public List<Player> players = new List<Player>();
     public float RoundTime = 360f;
+    [SyncVar]
     public int Round = 0;
+
+    [SyncVar]
     public bool timerOn = false;
+
+    [SyncVar]
     public bool Respawn = false;
+
+    [SyncVar]
     public bool itemsPlaced = false;
+
+    [SyncVar]
     public bool placingItems = false;
+
+    [SerializeField][SyncVar]
     public int playersPlacedBlocks = 0;
+
     public bool playerRemovingItem = false;
     public Transform playerSpawnLocation;
+    [SerializeField]
+    private CustomNetworkManager customNetworkManager;
 
-// Start is called before the first frame update
-    void Start()
+
+    // Start is called before the first frame update
+
+    public override void OnStartServer()
     {
-        playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
-        StartCoroutine(PopulatePlayerArray());
+        base.OnStartServer();
+        // Start the round timer
         timerOn = true;
     }
 
-    IEnumerator PopulatePlayerArray()
+    // Method to add a player to the players list
+    public void AddPlayer(Player newPlayer)
     {
-        yield return new WaitForEndOfFrame(); // Wait until the end of the frame
+        players.Add(newPlayer);
+    }
 
-        player = new Player[6];
-        for (int i = 0; i < 6; i++)
-        {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player" + (i + 1));
-            if (playerObj != null)
-            {
-                Player playerComponent = playerObj.GetComponent<Player>();
-                if (playerComponent != null)
-                {
-                    player[i] = playerComponent;
-                }
-                else
-                {
-                    Debug.LogError("Player component not found on game object with tag 'Player" + (i + 1) + "'!");
-                }
-            }
-            else
-            {
-                //Debug.LogError("Player game object with tag 'Player" + (i + 1) + "' not found!");
-            }
-        }
+    // Method to remove a player from the players list
+    public void RemovePlayer(Player playerToRemove)
+    {
+        players.Remove(playerToRemove);
+    }
 
-        // Call a method or perform any logic that requires the 'player' array here
-        // ...
+    private void Start()
+    {
+        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+        playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
     }
 
     void Update()
     {
+
         if (placingItems)
         {
             Respawn = false;
+            timerOn = false;
 
-            if (playersPlacedBlocks >= PlayerSaveData.playerNumber + 2)
-            {
+            if(playersPlacedBlocks >= customNetworkManager.playerCount +2){
                 itemsPlaced = true;
                 placingItems = false;
             }
+            
         }
-        
 
         if (!placingItems)
         {
-            for (int i = 0; i < player.Length; i++)
+            for (int i = 0; i < players.Count; i++)
             {
-                if (player[i] != null && player[i].becameKing)
+                if (players[i] != null && players[i].becameKing)
                 {
                     // Update player flags for the current king
-                    for (int j = 0; j < player.Length; j++)
+                    for (int j = 0; j < players.Count; j++)
                     {
-                        if (player[j] != null)
+                        if (players[j] != null)
                         {
-                            player[j].isKing = (j == i);
-                            player[j].isPlayer = (j != i);
+                            players[j].isKing = (j == i);
+                            players[j].isPlayer = (j != i);
                         }
                     }
 
                     // Set respawn and round variables
                     Respawn = true;
                     Round += 1;
-                    player[i].becameKing = false;
-                    // Exit the loop since the king is found
-                    break;
-                }
-
-                if (player[i] != null && player[i].isPlayer && Respawn)
-                {
-                    player[i].rigid.velocity = Vector2.zero;
-                    player[i].transform.position = playerSpawnLocation.position;
-                    itemsPlaced = false;
-                    timerOn = false;
-                    RoundTime = 360f;
-                    playersPlacedBlocks = 0;
+                    players[i].becameKing = false;
                     placingItems = true;
-
+                    // Exit the loop since the king is found
                     break;
                 }
             }
@@ -127,5 +120,37 @@ public class RoundControl : MonoBehaviour
                 }
             }
         }
+
+        // Only the server should handle respawning and sync it across clients
+        if (Respawn && isServer)
+        {
+            RespawnPlayers();
+        }
+    }
+
+    [ClientRpc]
+    private void RpcRespawnPlayer(NetworkIdentity playerNetIdentity)
+    {
+        // Reset player's velocity and position on all clients
+        Player player = playerNetIdentity.GetComponent<Player>();
+        if (player != null)
+        {
+            player.rigid.velocity = Vector2.zero;
+            player.transform.position = playerSpawnLocation.position;
+        }
+    }
+
+    private void RespawnPlayers()
+    {
+        foreach (Player player in players)
+        {
+            if (player != null && player.isPlayer)
+            {
+                // Respawn the player on all clients
+                RpcRespawnPlayer(player.GetComponent<NetworkIdentity>());
+            }
+        }
+
+        Respawn = false;
     }
 }

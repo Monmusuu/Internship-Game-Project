@@ -123,7 +123,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &214434925
+--- !u!1 &452488196
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,10 +131,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 214434929}
-  - component: {fileID: 214434928}
-  - component: {fileID: 214434927}
-  - component: {fileID: 214434926}
+  - component: {fileID: 452488201}
+  - component: {fileID: 452488200}
+  - component: {fileID: 452488199}
+  - component: {fileID: 452488198}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -142,13 +142,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &214434926
+--- !u!114 &452488198
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 214434925}
+  m_GameObject: {fileID: 452488196}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c7424c1070fad4ba2a7a96b02fbeb4bb, type: 3}
@@ -166,13 +166,13 @@ MonoBehaviour:
   clientMaxReceivesPerTick: 1000
   clientSendQueueLimit: 10000
   clientReceiveQueueLimit: 10000
---- !u!114 &214434927
+--- !u!114 &452488199
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 214434925}
+  m_GameObject: {fileID: 452488196}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
@@ -180,16 +180,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: 800
   offsetY: 450
---- !u!114 &214434928
+--- !u!114 &452488200
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 214434925}
+  m_GameObject: {fileID: 452488196}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8aab4c8111b7c411b9b92cf3dbc5bd4e, type: 3}
+  m_Script: {fileID: 11500000, guid: fe18011a8a21b8246b820c233615a864, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
@@ -199,14 +199,35 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/Nathan Stuff/Scenes/Menu.unity
   onlineScene: Assets/Nathan Stuff/Scenes/CharacterSelection.unity
-  transport: {fileID: 214434926}
-  networkAddress: localhost
-  maxConnections: 100
+  transport: {fileID: 452488198}
+  networkAddress: 142.177.27.102
+  maxConnections: 6
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 191862200749692940, guid: 8ad10a54c12ed4748bc20cf06e537af9, type: 3}
+  playerPrefab: {fileID: 1583603190512241176, guid: bd9225c51aef3f147b390c61cf8e910e, type: 3}
   autoCreatePlayer: 1
-  playerSpawnMethod: 0
-  spawnPrefabs: []
+  playerSpawnMethod: 1
+  spawnPrefabs:
+  - {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+  - {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+  - {fileID: 6525572584686347409, guid: fe093d491171ca3458b48eeeae245633, type: 3}
+  - {fileID: 7606387864496508036, guid: e25dda4c8d832734a8a08a0d0decf5e6, type: 3}
+  - {fileID: 6653591027728031132, guid: a7c8017d8f0893e4c8af461daf5529f2, type: 3}
+  - {fileID: 8726427662679117382, guid: 1a626a4e0e734554180491337acc396b, type: 3}
+  - {fileID: 4809789596207978441, guid: b15ad386cca8b884e8928fa5cade8062, type: 3}
+  - {fileID: 8952024951581210804, guid: f76468afc8792ea4cbf36a0b51bbb593, type: 3}
+  - {fileID: 6122145753119281300, guid: 8a3a5451273d1944db1ffa43748e7951, type: 3}
+  - {fileID: 5547983234099374204, guid: 7a6ac984283460740bc531413e98594e, type: 3}
+  - {fileID: 501223548699330371, guid: 370f38da899bbd84b92c0d2f4947d647, type: 3}
+  - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
+  - {fileID: 2716951166115827867, guid: c09acc1db1d9ce14cb306171e20c7fdb, type: 3}
+  - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
+  - {fileID: 1897275775830132237, guid: 6322957afb2b5ae49b6634699ad3e7c3, type: 3}
+  - {fileID: 2592686703869513350, guid: be191b43f7da47b48bec7d2effae2383, type: 3}
+  - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
+  - {fileID: 9078389444590924029, guid: 6ff7841d27388364c8a2e78a3a853b73, type: 3}
+  - {fileID: 1998069914564895633, guid: 2326edc4d86e9a7469c44185aa17ff3e, type: 3}
+  - {fileID: 1897275775830132237, guid: 60a251058c13fe04788ebd9bf40af2fa, type: 3}
+  - {fileID: 4675326826205994913, guid: 629e005fc793e054d81fa71d888a01a4, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     catchupNegativeThreshold: -1
@@ -218,15 +239,23 @@ MonoBehaviour:
     dynamicAdjustmentTolerance: 1
     deliveryTimeEmaDuration: 2
   timeInterpolationGui: 0
---- !u!4 &214434929
+  scenePlayerPrefabs:
+  - sceneName: CharacterSelection
+    playerPrefab: {fileID: 1583603190512241176, guid: bd9225c51aef3f147b390c61cf8e910e, type: 3}
+  - sceneName: MapSelection
+    playerPrefab: {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
+  - sceneName: Nathan
+    playerPrefab: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+  playerCount: 0
+--- !u!4 &452488201
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 214434925}
+  m_GameObject: {fileID: 452488196}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -59.753952, y: -64.21994, z: 43.224567}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

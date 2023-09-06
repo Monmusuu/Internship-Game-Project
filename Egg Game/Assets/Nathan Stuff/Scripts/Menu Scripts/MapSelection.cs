@@ -2,23 +2,67 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro;
 using UnityEngine.UI;
+using Mirror;
+using System.Linq;
 
-public class MapSelection : MonoBehaviour
+[System.Serializable]
+public class MapObjectContainer
 {
-    public VotingSystem votingSystem;
-    public float speed = 5f;
+    public GameObject[] mapObjects;
+}
 
-    private PlayerInput playerInput;
+public class MapSelection : NetworkBehaviour
+{
+    public float speed = 5f;
     private Vector2 movementInput;
+
     [SerializeField]
     private Button mapButton;
 
+    private Collider2D cursorCollider;
+
+    // Game focus variable
+    private bool isGameFocused = true;
+
+    [SerializeField]
+    private MapObjectContainer mapObjectContainer;
+
+    private void Awake()
+    {
+        cursorCollider = GetComponent<Collider2D>();
+        Application.focusChanged += OnGameFocusChanged;
+
+        // If the mapObjectContainer is not assigned, find map objects with the "Map" tag
+        if (mapObjectContainer.mapObjects == null || mapObjectContainer.mapObjects.Length == 0)
+        {
+            // Manually find and sort the map objects by their names
+            List<GameObject> maps = new List<GameObject>();
+            int mapIndex = 1;
+            GameObject mapObject;
+            while ((mapObject = GameObject.Find("Map " + mapIndex)) != null)
+            {
+                maps.Add(mapObject);
+                mapIndex++;
+            }
+
+            mapObjectContainer.mapObjects = maps.ToArray();
+        }
+    }
+
+    private void OnGameFocusChanged(bool hasFocus)
+    {
+        isGameFocused = hasFocus;
+
+        // If the game lost focus, reset the movement input
+        if (!isGameFocused)
+        {
+            ResetMovementInput();
+        }
+    }
+
     private void Start()
     {
-        votingSystem = GameObject.Find("VotingSystem").GetComponent<VotingSystem>();
-        playerInput = GetComponent<PlayerInput>();
         UnityEngine.Cursor.visible = false;
 
         // Find and assign the button object
@@ -27,34 +71,38 @@ public class MapSelection : MonoBehaviour
 
     private void Update()
     {
-        if (votingSystem.HasVoted(playerInput.playerIndex))
+        if (!isGameFocused) return; // Only process input if the game is focused
+
+        // Process movement input based on the mouse position
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
+
+        // Clamp the cursor position to stay within the screen boundaries
+        ClampPosition(newPosition);
+
+        if (isLocalPlayer && NetworkClient.ready)
         {
-            // Player has voted, stop movement
-            return;
+            CmdMoveCursor(transform.position);
         }
 
-        // Process movement input
-        Vector2 movement = movementInput.normalized;
-        Vector3 newPosition = transform.position + new Vector3(movement.x, movement.y, 0) * speed * Time.deltaTime;
-
-        // Update the cursor position based on input
-        if (playerInput.currentControlScheme == "Keyboard&Mouse")
+        // Process mouse click
+        if (isLocalPlayer && Input.GetMouseButtonDown(0))
         {
-            // Get the mouse position in world coordinates
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            // Clamp the cursor position to stay within the screen boundaries
-            ClampPosition(mousePosition);
-        }
-        else if (playerInput.currentControlScheme == "Gamepad")
-        {
-            ClampPosition(newPosition);
+            HandleMouseClick();
         }
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    [Command]
+    private void CmdMoveCursor(Vector3 position)
     {
-        movementInput = context.ReadValue<Vector2>();
+        // Update the cursor position on the server
+        transform.position = position;
+    }
+
+    private void ResetMovementInput()
+    {
+        // Reset the movement input
+        movementInput = Vector2.zero;
     }
 
     private void ClampPosition(Vector3 position)
@@ -64,10 +112,9 @@ public class MapSelection : MonoBehaviour
         float screenHorizontalSize = Camera.main.orthographicSize * screenAspect;
         float screenVerticalSize = Camera.main.orthographicSize;
 
-        // Get the object's dimensions
-        Renderer renderer = GetComponent<Renderer>();
-        float objectWidth = renderer.bounds.size.x;
-        float objectHeight = renderer.bounds.size.y;
+        // Get the object's dimensions based on the colliders
+        float objectWidth = cursorCollider.bounds.size.x;
+        float objectHeight = cursorCollider.bounds.size.y;
 
         // Clamp the position to stay within the screen boundaries
         float clampedX = Mathf.Clamp(position.x, -screenHorizontalSize + objectWidth / 2f, screenHorizontalSize - objectWidth / 2f);
@@ -77,40 +124,43 @@ public class MapSelection : MonoBehaviour
         transform.position = new Vector3(clampedX, clampedY, clampedZ);
     }
 
-    public void OnClick(InputAction.CallbackContext context)
+    public override void OnStartAuthority()
     {
-        if (context.performed)
+        // Enable input handling for the local player
+        enabled = true;
+    }
+
+    public override void OnStopAuthority()
+    {
+        // Disable input handling for non-local players
+        enabled = false;
+    }
+
+    private void HandleMouseClick()
+    {
+        if (mapButton != null && RectTransformUtility.RectangleContainsScreenPoint(mapButton.GetComponent<RectTransform>(), Input.mousePosition))
         {
-            int playerID = playerInput.playerIndex;
+            // Handle the button click event
+            mapButton.onClick.Invoke();
+        }
+        else
+        {
+            // Find the exact map index
+            int exactMapIndex = GetExactMapIndex(mapObjectContainer.mapObjects);
 
-            if (!votingSystem.HasVoted(playerID))
+            if (exactMapIndex != -1)
             {
-                // Get the map objects with the "Map" tag
-                GameObject[] mapObjects = GameObject.FindGameObjectsWithTag("Map");
-
-                // Find the exact map index
-                int exactMapIndex = GetExactMapIndex(mapObjects);
-
-                if (exactMapIndex != -1)
-                {
-                    // Vote for the selected map
-                    votingSystem.Vote(playerID, exactMapIndex);
-                    Debug.Log("Player " + playerID + " voted for map index: " + exactMapIndex);
-                }
-            }
-            else
-            {
-                // Undo the player's vote
-                votingSystem.UndoVote(playerID);
-            }
-
-            // Check if the cursor is over the button
-            if (mapButton != null && RectTransformUtility.RectangleContainsScreenPoint(mapButton.GetComponent<RectTransform>(), Input.mousePosition))
-            {
-                // Handle the button click event
-                mapButton.onClick.Invoke();
+                // Vote for the selected map
+                CmdVoteForMap(exactMapIndex);
             }
         }
+    }
+
+    [Command]
+    private void CmdVoteForMap(int mapIndex)
+    {
+        // Call the voting system's Vote method on the server
+        VotingSystem.Instance.Vote(GetComponent<NetworkIdentity>().connectionToClient.connectionId, mapIndex);
     }
 
     private int GetExactMapIndex(GameObject[] mapObjects)

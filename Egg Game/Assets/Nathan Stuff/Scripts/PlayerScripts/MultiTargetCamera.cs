@@ -1,132 +1,122 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-[RequireComponent(typeof(Camera))]
-public class MultiTargetCamera : MonoBehaviour
+public class MultiTargetCamera : NetworkBehaviour
 {
-
-    public List<GameObject> players = new List<GameObject>();
+    public List<Player> players = new List<Player>();
     public GameObject mapObject;
-    public RoundControl roundControl;
-    public Vector3 offset;
     public float smoothTime = 0.5f;
     private Vector3 velocity;
     public float minZoom = 25f;
     public float maxZoom = 9f;
     public float zoomLimiter = 35f;
-    public float height = 0;
-    public float width = 0;
+    public float height = 10f;
+    public float width = 10f;
+    [SerializeField] private RoundControl roundControl;
+
+    public Vector3 offset;
+
     private Camera cam;
-    private float initialZ; // Store the initial Z position of the camera
-    public bool hasPlayer1;
-    public bool hasPlayer2;
-    bool hasPlayer3;
-    bool hasPlayer4;
-    bool hasPlayer5;
-    bool hasPlayer6;
+    private float initialZ;
 
-    void Start() {
+    private void Start()
+    {
         cam = GetComponent<Camera>();
-        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
-        initialZ = transform.position.z; // Store the initial Z position
-    }
+        initialZ = transform.position.z;
 
-    private void Update() {
-        if(GameObject.FindWithTag("Player1") && (!hasPlayer1)){
-            players.AddRange(GameObject.FindGameObjectsWithTag("Player1"));
-            hasPlayer1 = true;
+        // If this script is on the local player object, set the offset
+        if (isLocalPlayer)
+        {
+            offset = new Vector3(0f, 5f, -10f); // Adjust the values according to your needs
         }
 
-        if(GameObject.FindWithTag("Player2") && (!hasPlayer2)){
-            players.AddRange(GameObject.FindGameObjectsWithTag("Player2"));
-            hasPlayer2 = true;
+        // Try to find the RoundControl component and log the result
+        roundControl = FindObjectOfType<RoundControl>();
+        if (roundControl != null)
+        {
+            Debug.Log("RoundControl found in MultiTargetCamera.");
         }
-
-        if(GameObject.FindWithTag("Player3") && (!hasPlayer3)){
-            players.AddRange(GameObject.FindGameObjectsWithTag("Player3"));
-            hasPlayer3 = true;
-        }
-
-        if(GameObject.FindWithTag("Player4") && (!hasPlayer4)){
-            players.AddRange(GameObject.FindGameObjectsWithTag("Player4"));
-            hasPlayer4 = true;
-        }
-
-        if(GameObject.FindWithTag("Player5") && (!hasPlayer5)){
-            players.AddRange(GameObject.FindGameObjectsWithTag("Player5"));
-            hasPlayer5 = true;
-        }
-
-        if(GameObject.FindWithTag("Player6") && (!hasPlayer6)){
-            players.AddRange(GameObject.FindGameObjectsWithTag("Player6"));
-            hasPlayer6 = true;
+        else
+        {
+            Debug.LogWarning("RoundControl not found in MultiTargetCamera. Ensure that RoundControl exists in the scene and is active before the camera script starts.");
         }
     }
 
-void LateUpdate()
-{
-    if (players.Count == 0)
-        return;
-
-    if (roundControl.placingItems)
+    private void LateUpdate()
     {
-        ZoomOutToSeeMap();
+        // If the camera is not attached to the local player (host-side), follow the center point of all players
+        if (!isLocalPlayer)
+        {
+            Move();
+            Zoom();
+        }
+        else // If the camera is attached to the local player (client-side), follow the local player
+        {
+            if (roundControl.placingItems)
+            {
+                ZoomOutToSeeMap();
+            }
+            else
+            {
+                Move();
+                // Zoom(); // We won't call the Zoom function on the client side.
+            }
+        }
     }
-    else
+
+    public override void OnStartServer()
     {
-        Move();
-        Zoom();
+        base.OnStartServer();
     }
-}
+
+    // Method to add a player to the players list
+    public void AddPlayer(Player newPlayer)
+    {
+        players.Add(newPlayer);
+    }
+
+    // Method to remove a player from the players list
+    public void RemovePlayer(Player playerToRemove)
+    {
+        players.Remove(playerToRemove);
+    }
 
     void ZoomOutToSeeMap()
     {
-        // Define a custom bounding box or rectangle that encapsulates the desired area
         Bounds customBounds = new Bounds(mapObject.transform.position, new Vector3(width, height, 0f));
-
-        // Calculate the aspect ratio of the custom bounds
         float customAspectRatio = customBounds.size.x / customBounds.size.y;
-
-        // Calculate the target size for the camera based on the larger dimension of the custom bounds
         float targetSize = Mathf.Max(customBounds.size.x, customBounds.size.y) * 0.5f;
-
-        // Adjust the target size based on the aspect ratio of the custom bounds and the camera's aspect ratio
         targetSize = Mathf.Max(targetSize, Mathf.Max(minZoom, maxZoom / cam.aspect * customAspectRatio));
-
-        // Set the camera's orthographic size to match the adjusted target size
         cam.orthographicSize = targetSize;
-
-        // Set the camera's position to the center of the custom bounds
         transform.position = customBounds.center + offset;
+
+        // Synchronize camera zoom level and target position for clients
+        currentZoomLevel = targetSize;
+        cameraTargetPosition = transform.position;
     }
 
-void Zoom()
-{
-    float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / zoomLimiter);
+    void Zoom()
+    {
+        float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / zoomLimiter);
 
-    // Calculate the maximum allowed zoom-out position based on the width and height of the map
-    float maxZoomOutWidth = mapObject.GetComponent<Renderer>().bounds.size.x * 0.5f;
-    float maxZoomOutHeight = mapObject.GetComponent<Renderer>().bounds.size.y * 0.5f;
+        float maxZoomOutWidth = mapObject.GetComponent<Renderer>().bounds.size.x * 0.5f;
+        float maxZoomOutHeight = mapObject.GetComponent<Renderer>().bounds.size.y * 0.5f;
+        newZoom = Mathf.Min(newZoom, Mathf.Max(maxZoomOutWidth / cam.aspect, maxZoomOutHeight));
 
-    // Limit the new zoom value based on the maximum zoom-out position
-    newZoom = Mathf.Min(newZoom, Mathf.Max(maxZoomOutWidth / cam.aspect, maxZoomOutHeight));
+        float maxZoomInWidth = width * 0.5f;
+        float maxZoomInHeight = height * 0.5f;
+        newZoom = Mathf.Max(newZoom, Mathf.Min(maxZoomInWidth / cam.aspect, maxZoomInHeight));
 
-    // Calculate the maximum allowed zoom-in position based on the width and height of the map
-    float maxZoomInWidth = width * 0.5f;
-    float maxZoomInHeight = height * 0.5f;
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
 
-    // Limit the new zoom value based on the maximum zoom-in position
-    newZoom = Mathf.Max(newZoom, Mathf.Min(maxZoomInWidth / cam.aspect, maxZoomInHeight));
-
-    cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
-}
+        // Synchronize camera zoom level for clients
+        currentZoomLevel = cam.orthographicSize;
+    }
 
     void Move()
     {
         Vector3 centerPoint = GetCenterPoint();
-
-        // Calculate the maximum allowed position based on the width and height of the map
         float maxPositionX = mapObject.transform.position.x + mapObject.GetComponent<Renderer>().bounds.size.x * 0.5f - width * 0.5f;
         float minPositionX = mapObject.transform.position.x - mapObject.GetComponent<Renderer>().bounds.size.x * 0.5f + width * 0.5f;
         float maxPositionY = mapObject.transform.position.y + mapObject.GetComponent<Renderer>().bounds.size.y * 0.5f - height * 0.5f;
@@ -134,34 +124,54 @@ void Zoom()
 
         float newX = Mathf.Clamp(centerPoint.x, minPositionX, maxPositionX);
         float newY = Mathf.Clamp(centerPoint.y, minPositionY, maxPositionY);
-
-        Vector3 newPosition = new Vector3(newX, newY, initialZ) + offset; // Use the initial Z position
-
+        Vector3 newPosition = new Vector3(newX, newY, initialZ) + offset;
         transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
+
+        // Synchronize camera target position for clients
+        cameraTargetPosition = transform.position;
     }
 
-
-    float GetGreatestDistance(){
+    float GetGreatestDistance()
+    {
         var bounds = new Bounds(players[0].transform.position, Vector3.zero);
-
-        for(int i = 0; i < players.Count; i++){
+        for (int i = 0; i < players.Count; i++)
+        {
             bounds.Encapsulate(players[i].transform.position);
         }
-
         return bounds.size.x;
     }
 
-    Vector3 GetCenterPoint(){
-        if(players.Count == 1){
+    Vector3 GetCenterPoint()
+    {
+        if (players.Count == 1)
+        {
             return players[0].transform.position;
         }
 
         var bounds = new Bounds(players[0].transform.position, Vector3.zero);
-
-        for(int i = 0; i < players.Count; i++){
+        for (int i = 0; i < players.Count; i++)
+        {
             bounds.Encapsulate(players[i].transform.position);
         }
-
         return bounds.center;
+    }
+
+    // SyncVars for camera zoom level and target position
+    [SyncVar(hook = nameof(OnZoomLevelUpdated))]
+    private float currentZoomLevel;
+
+    [SyncVar(hook = nameof(OnCameraTargetPositionUpdated))]
+    private Vector3 cameraTargetPosition;
+
+    // Hook method for the camera zoom level sync var update.
+    private void OnZoomLevelUpdated(float oldZoomLevel, float newZoomLevel)
+    {
+        cam.orthographicSize = newZoomLevel;
+    }
+
+    // Hook method for the camera target position sync var update.
+    private void OnCameraTargetPositionUpdated(Vector3 oldPosition, Vector3 newPosition)
+    {
+        transform.position = newPosition;
     }
 }

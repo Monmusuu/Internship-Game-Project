@@ -4,8 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
+using Mirror;
 
-public class PlayerSaveData : MonoBehaviour
+public struct ChangeSceneMessage : NetworkMessage
+{
+    public string sceneName;
+}
+
+public class PlayerSaveData : NetworkBehaviour
 {
     private Scene scene;
     public CharacterSelection[] characterSelections;
@@ -14,8 +20,11 @@ public class PlayerSaveData : MonoBehaviour
     public Sprite[] allWeapons;
     public RuntimeAnimatorController[] allAnimators; 
 
-    public static int playerNumber = 0;
-    public static int playerReadyNumber = 0;
+    [SyncVar]
+    public int playerNumber;
+
+    [SyncVar(hook = nameof(OnPlayerReadyNumberChanged))]
+    public int playerReadyNumber = 0;
 
     public int[] playerHatSpriteNumbers;
     public int[] playerBodySpriteNumbers;
@@ -26,10 +35,14 @@ public class PlayerSaveData : MonoBehaviour
     public Sprite[] playerSpriteBodies;
     public Sprite[] playerSpriteWeapons;
 
-
     public GameObject[] players;
     public GameObject[] playerTexts;
     public GameObject[] playerCursors;
+
+    [SerializeField]
+    private CustomNetworkManager customNetworkManager;
+
+    private bool isSceneChanging = false;
 
     private static PlayerSaveData instance;
     public static PlayerSaveData Instance { get { return instance; } }
@@ -48,7 +61,8 @@ public class PlayerSaveData : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Players: " + playerNumber);
+        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+        Debug.Log("Players: " + customNetworkManager.playerCount);
         scene = SceneManager.GetActiveScene();
 
     }
@@ -61,6 +75,11 @@ public class PlayerSaveData : MonoBehaviour
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnPlayerReadyNumberChanged(int oldValue, int newValue)
+    {
+        // Handle the playerReadyNumber change, if needed
     }
     private void Update()
     {
@@ -88,10 +107,10 @@ public class PlayerSaveData : MonoBehaviour
                             if (playerAnimatorNumbers.Length <= i)
                                 Array.Resize(ref playerAnimatorNumbers, i + 1);
 
-                            playerHatSpriteNumbers[i] = characterSelection.hatValue;
-                            playerBodySpriteNumbers[i] = characterSelection.bodyValue;
-                            playerWeaponSpriteNumbers[i] = characterSelection.weaponValue;
-                            playerAnimatorNumbers[i] = characterSelection.animatorValue;
+                            // playerHatSpriteNumbers[i] = characterSelection.hatValue;
+                            // playerBodySpriteNumbers[i] = characterSelection.bodyValue;
+                            // playerWeaponSpriteNumbers[i] = characterSelection.weaponValue;
+                            // playerAnimatorNumbers[i] = characterSelection.animatorValue;
 
                             // Debug.Log("Hat " + playerHatSpriteNumbers[i]);
                             // Debug.Log("Body " + playerBodySpriteNumbers[i]);
@@ -101,14 +120,48 @@ public class PlayerSaveData : MonoBehaviour
                     }
                 }
             }
+
+            if (playerReadyNumber == customNetworkManager.playerCount && playerReadyNumber >= 1 && !isSceneChanging)
+            {
+                isSceneChanging = true; // Set the flag to indicate a scene change is in progress
+                StartCoroutine(ChangeSceneCoroutine());
+            }
         }
     }
 
+    private IEnumerator ChangeSceneCoroutine()
+    {
+        yield return new WaitForSeconds(1f); // Delay the scene change to allow time for other network operations
+
+        // Perform the scene change
+        if (NetworkServer.active)
+        {
+            CustomNetworkManager customNetworkManager = FindObjectOfType<CustomNetworkManager>();
+            if (customNetworkManager != null)
+            {
+                customNetworkManager.ServerChangeScene("MapSelection");
+            }
+        }
+        else if (NetworkClient.active)
+        {
+            CustomNetworkManager customNetworkManager = FindObjectOfType<CustomNetworkManager>();
+            if (customNetworkManager != null)
+            {
+                NetworkClient.connection.Send(new ChangeSceneMessage { sceneName = "MapSelection" });
+            }
+        }
+    }
+
+
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (NetworkClient.active && scene.name == "MapSelection")
+        {
+            //StartCoroutine(ChangeSceneCoroutine());
+        }
         if (scene.name == "CharacterSelection")
         {
-            playerNumber = 0;
             playerReadyNumber = 0;
         }
 
@@ -152,21 +205,21 @@ public class PlayerSaveData : MonoBehaviour
 
             for (int i = 0; i < playerNumber; i++)
             {
-                playerSpriteHats[i] = allHats[playerHatSpriteNumbers[i]];
-                playerSpriteWeapons[i] = allWeapons[playerWeaponSpriteNumbers[i]];
-                playerSpriteBodies[i] = allBodies[playerBodySpriteNumbers[i]];
+                // playerSpriteHats[i] = allHats[playerHatSpriteNumbers[i]];
+                // playerSpriteWeapons[i] = allWeapons[playerWeaponSpriteNumbers[i]];
+                // playerSpriteBodies[i] = allBodies[playerBodySpriteNumbers[i]];
 
-                players[i].transform.GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
-                players[i].transform.GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
-                players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
+                // players[i].transform.GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
+                // players[i].transform.GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
+                // players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
 
-                Animator playerAnimator = players[i].GetComponent<Animator>();
-                playerAnimator.runtimeAnimatorController = allAnimators[playerAnimatorNumbers[i]];
+                // Animator playerAnimator = players[i].GetComponent<Animator>();
+                // playerAnimator.runtimeAnimatorController = allAnimators[playerAnimatorNumbers[i]];
 
-                 // Assign the sprite to a child object of the corresponding player text
-                SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
-                if (childSpriteRenderer != null)
-                    childSpriteRenderer.sprite = playerSpriteBodies[i];
+                //  // Assign the sprite to a child object of the corresponding player text
+                // SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
+                // if (childSpriteRenderer != null)
+                //     childSpriteRenderer.sprite = playerSpriteBodies[i];
             }
             UnityEngine.Cursor.visible = false;
         }

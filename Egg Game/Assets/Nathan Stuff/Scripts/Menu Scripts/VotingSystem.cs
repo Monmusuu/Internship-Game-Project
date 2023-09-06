@@ -3,32 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Mirror;
 
-public class VotingSystem : MonoBehaviour
+public class VotingSystem : NetworkBehaviour
 {
     public int numMaps = 5; // Number of available maps
-    public TextMeshProUGUI[] voteCountTexts; // Array to store the TextMeshProUGUI components for displaying vote counts
+    [SerializeField] private TextMeshProUGUI[] voteCountTexts; // Array to store the TextMeshProUGUI components for displaying vote counts
 
     private Dictionary<int, bool> hasVoted; // Dictionary to track whether each player has voted
     private Dictionary<int, int> selectedMapIndex; // Dictionary to store the selected map index for each player
     private int[] voteCounts; // Array to store the vote counts for each map
 
+    public static VotingSystem Instance { get; private set; }
+
     private void Start()
     {
+        Instance = this;
+
         InitializeVotingSystem();
     }
 
-    public void Vote(int playerID, int mapIndex)
+    public void Vote(int connectionId, int mapIndex)
     {
-        if (hasVoted.ContainsKey(playerID) && !hasVoted[playerID])
+        if (!hasVoted.ContainsKey(connectionId) || !hasVoted[connectionId])
         {
             // Increment the vote count for the selected map
             voteCounts[mapIndex]++;
-            Debug.Log("Player " + playerID + " voted for map " + mapIndex);
+            Debug.Log("Player with connection ID " + connectionId + " voted for map " + mapIndex);
 
             // Set the selected map index for the player and mark them as voted
-            selectedMapIndex[playerID] = mapIndex;
-            hasVoted[playerID] = true;
+            selectedMapIndex[connectionId] = mapIndex;
+
+            if (!hasVoted.ContainsKey(connectionId))
+            {
+                hasVoted.Add(connectionId, true);
+            }
+            else
+            {
+                hasVoted[connectionId] = true;
+            }
 
             // Check if all players have voted
             if (AllPlayersVoted())
@@ -43,32 +56,56 @@ public class VotingSystem : MonoBehaviour
             // Update the vote count display
             UpdateVoteCountDisplay();
         }
+        else
+        {
+            // Player already voted, so undo the vote
+            UndoVote(connectionId);
+        }
     }
 
-    public void UndoVote(int playerID)
+
+    public void UndoVote(int connectionId)
     {
-        if (hasVoted.ContainsKey(playerID) && hasVoted[playerID])
+        if (hasVoted[connectionId])
         {
-            int selectedMap = selectedMapIndex[playerID];
+            int selectedMap = selectedMapIndex[connectionId];
 
             // Decrement the vote count for the selected map
             voteCounts[selectedMap]--;
-            Debug.Log("Player " + playerID + " vote for map " + selectedMap + " undone.");
+            Debug.Log("Player with connection ID " + connectionId + " vote for map " + selectedMap + " undone.");
 
             // Reset the selected map index and mark the player as not voted
-            selectedMapIndex[playerID] = -1;
-            hasVoted[playerID] = false;
+            selectedMapIndex[connectionId] = -1;
+            hasVoted[connectionId] = false;
 
             // Update the vote count display
             UpdateVoteCountDisplay();
         }
     }
 
-    public bool HasVoted(int playerID)
+    public void ClearVote(int connectionId)
     {
-        if (hasVoted.ContainsKey(playerID))
+        if (hasVoted[connectionId])
         {
-            return hasVoted[playerID];
+            int selectedMap = selectedMapIndex[connectionId];
+
+            // Decrement the vote count for the selected map
+            voteCounts[selectedMap]--;
+
+            // Reset the selected map index and mark the player as not voted
+            selectedMapIndex[connectionId] = -1;
+            hasVoted[connectionId] = false;
+
+            // Update the vote count display
+            UpdateVoteCountDisplay();
+        }
+    }
+
+    public bool HasVoted(int connectionId)
+    {
+        if (hasVoted.ContainsKey(connectionId))
+        {
+            return hasVoted[connectionId];
         }
         return false;
     }
@@ -83,10 +120,11 @@ public class VotingSystem : MonoBehaviour
         voteCounts = new int[numMaps];
 
         // Initialize each player's vote status and selected map index
-        for (int i = 0; i < PlayerSaveData.playerNumber; i++)
+        foreach (var connection in NetworkServer.connections)
         {
-            hasVoted.Add(i, false);
-            selectedMapIndex.Add(i, -1);
+            int connectionId = connection.Value.connectionId;
+            hasVoted.Add(connectionId, false);
+            selectedMapIndex.Add(connectionId, -1);
         }
 
         // Update the vote count display
@@ -98,7 +136,14 @@ public class VotingSystem : MonoBehaviour
         for (int i = 0; i < numMaps; i++)
         {
             voteCountTexts[i].text = voteCounts[i].ToString();
+            RpcUpdateVoteCountDisplay(i, voteCounts[i].ToString());
         }
+    }
+
+    [ClientRpc]
+    private void RpcUpdateVoteCountDisplay(int mapIndex, string voteCount)
+    {
+        voteCountTexts[mapIndex].text = voteCount;
     }
 
     private bool AllPlayersVoted()
@@ -155,13 +200,23 @@ public class VotingSystem : MonoBehaviour
     private void SwitchToMapScene(int mapIndex)
     {
         // Replace "MapScene1", "MapScene2", etc. with the actual scene names for each map index
-        string[] sceneNames = { "Nathan", "MapScene2", "MapScene3", "MapScene4", "MapScene5" };
+        string[] sceneNames = { "Nathan", "MapScene2", "MapScene3", "MapScene4", "MapScene5", "MapScene6" };
 
         // Check if the map index is within the valid range
         if (mapIndex >= 0 && mapIndex < sceneNames.Length)
         {
             string sceneName = sceneNames[mapIndex];
-            SceneManager.LoadScene(sceneName);
+            Debug.Log("Switching to scene: " + sceneName);
+
+            // Call the ServerChangeScene method on the NetworkManager to change the scene
+            if (NetworkManager.singleton != null)
+            {
+                NetworkManager.singleton.ServerChangeScene(sceneName);
+            }
+            else
+            {
+                Debug.LogError("NetworkManager not found. Make sure you have a NetworkManager in your scene.");
+            }
         }
         else
         {
@@ -169,3 +224,4 @@ public class VotingSystem : MonoBehaviour
         }
     }
 }
+

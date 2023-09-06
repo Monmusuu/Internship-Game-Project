@@ -12,7 +12,7 @@ public class PlayerAutoJoins : MonoBehaviour
     void Awake()
     {
         // Get the current player count from PlayerSaveData
-        int playerCount = PlayerSaveData.playerNumber;
+        int playerCount = playerSaveData.playerNumber;
 
         // Calculate the middle position of the canvas
         Vector3 spawnPosition = canvas.transform.position;

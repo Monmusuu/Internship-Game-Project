@@ -1,14 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using Mirror;
 
-[RequireComponent(typeof(CharacterController))]
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     private Animator animator;
     public Rigidbody2D rigid;
-    private CharacterController controller;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private float jumpSpeed = 5;
     [SerializeField] private LayerMask groundLayer;
@@ -21,6 +19,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject Weapon;
     [SerializeField] private Collider2D weaponCollider;
     [SerializeField] private Animator m_WeaponAnimator;
+    [SyncVar(hook = nameof(OnFlipChanged))]
+    private bool isFacingRight = true;
     private bool lastDirRight = false;
     private bool attackFinished = false;
     private double weaponTimer = 1.5f;
@@ -31,11 +31,15 @@ public class Player : MonoBehaviour
     private bool right = false;
     private bool jumped = false;
     private bool attack = false;
+    [SyncVar]
     public bool isKing = false;
     public bool isPause = false;
+    [SyncVar]
     public bool becameKing = false;
+    [SyncVar]
     public bool isPlayer = false;
-    public bool isflashing = false;
+    [SyncVar(hook = nameof(OnIsFlashingChanged))]
+    private bool isflashing = false;
     private float maxSpeed = 15.0f;
     private int maxHealth = 6;
     private int currentHealth = 6;
@@ -44,12 +48,17 @@ public class Player : MonoBehaviour
     public Player[] player;
     public PlayerSaveData playerSaveData;
     public RoundControl roundControl;
+    public MultiTargetCamera multiTargetCamera;
     public GameObject BuildManager;
     public GameObject playerBlockPlacement;
     public GameObject trapInteraction;
     public Transform kingSpawnLocation;
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
+
+    private bool isRunningLocal = false; // Local variable to handle isRunning
+    [SyncVar(hook = nameof(OnRunningChanged))]
+    private bool isRunning = false; // Synced variable to handle isRunning
 
     public int GetMaxHealth() { return maxHealth; }
     public void SetMaxHealth(int value) { maxHealth = value; }
@@ -65,174 +74,216 @@ public class Player : MonoBehaviour
     {
         gameManager = GameObject.Find("GameState").GetComponent<GameManager>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
+        multiTargetCamera = GameObject.Find("Main Camera").GetComponent<MultiTargetCamera>();
         playerSaveData = GameObject.Find("GameState").GetComponent<PlayerSaveData>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         animator = GetComponent<Animator>();
         isPlayer = true;
         healthbar.SetMaxHealth(maxHealth);
-        BuildManager.SetActive(false);
+        playerBlockPlacement.SetActive(false);
         trapInteraction.SetActive(false);
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
-        controller = gameObject.GetComponent<CharacterController>();
-    }
 
-    public void OnMoveLeft(InputAction.CallbackContext context)
-    {
-        left = context.action.triggered;
-    }
-
-    public void OnMoveRight(InputAction.CallbackContext context)
-    {
-        right = context.action.triggered;
-    }
-
-    public void OnJump(InputAction.CallbackContext context)
-    {
-        jumped = context.action.triggered;
-    }
-
-    public void OnAttack(InputAction.CallbackContext context)
-    {
-        attack = context.action.triggered;
-    }
-
-    public void OnPause(InputAction.CallbackContext context)
-    {
-        if (context.performed)
+        if (isServer)
         {
-            isPause = !isPause;
+            roundControl = GameObject.FindObjectOfType<RoundControl>();
+            roundControl.AddPlayer(this); // Add this player to the players list
+            multiTargetCamera = GameObject.FindObjectOfType<MultiTargetCamera>();
+            multiTargetCamera.AddPlayer(this);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcActivateBuildManager(bool activate)
+    {   
+        BuildManager.SetActive(activate);
+    }
+
+ 
+    [ClientRpc]
+    private void RpcActivatePlayerPlacement(bool activate)
+    {
+        playerBlockPlacement.SetActive(activate);
+    }
+
+    [ClientRpc]
+    private void RpcActivateTrapInteraction(bool activate)
+    {
+        trapInteraction.SetActive(activate);
+    }
+
+    [Client]
+    private void ActivateBuildManager()
+    {
+        bool activate = roundControl.placingItems && isKing && roundControl.Round >= 1;
+        RpcActivateBuildManager(activate);
+    }
+
+    [Client]
+    private void ActivatePlayerPlacement()
+    {
+        bool activate = roundControl.placingItems && isPlayer && roundControl.Round >= 1;
+        RpcActivatePlayerPlacement(activate);
+    }
+
+    [Client]
+    private void ActivateTrapInteraction()
+    {
+        bool activate = roundControl.timerOn && isKing && roundControl.Round >= 1;
+        RpcActivateTrapInteraction(activate);
+    }
+
+    // OnDestroy is called when the player GameObject is destroyed
+    void OnDestroy()
+    {
+        // Ensure that the roundControl reference is valid and this is the server (host)
+        if (roundControl != null && isServer)
+        {
+            roundControl.RemovePlayer(this); // Remove this player from the players list
+        }
+
+        if (multiTargetCamera != null && isServer){
+            multiTargetCamera.RemovePlayer(this);
         }
     }
 
     void Update()
     {
+        left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
+        right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+        jumped = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
+        attack = Input.GetKeyDown(KeyCode.Mouse0);
+
         if (player == null || player.Length == 0)
         {
             InitializePlayerArray();
         }
 
-
-        if (!gameManager.GetIsPaused()) {
-            // Look for the Esc keypress and pause the game if Esc is pressed.
-            if (isPause && !gameManager.GetIsPaused()) {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            isPause = !isPause;
+            if (isPause)
+            {
                 gameManager.PauseGame();
             }
-        } else {
-            // If the game is paused and the Esc key is pressed, unpause the game.
-            if (!isPause && gameManager.GetIsPaused()) {
+            else
+            {
                 gameManager.UnpauseGame();
             }
         }
 
-        if(roundControl.placingItems && isPlayer && roundControl.Round >= 1 ){
-            playerBlockPlacement.SetActive(true);
-        }else{
-            playerBlockPlacement.SetActive(false);
-        }
+        ActivateBuildManager();
+        ActivatePlayerPlacement();
+        ActivateTrapInteraction();
 
-        if(roundControl.placingItems && isKing && roundControl.Round >= 1 ){
-            BuildManager.SetActive(true);
-        }else{
-            BuildManager.SetActive(false);
-        }
-
-        if(roundControl.timerOn && isKing && roundControl.Round >= 1){
-            trapInteraction.SetActive(true);
-        }else{
-            trapInteraction.SetActive(false);
-        }
-
-        if(roundControl.timerOn){
-            if (!isKing)
+        if(!roundControl.placingItems){
+            if (roundControl.timerOn)
             {
-                GroundCheck();
-
-                if (isGrounded)
+                if (!isKing)
                 {
-                    animator.SetBool("Landed", true);
-                    if (jumped)
+                    GroundCheck();
+
+                    if (isGrounded)
                     {
-                        animator.SetBool("Landed", false);
-                        rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
-                        animator.SetTrigger("Jumped");
-                    }
-                    else
-                    {
-                        if (Mathf.Abs(rigid.velocity.x) > 0.1f)
+                        animator.SetBool("Landed", true);
+                        if (jumped)
                         {
-                            animator.SetBool("Running", true);
+                            animator.SetBool("Landed", false);
+                            rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
+                            animator.SetTrigger("Jumped");
                         }
-                        else if (Mathf.Abs(rigid.velocity.x) <= 0f)
+                        else
                         {
-                            animator.SetBool("Running", false);
+                            // Set the local isRunning variable based on the rigidbody velocity
+                            isRunningLocal = Mathf.Abs(rigid.velocity.x) > 0.1f;
                         }
                     }
-                }
 
-                wasGrounded = isGrounded;
-                
-                // Limit maximum speed
-                rigid.velocity = new Vector2(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y);
+                    wasGrounded = isGrounded;
 
-                float targetVelocityX = 0f;
-                if (left)
-                {
-                    targetVelocityX = -m_RunSpeed;
-                    if (!lastDirRight)
+                    rigid.velocity = new Vector2(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y);
+
+                    float targetVelocityX = 0f;
+                    if (left)
                     {
-                        Flip();
+                        targetVelocityX = -m_RunSpeed;
+                    }
+                    else if (right)
+                    {
+                        targetVelocityX = m_RunSpeed;
+                    }
+
+                    float acceleration = left || right ? 0.1f : 0.008f;
+                    rigid.velocity = new Vector2(Mathf.Lerp(rigid.velocity.x, targetVelocityX, acceleration), rigid.velocity.y);
+
+                    if (isAttacking)
+                    {
+
+                        internalTimer -= Time.deltaTime;
+                        if (internalTimer <= 0)
+                        {
+                            weaponCollider.enabled = false;
+                            isAttacking = false;
+                            internalTimer = weaponTimer;
+                            attackFinished = true;
+                        }
+                    }
+                    if (attackFinished)
+                    {
+                        weaponCooldown -= Time.deltaTime;
+                    }
+                    if (weaponCooldown <= 0)
+                    {
+                        weaponCooldown = 0.8f;
+                        attackFinished = false;
                     }
                 }
-                else if (right)
-                {
-                    targetVelocityX = m_RunSpeed;
-                    if (lastDirRight)
-                    {
-                        Flip();
-                    }
-                }
 
-                // Apply smooth acceleration and deceleration
-                float acceleration = left || right ? 0.1f : 0.008f;
-                rigid.velocity = new Vector2(Mathf.Lerp(rigid.velocity.x, targetVelocityX, acceleration), rigid.velocity.y);
-
-
-                if (attack && weaponCooldown == 0.8f && !isAttacking)
+                if (becameKing)
                 {
-                    isAttacking = true;
-                    weaponCollider.enabled = true;
-                    m_WeaponAnimator.SetTrigger("Swing");
-                }
-                if (isAttacking)
-                {
-                    internalTimer -= Time.deltaTime;
-                    if (internalTimer <= 0)
-                    {
-                        weaponCollider.enabled = false;
-                        isAttacking = false;
-                        internalTimer = weaponTimer;
-                        attackFinished = true;
-                    }
-                }
-                if (attackFinished)
-                {
-                    weaponCooldown -= Time.deltaTime;
-                }
-                if (weaponCooldown <= 0)
-                {
-                    weaponCooldown = 0.8f;
-                    attackFinished = false;
+                    rigid.velocity = Vector2.zero;
+                    transform.position = kingSpawnLocation.position;
                 }
             }
 
-            if (becameKing)
+            if (isLocalPlayer)
             {
-                //Debug.Log("Kingship has been claimed");
-                rigid.velocity = Vector2.zero;
-                transform.position = kingSpawnLocation.position;
+                // If the player changes direction, update the lastDirRight and isFacingRight variables
+                if (left && !lastDirRight)
+                {
+                    lastDirRight = true;
+                    isFacingRight = true;
+                    Flip();
+                }
+                else if (right && lastDirRight)
+                {
+                    lastDirRight = false;
+                    isFacingRight = false;
+                    Flip();
+                }
+
+                // Call the CmdPlayerJump command on the server if the player jumped
+                if (jumped)
+                {
+                    CmdPlayerJump();
+                }
+
+                // Call the CmdPlayerAttack command on the server if the player attacked
+                if (attack)
+                {
+                    CmdPlayerAttack();
+                }
+
+                // Set the local isRunning variable based on the rigidbody velocity
+                isRunningLocal = Mathf.Abs(rigid.velocity.x) > 0.1f;
+
+                // Call CmdSetRunning method directly on the server (host)
+                CmdSetRunning(isRunningLocal);
             }
         }
+        
+
     }
 
     void InitializePlayerArray()
@@ -269,10 +320,72 @@ public class Player : MonoBehaviour
 
     void Flip()
     {
+        // Reverse the isFacingRight value for the host to ensure correct flip for all players
+        if (isLocalPlayer)
+        {
+            isFacingRight = !isFacingRight;
+            CmdSetFacingRight(isFacingRight);
+        }
+
         Vector3 currentScale = gameObject.transform.localScale;
-        currentScale.x *= -1;
+        currentScale.x = isFacingRight ? 1 : -1;
         gameObject.transform.localScale = currentScale;
-        lastDirRight = !lastDirRight;
+    }
+
+    private void OnFlipChanged(bool oldValue, bool newValue)
+    {
+        // Update the player's scale based on the isFacingRight variable
+        Vector3 currentScale = gameObject.transform.localScale;
+        currentScale.x = newValue ? 1 : -1;
+        gameObject.transform.localScale = currentScale;
+    }
+
+    [Command]
+    private void CmdSetFacingRight(bool facingRight)
+    {
+        isFacingRight = facingRight;
+    }
+
+    [Command]
+    private void CmdSetRunning(bool running)
+    {
+        isRunning = running;
+    }
+
+    private void OnRunningChanged(bool oldValue, bool newValue)
+    {
+        animator.SetBool("Running", newValue);
+    }
+
+    [Command]
+    private void CmdPlayerJump()
+    {
+        // Perform jump logic here, like applying jump force to the rigidbody
+        if (isGrounded)
+        {
+            rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
+            animator.SetTrigger("Jumped");
+        }
+    }
+
+    [Command]
+    private void CmdPlayerAttack()
+    {
+        // Perform attack logic here on the server
+        if (!isAttacking && weaponCooldown == 0.8f)
+        {
+            isAttacking = true;
+            weaponCollider.enabled = true;
+            RpcPlayAttackAnimation(); // Call an RPC to play the attack animation on all clients
+        }
+    }
+
+    // RPC to play the attack animation on all clients (including the host)
+    [ClientRpc]
+    private void RpcPlayAttackAnimation()
+    {
+        // Perform any visual/sound effects related to the attack on the clients here, if needed.
+        m_WeaponAnimator.SetTrigger("Swing"); // Assuming you have a common trigger "Swing" for both host and client
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -290,18 +403,17 @@ public class Player : MonoBehaviour
         }
     }
 
-    // void OnTriggerStay2D(Collider2D other)
-    // {
-    //     if (other.gameObject.CompareTag("KingPoint"))
-    //     {
-    //         isKing = true;
-    //         becameKing = false;
-    //     }
-    // }
-
-    IEnumerator InvincibleFlash()
+    private void OnIsFlashingChanged(bool oldValue, bool newValue)
     {
-        for (int i = 0; i <= 2.8; i++)
+        if (newValue)
+        {
+            StartCoroutine(InvincibleFlash());
+        }
+    }
+
+    private IEnumerator InvincibleFlash()
+    {
+        for (int i = 0; i <= 2; i++) // Changed 2.8 to 2 (assuming it's for visual flashing effect)
         {
             GetComponent<Renderer>().material.color = new Color(1f, 0.30196078f, 0.30196078f);
             yield return new WaitForSeconds(0.5f);

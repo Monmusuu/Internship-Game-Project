@@ -1,26 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class GuillotineScript : MonoBehaviour
+public class GuillotineScript : NetworkBehaviour
 {
     public Transform pointA; // Starting point
     public Transform pointB; // Target point
     public float moveSpeedDown = 5f; // Speed of movement down to point B
     public float moveSpeedUp = 2f; // Speed of movement back up to point A
 
+    [SyncVar]
     private bool isMovingDown = false; // Flag indicating if the object is moving down
+
+    [SyncVar]
     private bool isMovingUp = false; // Flag indicating if the object is moving up
+
+    [SyncVar]
+    private Vector3 syncedPosition; // Synchronized position across the network
+
+    private void Start()
+    {
+        if (isServer)
+        {
+            syncedPosition = transform.position;
+        }
+    }
 
     private void Update()
     {
-        if (isMovingDown)
+        if (isServer)
         {
-            MoveDown();
+            if (isMovingDown)
+            {
+                MoveDown();
+            }
+            else if (isMovingUp)
+            {
+                MoveUp();
+            }
         }
-        else if (isMovingUp)
+        else
         {
-            MoveUp();
+            // Interpolate position for clients
+            transform.position = Vector3.Lerp(transform.position, syncedPosition, Time.deltaTime * 10f);
         }
     }
 
@@ -32,33 +55,38 @@ public class GuillotineScript : MonoBehaviour
 
     private void StartMovingDown()
     {
-        //Debug.Log("StartMovingDown called");
+        if (!isServer) return;
+
         isMovingDown = true;
         isMovingUp = false;
     }
 
     private void MoveDown()
     {
-        //Debug.Log("MoveDown called");
+        if (!isServer) return;
+
         transform.position = Vector3.MoveTowards(transform.position, pointB.position, moveSpeedDown * Time.deltaTime);
 
         if (transform.position == pointB.position)
         {
-            Debug.Log("MoveDown completed");
             isMovingDown = false;
             isMovingUp = true;
         }
+
+        syncedPosition = transform.position;
     }
 
     private void MoveUp()
     {
-        //Debug.Log("MoveUp called");
+        if (!isServer) return;
+
         transform.position = Vector3.MoveTowards(transform.position, pointA.position, moveSpeedUp * Time.deltaTime);
 
         if (transform.position == pointA.position)
         {
-            Debug.Log("MoveUp completed");
             isMovingUp = false;
         }
+
+        syncedPosition = transform.position;
     }
 }

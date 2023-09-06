@@ -15,7 +15,6 @@ TagManager:
   - Trap
   - Player1IMG
   - Background
-  - Map
   - Cursor
   - button
   - button0
@@ -25,6 +24,7 @@ TagManager:
   - button4
   - button5
   - SpecialButton
+  - Platform
   layers:
   - Default
   - TransparentFX

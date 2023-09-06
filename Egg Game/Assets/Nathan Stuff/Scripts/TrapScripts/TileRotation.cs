@@ -1,54 +1,89 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
+using Mirror;
 
-public class TileRotation : MonoBehaviour
+public class TileRotation : NetworkBehaviour
 {
-    [System.Serializable]
-    public class ChildRotationInfo
-    {
-        public Transform childTransform; // Reference to the child transform
-        public float rotationSpeed = -90f; // Rotation speed for the child
-    }
-
-    public float baseRotationSpeed = 90f; // Rotation speed for the base object
-    public ChildRotationInfo[] childRotationInfos; // Array of child rotation information
     public RoundControl roundControl;
+    private bool rotationRequested = false;
 
-    void StartRotation()
+    [SerializeField]
+    private float parentRotationSpeed = 40f;
+
+    [SerializeField]
+    private GameObject childPrefab; // Reference to the child prefab
+
+    [SyncVar(hook = nameof(OnRotationStateChanged))]
+    private float currentRotation = 0f;
+
+    [SerializeField]
+    private Transform[] childSpawnTransforms;
+
+    private void Start()
     {
-        RotateObject(transform, baseRotationSpeed);
-
-        foreach (ChildRotationInfo childInfo in childRotationInfos)
-        {
-            StartChildRotation(childInfo);
-        }
-    }
-
-    void StartChildRotation(ChildRotationInfo childInfo)
-    {
-        RotateObject(childInfo.childTransform, childInfo.rotationSpeed);
-    }
-
-    private void Start() {
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
-    }
-
-    void Update()
-    {
-        if(roundControl.timerOn){
-            StartRotation();
-
-            RotateObject(transform, baseRotationSpeed);
-
-            foreach (ChildRotationInfo childInfo in childRotationInfos)
-            {
-                RotateObject(childInfo.childTransform, childInfo.rotationSpeed);
-            }
+        if (isServer)
+        {
+            SpawnChildObjects();
         }
     }
 
-    void RotateObject(Transform objectTransform, float rotationSpeed)
+    [ServerCallback]
+    private void Update()
     {
-        objectTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+        if (roundControl.timerOn)
+        {
+            rotationRequested = true;
+            currentRotation += parentRotationSpeed * Time.deltaTime;
+        }
+    }
+
+    private void OnRotationStateChanged(float oldRotation, float newRotation)
+    {
+        rotationRequested = true;
+        currentRotation = newRotation;
+
+        transform.rotation = Quaternion.Euler(0f, 0f, currentRotation);
+    }
+
+    private void FixedUpdate()
+    {
+
+        // Update the rotation of the parent
+        transform.rotation = Quaternion.Euler(0f, 0f, currentRotation);
+
+        // Calculate child rotation speed to remain upright
+        float childRotationSpeed = -parentRotationSpeed * Mathf.Deg2Rad;
+
+        // Rotate the child objects to remain upright
+        foreach (Transform childTransform in transform)
+        {
+            childTransform.rotation = Quaternion.identity; // Reset rotation
+            childTransform.Rotate(Vector3.forward, childRotationSpeed * Time.deltaTime, Space.Self); // Rotate around local Z-axis
+        }
+    }
+
+    [Server]
+    private void SpawnChildObjects()
+    {
+        foreach (Transform spawnTransform in childSpawnTransforms)
+        {
+            Vector3 spawnPosition = spawnTransform.position;
+            Quaternion spawnRotation = spawnTransform.rotation;
+
+            GameObject spawnedChild = Instantiate(childPrefab, spawnPosition, spawnRotation);
+
+            // Attach the ChildObject script to the spawned child
+            ChildPlatform childScript = spawnedChild.GetComponent<ChildPlatform>();
+            if (childScript != null)
+            {
+                childScript.ParentIdentity = this.netIdentity; // Assign the parent identity
+            }
+            else
+            {
+                Debug.LogWarning("ChildPlatform script not found on spawned child!");
+            }
+
+            NetworkServer.Spawn(spawnedChild);
+        }
     }
 }
