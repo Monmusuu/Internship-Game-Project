@@ -48,9 +48,13 @@ public class PlayerSaveData : MonoBehaviour
 
     private void Start()
     {
+<<<<<<< Updated upstream
         Debug.Log("Players: " + playerNumber);
         scene = SceneManager.GetActiveScene();
 
+=======
+        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+>>>>>>> Stashed changes
     }
 
     private void OnEnable()
@@ -64,15 +68,16 @@ public class PlayerSaveData : MonoBehaviour
     }
     private void Update()
     {
+        scene = SceneManager.GetActiveScene();
+
         if (scene.name == "CharacterSelection")
         {
-
-            for (int i = 0; i < playerNumber; i++)
+            for (int i = 0; i < customNetworkManager.playerCount; i++)
             {
-                GameObject playerObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
-                if (playerObject != null)
+                GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
+                if (selectionObject != null)
                 {
-                    CharacterSelection characterSelection = playerObject.GetComponent<CharacterSelection>();
+                    CharacterSelection characterSelection = selectionObject.GetComponent<CharacterSelection>();
                     if (characterSelection != null)
                     {
 
@@ -87,6 +92,7 @@ public class PlayerSaveData : MonoBehaviour
                                 Array.Resize(ref playerWeaponSpriteNumbers, i + 1);
                             if (playerAnimatorNumbers.Length <= i)
                                 Array.Resize(ref playerAnimatorNumbers, i + 1);
+<<<<<<< Updated upstream
 
                             playerHatSpriteNumbers[i] = characterSelection.hatValue;
                             playerBodySpriteNumbers[i] = characterSelection.bodyValue;
@@ -97,13 +103,71 @@ public class PlayerSaveData : MonoBehaviour
                             // Debug.Log("Body " + playerBodySpriteNumbers[i]);
                             // Debug.Log("Weapon " + playerWeaponSpriteNumbers[i]);
                             // Debug.Log("Animator " + playerAnimatorNumbers[i]);
+=======
+>>>>>>> Stashed changes
                         }
                     }
                 }
             }
         }
+
+        if (scene.name != "CharacterSelection" && scene.name != "MapSelection" && scene.name != "Menu")
+        {
+
+            // playerTexts = new GameObject[]
+            // {
+            //     GameObject.Find("Player One Text"),
+            //     GameObject.Find("Player Two Text"),
+            //     GameObject.Find("Player Three Text"),
+            //     GameObject.Find("Player Four Text"),
+            //     GameObject.Find("Player Five Text"),
+            //     GameObject.Find("Player Six Text")
+            // };
+
+            // for (int i = customNetworkManager.playerCount; i < players.Length; i++)
+            // {
+            //     if (playerTexts[i] != null)
+            //         playerTexts[i].SetActive(false);
+            // }
+
+            // for (int i = 0; i < customNetworkManager.playerCount; i++)
+            // {
+            //      // Assign the sprite to a child object of the corresponding player text
+            //     SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
+            //     if (childSpriteRenderer != null)
+            //         childSpriteRenderer.sprite = playerSpriteBodies[i];
+            // }
+        }
     }
 
+<<<<<<< Updated upstream
+=======
+
+
+    private IEnumerator ChangeSceneCoroutine()
+    {
+        yield return new WaitForSeconds(1f); // Delay the scene change to allow time for other network operations
+
+        // Perform the scene change
+        if (NetworkServer.active)
+        {
+            CustomNetworkManager customNetworkManager = FindObjectOfType<CustomNetworkManager>();
+            if (customNetworkManager != null)
+            {
+                customNetworkManager.ServerChangeScene("MapSelection");
+            }
+        }
+        else if (NetworkClient.active)
+        {
+            CustomNetworkManager customNetworkManager = FindObjectOfType<CustomNetworkManager>();
+            if (customNetworkManager != null)
+            {
+                NetworkClient.connection.Send(new ChangeSceneMessage { sceneName = "MapSelection" });
+            }
+        }
+    }
+
+>>>>>>> Stashed changes
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "CharacterSelection")
@@ -111,6 +175,7 @@ public class PlayerSaveData : MonoBehaviour
             playerNumber = 0;
             playerReadyNumber = 0;
         }
+<<<<<<< Updated upstream
 
         if (scene.name != "CharacterSelection" && scene.name != "MapSelection" && scene.name != "Menu")
         {
@@ -170,5 +235,7 @@ public class PlayerSaveData : MonoBehaviour
             }
             UnityEngine.Cursor.visible = false;
         }
+=======
+>>>>>>> Stashed changes
     }
 }

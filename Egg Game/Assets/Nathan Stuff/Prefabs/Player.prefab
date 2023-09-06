@@ -782,7 +782,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.22, y: 2.09}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -889,6 +889,13 @@ GameObject:
   - component: {fileID: 3175108449416737197}
   - component: {fileID: 3219085190463158595}
   - component: {fileID: 3219085190463158592}
+<<<<<<< Updated upstream
+=======
+  - component: {fileID: -3116542750361915830}
+  - component: {fileID: -1306996281108006186}
+  - component: {fileID: 5194341589280456870}
+  - component: {fileID: 6729537193386485911}
+>>>>>>> Stashed changes
   m_Layer: 8
   m_Name: Player
   m_TagString: Player1
@@ -964,7 +971,7 @@ SpriteRenderer:
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.07, y: 1.79}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1003,6 +1010,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c24240ac570a1499d9229432e10b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< Updated upstream
+=======
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+>>>>>>> Stashed changes
   rigid: {fileID: 3219085190463158599}
   gameManager: {fileID: 0}
   jumpSpeed: 11
@@ -1034,6 +1047,34 @@ MonoBehaviour:
   kingSpawnLocation: {fileID: 0}
   groundCheckCollider: {fileID: 3219085189834981985}
   groundCheckCollider2: {fileID: 3219085189834981985}
+  customNetworkManager: {fileID: 0}
+  PlayerNumber: 0
+  hatSpriteIndex: 0
+  hatSpriteVariations:
+  - {fileID: -815256263, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: -1746037780, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1805595645, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: -697750836, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1585972040, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1734291148, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  hatSpriteRenderer: {fileID: 0}
+  bodySpriteIndex: 0
+  bodySpriteVariations:
+  - {fileID: 488394471, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1455047922, guid: 6f41fc16e7510d547a8b96eb84722b8c, type: 3}
+  bodySpriteRenderer: {fileID: 0}
+  weaponSpriteIndex: 0
+  weaponSpriteVariations:
+  - {fileID: 149902712, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: -497650530, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: -1721576113, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 2131181691, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  weaponSpriteRenderer: {fileID: 0}
+  animatorIndex: 0
+  animatorVariations:
+  - {fileID: 9100000, guid: 783ea1d234901e84caf67c76f6f0e7c7, type: 2}
+  - {fileID: 9100000, guid: c8e087b595453984698fe11b9a3ce378, type: 2}
+  animator: {fileID: 0}
 --- !u!114 &3175108449416737197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1217,6 +1258,89 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+<<<<<<< Updated upstream
+=======
+--- !u!114 &-3116542750361915830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3219085190463158601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3392503721
+  serverOnly: 0
+  visible: 0
+  hasSpawned: 0
+--- !u!114 &-1306996281108006186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3219085190463158601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 308897386457009593}
+  clientAuthority: 0
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChange: 1
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  compressRotation: 0
+  positionPrecision: 0.0001
+  scalePrecision: 0.01
+--- !u!114 &5194341589280456870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3219085190463158601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3ed940efdc25a345b926284a1c24cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6729537193386485911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3219085190463158601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 3219085190463158592}
+>>>>>>> Stashed changes
 --- !u!1 &5988289339147122484
 GameObject:
   m_ObjectHideFlags: 0
