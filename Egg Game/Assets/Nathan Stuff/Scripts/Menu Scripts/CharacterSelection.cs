@@ -9,19 +9,19 @@ using Mirror;
 public class CharacterSelection : NetworkBehaviour
 {
     [SyncVar(hook = nameof(OnHatValueChanged))]
-    private int _hatValue = 0;
+    public int _hatValue = 0;
 
     [SyncVar(hook = nameof(OnAnimatorValueChanged))]
-    private int _animatorValue = 0;
+    public int _animatorValue = 0;
 
     [SyncVar(hook = nameof(OnBodyValueChanged))]
-    private int _bodyValue = 0;
+    public int _bodyValue = 0;
 
     [SyncVar(hook = nameof(OnWeaponValueChanged))]
-    private int _weaponValue = 0;
+    public int _weaponValue = 0;
 
     [SyncVar(hook = nameof(OnReadyStateChanged))]
-    private bool _isReady = false;
+    public bool _isReady = false;
 
     [SerializeField] private Sprite[] allHats;
     [SerializeField] private RuntimeAnimatorController[] allAnimators;
@@ -38,6 +38,9 @@ public class CharacterSelection : NetworkBehaviour
     
     public PlayerSaveData playerSaveData;
 
+    [SerializeField]
+    private CustomNetworkManager customNetworkManager;
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -48,6 +51,7 @@ public class CharacterSelection : NetworkBehaviour
 
     private void Start()
     {
+        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
         canvas = GameObject.Find("Canvas").transform;
         this.transform.SetParent(canvas.transform);
         playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
@@ -239,6 +243,8 @@ public class CharacterSelection : NetworkBehaviour
 
             if (_isReady)
             {
+                RpcSaveCustomizationChoices(_hatValue, _bodyValue, _weaponValue, _animatorValue);
+
                 playerSaveData.playerReadyNumber += 1;
                 Debug.Log("Players Ready: " + playerSaveData.playerReadyNumber);
             }
@@ -255,4 +261,20 @@ public class CharacterSelection : NetworkBehaviour
         isReady = newValue;
     }
 
+    [ClientRpc]
+    private void RpcSaveCustomizationChoices(int hatValue, int bodyValue, int weaponValue, int animatorValue)
+    {
+        for (int i = 0; i < customNetworkManager.playerCount; i++)
+        {
+            GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
+            if (selectionObject != null)
+            {
+                // Update the customization choices for all clients
+                playerSaveData.playerHatSpriteNumbers[connectionToClient.connectionId] = hatValue;
+                playerSaveData.playerBodySpriteNumbers[connectionToClient.connectionId] = bodyValue;
+                playerSaveData.playerWeaponSpriteNumbers[connectionToClient.connectionId] = weaponValue;
+                playerSaveData.playerAnimatorNumbers[connectionToClient.connectionId] = animatorValue;
+            }
+        }
+    }
 }
