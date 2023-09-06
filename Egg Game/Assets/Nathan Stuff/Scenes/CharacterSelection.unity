@@ -2042,7 +2042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 966defd82d2c82147a437a29c60186a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 1
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0
   characterSelections:
@@ -2053,7 +2053,7 @@ MonoBehaviour:
   - {fileID: 2097385673}
   - {fileID: 1281021156}
   allHats:
-  - {fileID: -815256263, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 0}
   - {fileID: -1746037780, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   - {fileID: 1805595645, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   - {fileID: -697750836, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
@@ -2080,7 +2080,6 @@ MonoBehaviour:
   players: []
   playerTexts: []
   playerCursors: []
-  customNetworkManager: {fileID: 0}
 --- !u!114 &1984594596
 MonoBehaviour:
   m_ObjectHideFlags: 0

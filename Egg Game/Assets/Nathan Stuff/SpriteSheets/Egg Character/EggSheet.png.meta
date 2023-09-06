@@ -629,27 +629,6 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: EggSheet_18
-      rect:
-        serializedVersion: 2
-        x: 587
-        y: 3
-        width: 161
-        height: 220
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d836496dd8ab32a4eb5bd2c29d4d1211
-      internalID: -815256263
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     physicsShape: []
     bones: []
