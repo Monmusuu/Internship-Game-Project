@@ -62,9 +62,6 @@ public class PlayerSaveData : NetworkBehaviour
     private void Start()
     {
         customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
-        Debug.Log("Players: " + customNetworkManager.playerCount);
-        scene = SceneManager.GetActiveScene();
-
     }
 
     private void OnEnable()
@@ -83,15 +80,16 @@ public class PlayerSaveData : NetworkBehaviour
     }
     private void Update()
     {
+        scene = SceneManager.GetActiveScene();
+
         if (scene.name == "CharacterSelection")
         {
-
-            for (int i = 0; i < playerNumber; i++)
+            for (int i = 0; i < customNetworkManager.playerCount; i++)
             {
-                GameObject playerObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
-                if (playerObject != null)
+                GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
+                if (selectionObject != null)
                 {
-                    CharacterSelection characterSelection = playerObject.GetComponent<CharacterSelection>();
+                    CharacterSelection characterSelection = selectionObject.GetComponent<CharacterSelection>();
                     if (characterSelection != null)
                     {
 
@@ -106,16 +104,6 @@ public class PlayerSaveData : NetworkBehaviour
                                 Array.Resize(ref playerWeaponSpriteNumbers, i + 1);
                             if (playerAnimatorNumbers.Length <= i)
                                 Array.Resize(ref playerAnimatorNumbers, i + 1);
-
-                            // playerHatSpriteNumbers[i] = characterSelection.hatValue;
-                            // playerBodySpriteNumbers[i] = characterSelection.bodyValue;
-                            // playerWeaponSpriteNumbers[i] = characterSelection.weaponValue;
-                            // playerAnimatorNumbers[i] = characterSelection.animatorValue;
-
-                            // Debug.Log("Hat " + playerHatSpriteNumbers[i]);
-                            // Debug.Log("Body " + playerBodySpriteNumbers[i]);
-                            // Debug.Log("Weapon " + playerWeaponSpriteNumbers[i]);
-                            // Debug.Log("Animator " + playerAnimatorNumbers[i]);
                         }
                     }
                 }
@@ -127,7 +115,37 @@ public class PlayerSaveData : NetworkBehaviour
                 StartCoroutine(ChangeSceneCoroutine());
             }
         }
+
+        if (scene.name != "CharacterSelection" && scene.name != "MapSelection" && scene.name != "Menu")
+        {
+
+            // playerTexts = new GameObject[]
+            // {
+            //     GameObject.Find("Player One Text"),
+            //     GameObject.Find("Player Two Text"),
+            //     GameObject.Find("Player Three Text"),
+            //     GameObject.Find("Player Four Text"),
+            //     GameObject.Find("Player Five Text"),
+            //     GameObject.Find("Player Six Text")
+            // };
+
+            // for (int i = customNetworkManager.playerCount; i < players.Length; i++)
+            // {
+            //     if (playerTexts[i] != null)
+            //         playerTexts[i].SetActive(false);
+            // }
+
+            // for (int i = 0; i < customNetworkManager.playerCount; i++)
+            // {
+            //      // Assign the sprite to a child object of the corresponding player text
+            //     SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
+            //     if (childSpriteRenderer != null)
+            //         childSpriteRenderer.sprite = playerSpriteBodies[i];
+            // }
+        }
     }
+
+
 
     private IEnumerator ChangeSceneCoroutine()
     {
@@ -152,8 +170,6 @@ public class PlayerSaveData : NetworkBehaviour
         }
     }
 
-
-
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (NetworkClient.active && scene.name == "MapSelection")
@@ -163,65 +179,6 @@ public class PlayerSaveData : NetworkBehaviour
         if (scene.name == "CharacterSelection")
         {
             playerReadyNumber = 0;
-        }
-
-        if (scene.name != "CharacterSelection" && scene.name != "MapSelection" && scene.name != "Menu")
-        {
-            players = new GameObject[]
-            {
-                GameObject.FindGameObjectWithTag("Player1"),
-                GameObject.FindGameObjectWithTag("Player2"),
-                GameObject.FindGameObjectWithTag("Player3"),
-                GameObject.FindGameObjectWithTag("Player4"),
-                GameObject.FindGameObjectWithTag("Player5"),
-                GameObject.FindGameObjectWithTag("Player6")
-            };
-
-            playerTexts = new GameObject[]
-            {
-                GameObject.Find("Player One Text"),
-                GameObject.Find("Player Two Text"),
-                GameObject.Find("Player Three Text"),
-                GameObject.Find("Player Four Text"),
-                GameObject.Find("Player Five Text"),
-                GameObject.Find("Player Six Text")
-            };
-
-            for (int i = playerNumber; i < players.Length; i++)
-            {
-                if (playerTexts[i] != null)
-                    playerTexts[i].SetActive(false);
-            }
-
-            // Initialize the sprite arrays with the correct sizes
-            playerSpriteHats = new Sprite[playerNumber];
-            playerSpriteWeapons = new Sprite[playerNumber];
-            playerSpriteBodies = new Sprite[playerNumber];
-
-            // // Debug log to check saved values
-            // Debug.Log("Player Hat Sprite Numbers: " + string.Join(", ", playerHatSpriteNumbers));
-            // Debug.Log("Player Body Sprite Numbers: " + string.Join(", ", playerBodySpriteNumbers));
-            // Debug.Log("Player Weapon Sprite Numbers: " + string.Join(", ", playerWeaponSpriteNumbers));
-
-            for (int i = 0; i < playerNumber; i++)
-            {
-                // playerSpriteHats[i] = allHats[playerHatSpriteNumbers[i]];
-                // playerSpriteWeapons[i] = allWeapons[playerWeaponSpriteNumbers[i]];
-                // playerSpriteBodies[i] = allBodies[playerBodySpriteNumbers[i]];
-
-                // players[i].transform.GetChild(5).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteHats[i];
-                // players[i].transform.GetChild(4).gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteWeapons[i];
-                // players[i].transform.gameObject.GetComponent<SpriteRenderer>().sprite = playerSpriteBodies[i];
-
-                // Animator playerAnimator = players[i].GetComponent<Animator>();
-                // playerAnimator.runtimeAnimatorController = allAnimators[playerAnimatorNumbers[i]];
-
-                //  // Assign the sprite to a child object of the corresponding player text
-                // SpriteRenderer childSpriteRenderer = playerTexts[i].GetComponentInChildren<SpriteRenderer>();
-                // if (childSpriteRenderer != null)
-                //     childSpriteRenderer.sprite = playerSpriteBodies[i];
-            }
-            UnityEngine.Cursor.visible = false;
         }
     }
 }

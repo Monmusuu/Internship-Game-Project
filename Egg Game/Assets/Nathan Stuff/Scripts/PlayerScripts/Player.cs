@@ -5,7 +5,6 @@ using Mirror;
 
 public class Player : NetworkBehaviour
 {
-    private Animator animator;
     public Rigidbody2D rigid;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private float jumpSpeed = 5;
@@ -56,6 +55,11 @@ public class Player : NetworkBehaviour
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
 
+    [SerializeField]
+    private CustomNetworkManager customNetworkManager;
+
+    public int PlayerNumber; // This will store the player number extracted from the tag
+
     private bool isRunningLocal = false; // Local variable to handle isRunning
     [SyncVar(hook = nameof(OnRunningChanged))]
     private bool isRunning = false; // Synced variable to handle isRunning
@@ -65,25 +69,149 @@ public class Player : NetworkBehaviour
     public int GetCurrentHealth() { return currentHealth; }
     public void SetCurrentHealth(int value) { currentHealth = value; }
 
+    [SerializeField][SyncVar(hook = nameof(OnHatSpriteChange))]
+    private int hatSpriteIndex = 0;
+
+    [SerializeField]
+    private Sprite[] hatSpriteVariations;
+
+    [SerializeField]
+    private SpriteRenderer hatSpriteRenderer;
+
+    public void hatChangeSprite(int newIndex)
+    {
+        //if (isServer)
+        //{
+            hatSpriteIndex = newIndex;
+        //}
+    }
+
+    private void OnHatSpriteChange(int oldIndex, int newIndex)
+    {
+        hatSpriteRenderer.sprite = hatSpriteVariations[newIndex];
+    }
+
+    [SerializeField][SyncVar(hook = nameof(OnBodySpriteChange))]
+    private int bodySpriteIndex = 0;
+
+    [SerializeField]
+    private Sprite[] bodySpriteVariations;
+
+    [SerializeField]
+    private SpriteRenderer bodySpriteRenderer;
+
+    public void bodyChangeSprite(int newIndex)
+    {
+        //if (isServer)
+        //{
+            bodySpriteIndex = newIndex;
+        //}
+    }
+
+    private void OnBodySpriteChange(int oldIndex, int newIndex)
+    {
+        bodySpriteRenderer.sprite = bodySpriteVariations[newIndex];
+    }
+
+    
+    [SerializeField][SyncVar(hook = nameof(OnWeaponSpriteChange))]
+    private int weaponSpriteIndex = 0;
+
+    [SerializeField]
+    private Sprite[] weaponSpriteVariations;
+
+    [SerializeField]
+    private SpriteRenderer weaponSpriteRenderer;
+
+    public void weaponChangeSprite(int newIndex)
+    {
+        //if (isServer)
+        //{
+            weaponSpriteIndex = newIndex;
+        //}
+    }
+
+    private void OnWeaponSpriteChange(int oldIndex, int newIndex)
+    {
+        weaponSpriteRenderer.sprite = weaponSpriteVariations[newIndex];
+    }
+
+    [SerializeField][SyncVar(hook = nameof(OnAnimatorChange))]
+    private int animatorIndex = 0;
+
+    [SerializeField]
+    private RuntimeAnimatorController[] animatorVariations;
+
+    [SerializeField]
+    private Animator animator;
+
+    public void animatorChange(int newIndex)
+    {
+        //if (isServer)
+        //{
+            animatorIndex = newIndex;
+        //}
+    }
+
+    private void OnAnimatorChange(int oldIndex, int newIndex)
+    {
+        animator.runtimeAnimatorController = animatorVariations[newIndex];
+    }
+    
+
+    private void Awake()
+    {
+        Transform hatChild = transform.GetChild(5);
+        hatSpriteRenderer = hatChild.GetComponent<SpriteRenderer>();
+        bodySpriteRenderer = GetComponent<SpriteRenderer>();
+        Transform weaponChild = transform.GetChild(4);
+        weaponSpriteRenderer = weaponChild.GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+    }
+
     void OnEnable()
     {
         internalTimer = weaponTimer;
     }
 
+
+
     void Start()
     {
+        // Get the tag of the GameObject this script is attached to
+        string objectTag = gameObject.tag;
+
+        // Check if the tag starts with "player" and has at least 7 characters (e.g., "player1" to "player6")
+        if (objectTag.StartsWith("Player") && objectTag.Length >= 7)
+        {
+            // Extract the number part of the tag and parse it to an int
+            string numberPart = objectTag.Substring(6); // Get characters after "player"
+            int.TryParse(numberPart, out PlayerNumber);
+        }
+        else
+        {
+            // If the tag doesn't match the expected format, set PlayerNumber to a default value (e.g., -1)
+            PlayerNumber = -1;
+        }
+
+        // Now you can use PlayerNumber as the number extracted from the tag
+        Debug.Log("PlayerNumber: " + PlayerNumber);
+
+        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
         gameManager = GameObject.Find("GameState").GetComponent<GameManager>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         multiTargetCamera = GameObject.Find("Main Camera").GetComponent<MultiTargetCamera>();
-        playerSaveData = GameObject.Find("GameState").GetComponent<PlayerSaveData>();
+        playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
-        animator = GetComponent<Animator>();
         isPlayer = true;
         healthbar.SetMaxHealth(maxHealth);
         playerBlockPlacement.SetActive(false);
         trapInteraction.SetActive(false);
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
+
+        ApplyPlayerSprites(gameObject, PlayerNumber-1);
+        
 
         if (isServer)
         {
@@ -386,6 +514,15 @@ public class Player : NetworkBehaviour
     {
         // Perform any visual/sound effects related to the attack on the clients here, if needed.
         m_WeaponAnimator.SetTrigger("Swing"); // Assuming you have a common trigger "Swing" for both host and client
+    }
+
+    //[Command]
+    public void ApplyPlayerSprites(GameObject player, int i)
+    {
+        hatSpriteIndex = playerSaveData.playerHatSpriteNumbers[i];
+        weaponSpriteIndex = playerSaveData.playerWeaponSpriteNumbers[i];
+        bodySpriteIndex = playerSaveData.playerBodySpriteNumbers[i];
+        animatorIndex = playerSaveData.playerAnimatorNumbers[i];
     }
 
     void OnTriggerEnter2D(Collider2D other)

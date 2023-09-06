@@ -1036,7 +1036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c24240ac570a1499d9229432e10b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 1
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0
   rigid: {fileID: 3219085190463158599}
@@ -1070,6 +1070,34 @@ MonoBehaviour:
   kingSpawnLocation: {fileID: 0}
   groundCheckCollider: {fileID: 3219085189834981985}
   groundCheckCollider2: {fileID: 3219085189834981985}
+  customNetworkManager: {fileID: 0}
+  PlayerNumber: 0
+  hatSpriteIndex: 0
+  hatSpriteVariations:
+  - {fileID: 0}
+  - {fileID: -1746037780, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1805595645, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: -697750836, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1585972040, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1734291148, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  hatSpriteRenderer: {fileID: 0}
+  bodySpriteIndex: 0
+  bodySpriteVariations:
+  - {fileID: 488394471, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 1455047922, guid: 6f41fc16e7510d547a8b96eb84722b8c, type: 3}
+  bodySpriteRenderer: {fileID: 0}
+  weaponSpriteIndex: 0
+  weaponSpriteVariations:
+  - {fileID: 149902712, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: -497650530, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: -1721576113, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  - {fileID: 2131181691, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  weaponSpriteRenderer: {fileID: 0}
+  animatorIndex: 0
+  animatorVariations:
+  - {fileID: 9100000, guid: 783ea1d234901e84caf67c76f6f0e7c7, type: 2}
+  - {fileID: 9100000, guid: c8e087b595453984698fe11b9a3ce378, type: 2}
+  animator: {fileID: 0}
 --- !u!114 &3175108449416737197
 MonoBehaviour:
   m_ObjectHideFlags: 0
