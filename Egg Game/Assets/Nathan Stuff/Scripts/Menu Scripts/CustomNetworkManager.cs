@@ -17,55 +17,57 @@ public class CustomNetworkManager : NetworkManager
     private int currentPlayerPrefabIndex = 0;
 
     [SerializeField]
-    public int playerCount = 0; // This variable will store the current player count.
+    public int playerCount = 0;
+
+    private Dictionary<NetworkConnectionToClient, Transform> playerSpawnPositions = new Dictionary<NetworkConnectionToClient, Transform>();
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-{
-    string sceneName = SceneManager.GetActiveScene().name;
-
-    foreach (ScenePlayerPrefabs scenePrefabs in scenePlayerPrefabs)
     {
-        if (scenePrefabs.sceneName == sceneName)
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        foreach (ScenePlayerPrefabs scenePrefabs in scenePlayerPrefabs)
         {
-            GameObject playerPrefab = scenePrefabs.playerPrefab;
-            GameObject player = Instantiate(playerPrefab);
-
-            int playerId = conn.connectionId + 1;
-            player.tag = "Player" + playerId;
-
-            NetworkServer.AddPlayerForConnection(conn, player);
-
-            // Set the player's position based on the round-robin logic
-            Transform startPosition = GetStartPosition();
-            if (startPosition != null)
+            if (scenePrefabs.sceneName == sceneName)
             {
-                player.transform.position = startPosition.position;
-                player.transform.rotation = startPosition.rotation;
+                GameObject playerPrefab = scenePrefabs.playerPrefab;
+
+                // Find the first available spawn position
+                Transform startPosition = GetAvailableStartPosition();
+
+                if (startPosition != null)
+                {
+                    // Mark this spawn position as occupied
+                    playerSpawnPositions[conn] = startPosition;
+
+                    // Instantiate the player at the chosen spawn position
+                    GameObject player = Instantiate(playerPrefab, startPosition.position, startPosition.rotation);
+
+                    int playerId = conn.connectionId + 1;
+                    player.tag = "Player" + playerId;
+
+                    NetworkServer.AddPlayerForConnection(conn, player);
+
+                    // Increment the player prefab index for the next player
+                    currentPlayerPrefabIndex = (currentPlayerPrefabIndex + 1) % scenePlayerPrefabs.Length;
+
+                    // Increment the player count when a new player joins.
+                    playerCount++;
+
+                    Debug.Log("Players: " + playerCount);
+
+                    // Initialize player-specific data here
+
+                    return;
+                }
+                else
+                {
+                    Debug.LogError("No available spawn positions found.");
+                }
             }
-            else
-            {
-                player.transform.position = Vector3.zero;
-            }
-
-            // Increment the player prefab index for the next player
-            currentPlayerPrefabIndex = (currentPlayerPrefabIndex + 1) % scenePlayerPrefabs.Length;
-
-            // Increment the player count when a new player joins.
-            playerCount++;
-
-            Debug.Log("Players: " + playerCount);
-
-            PlayerSaveData.Instance.playerSpriteHats = new Sprite[playerCount];
-            PlayerSaveData.Instance.playerSpriteWeapons = new Sprite[playerCount];
-            PlayerSaveData.Instance.playerSpriteBodies = new Sprite[playerCount];
-
-            return;
         }
+
+        Debug.LogError("No player prefab found for scene: " + sceneName);
     }
-
-    Debug.LogError("No player prefab found for scene: " + sceneName);
-}
-
 
     public override void OnServerChangeScene(string newSceneName)
     {
@@ -75,13 +77,19 @@ public class CustomNetworkManager : NetworkManager
         currentPlayerPrefabIndex = 0; // Reset the player prefab index when changing scenes
     }
 
-    public override void OnServerDisconnect(NetworkConnectionToClient conn)
-    {
-        base.OnServerDisconnect(conn);
+        public override void OnServerDisconnect(NetworkConnectionToClient conn)
+        {
+            base.OnServerDisconnect(conn);
 
-        // Decrease the player count when a player disconnects.
-        playerCount--;
-    }
+            // Decrease the player count when a player disconnects.
+            playerCount--;
+
+            // Free up the spawn position of the disconnected player
+            if (playerSpawnPositions.ContainsKey(conn))
+            {
+                playerSpawnPositions.Remove(conn);
+            }
+        }
 
     public void ClientChangeScene(string sceneName)
     {
@@ -112,5 +120,19 @@ public class CustomNetworkManager : NetworkManager
         {
             Debug.LogWarning("ClientChangeScene: Client is not connected.");
         }
+    }
+
+    // Helper method to find an available spawn position
+    private Transform GetAvailableStartPosition()
+    {
+        foreach (Transform startPosition in startPositions)
+        {
+            bool positionOccupied = playerSpawnPositions.ContainsValue(startPosition);
+            if (!positionOccupied)
+            {
+                return startPosition;
+            }
+        }
+        return null;
     }
 }
