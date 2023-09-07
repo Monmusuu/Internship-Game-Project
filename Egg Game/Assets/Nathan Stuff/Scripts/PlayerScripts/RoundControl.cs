@@ -55,7 +55,7 @@ public class RoundControl : NetworkBehaviour
     private void Start()
     {
         customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
-        playerSpawnLocation = GameObject.Find("SpawnPoint").transform;
+        playerSpawnLocation = GameObject.Find("SpawnPoints").transform;
     }
 
     void Update()
