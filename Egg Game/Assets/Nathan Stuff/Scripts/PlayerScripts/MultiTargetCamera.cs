@@ -48,8 +48,16 @@ public class MultiTargetCamera : NetworkBehaviour
         // If the camera is not attached to the local player (host-side), follow the center point of all players
         if (!isLocalPlayer)
         {
-            Move();
-            Zoom();
+            if (roundControl.placingItems)
+            {
+                ZoomOutToSeeMap();
+                Debug.Log("Zooming Out");
+            }
+            else
+            {
+                Move();
+                Zoom();
+            }
         }
         else // If the camera is attached to the local player (client-side), follow the local player
         {
@@ -82,19 +90,40 @@ public class MultiTargetCamera : NetworkBehaviour
         players.Remove(playerToRemove);
     }
 
-    void ZoomOutToSeeMap()
-    {
-        Bounds customBounds = new Bounds(mapObject.transform.position, new Vector3(width, height, 0f));
-        float customAspectRatio = customBounds.size.x / customBounds.size.y;
-        float targetSize = Mathf.Max(customBounds.size.x, customBounds.size.y) * 0.5f;
-        targetSize = Mathf.Max(targetSize, Mathf.Max(minZoom, maxZoom / cam.aspect * customAspectRatio));
-        cam.orthographicSize = targetSize;
-        transform.position = customBounds.center + offset;
+void ZoomOutToSeeMap()
+{
+    Bounds customBounds = new Bounds(mapObject.transform.position, new Vector3(width, height, 0f));
+    float customAspectRatio = customBounds.size.x / customBounds.size.y;
+    float targetSize = Mathf.Max(customBounds.size.x, customBounds.size.y) * 0.5f;
+    targetSize = Mathf.Max(targetSize, Mathf.Max(minZoom, maxZoom / cam.aspect * customAspectRatio));
 
-        // Synchronize camera zoom level and target position for clients
-        currentZoomLevel = targetSize;
-        cameraTargetPosition = transform.position;
-    }
+    // Calculate the maximum and minimum orthographic size based on map bounds
+    float maxOrthographicSize = Mathf.Min(customBounds.size.x / cam.aspect, customBounds.size.y);
+    float minOrthographicSize = Mathf.Max(width / cam.aspect, height);
+
+    // Clamp the targetSize to stay within the bounds of the map area
+    targetSize = Mathf.Clamp(targetSize, minOrthographicSize, maxOrthographicSize);
+
+    // Set the new orthographic size while maintaining the current aspect ratio
+    cam.orthographicSize = targetSize;
+
+    // Synchronize camera orthographic size for clients
+    currentZoomLevel = targetSize;
+
+    // Calculate the center position of the map
+    Vector3 mapCenter = customBounds.center;
+
+    // Calculate the camera position based on the map center and the new orthographic size
+    Vector3 newPosition = new Vector3(mapCenter.x, mapCenter.y, initialZ) + offset;
+    
+    // Apply the new camera position
+    transform.position = newPosition;
+
+    // Synchronize camera target position for clients
+    cameraTargetPosition = transform.position;
+}
+
+
 
     void Zoom()
     {
@@ -108,19 +137,27 @@ public class MultiTargetCamera : NetworkBehaviour
         float maxZoomInHeight = height * 0.5f;
         newZoom = Mathf.Max(newZoom, Mathf.Min(maxZoomInWidth / cam.aspect, maxZoomInHeight));
 
+        // Calculate the maximum and minimum orthographic size based on map bounds
+        float maxOrthographicSize = Mathf.Min(maxZoomOutWidth / cam.aspect, maxZoomOutHeight);
+        float minOrthographicSize = Mathf.Max(maxZoomInWidth / cam.aspect, maxZoomInHeight);
+
+        // Clamp the newZoom to stay within the bounds of the map area
+        newZoom = Mathf.Clamp(newZoom, minOrthographicSize, maxOrthographicSize);
+
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
 
         // Synchronize camera zoom level for clients
         currentZoomLevel = cam.orthographicSize;
     }
 
+
     void Move()
     {
         Vector3 centerPoint = GetCenterPoint();
-        float maxPositionX = mapObject.transform.position.x + mapObject.GetComponent<Renderer>().bounds.size.x * 0.5f - width * 0.5f;
-        float minPositionX = mapObject.transform.position.x - mapObject.GetComponent<Renderer>().bounds.size.x * 0.5f + width * 0.5f;
-        float maxPositionY = mapObject.transform.position.y + mapObject.GetComponent<Renderer>().bounds.size.y * 0.5f - height * 0.5f;
-        float minPositionY = mapObject.transform.position.y - mapObject.GetComponent<Renderer>().bounds.size.y * 0.5f + height * 0.5f;
+        float maxPositionX = mapObject.transform.position.x + mapObject.GetComponent<Renderer>().bounds.size.x * 0.5f - cam.orthographicSize * cam.aspect;
+        float minPositionX = mapObject.transform.position.x - mapObject.GetComponent<Renderer>().bounds.size.x * 0.5f + cam.orthographicSize * cam.aspect;
+        float maxPositionY = mapObject.transform.position.y + mapObject.GetComponent<Renderer>().bounds.size.y * 0.5f - cam.orthographicSize;
+        float minPositionY = mapObject.transform.position.y - mapObject.GetComponent<Renderer>().bounds.size.y * 0.5f + cam.orthographicSize;
 
         float newX = Mathf.Clamp(centerPoint.x, minPositionX, maxPositionX);
         float newY = Mathf.Clamp(centerPoint.y, minPositionY, maxPositionY);
