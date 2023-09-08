@@ -8,9 +8,11 @@ public class TrapActivation : NetworkBehaviour
 {
     public GameObject customCursor; // Assign your custom cursor GameObject in the inspector
     public Tilemap kingTilemap;
+    public GameObject boundingObject;
 
     private void Start()
     {
+        boundingObject = GameObject.Find("MapArea");
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
     }
 
@@ -22,7 +24,12 @@ public class TrapActivation : NetworkBehaviour
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
 
-        ClampPosition(newPosition);
+        // Limit the cursor's movement within the bounds of the boundingObject
+        Vector3 clampedPosition = LimitPositionWithinBounds(newPosition);
+
+        // Update the cursor's position
+        transform.position = clampedPosition;
+
         CmdMoveCursor(transform.position);
 
         if (Input.GetMouseButtonDown(0))
@@ -38,24 +45,23 @@ public class TrapActivation : NetworkBehaviour
         transform.position = position;
     }
 
-    private void ClampPosition(Vector3 position)
+    private Vector3 LimitPositionWithinBounds(Vector3 position)
     {
-        // Get the screen boundaries in world coordinates
-        float screenAspect = (float)Screen.width / Screen.height;
-        float screenHorizontalSize = Camera.main.orthographicSize * screenAspect;
-        float screenVerticalSize = Camera.main.orthographicSize;
+        // Get the object's dimensions based on its colliders
+        Collider2D[] colliders = boundingObject.GetComponentsInChildren<Collider2D>();
+        Bounds objectBounds = new Bounds();
 
-        // Get the object's dimensions
-        Renderer renderer = GetComponent<Renderer>();
-        float objectWidth = renderer.bounds.size.x;
-        float objectHeight = renderer.bounds.size.y;
+        foreach (Collider2D collider in colliders)
+        {
+            objectBounds.Encapsulate(collider.bounds);
+        }
 
-        // Clamp the position to stay within the screen boundaries
-        float clampedX = Mathf.Clamp(position.x, -screenHorizontalSize + objectWidth / 2f, screenHorizontalSize - objectWidth / 2f);
-        float clampedY = Mathf.Clamp(position.y, -screenVerticalSize + objectHeight / 2f, screenVerticalSize - objectHeight / 2f);
-        float clampedZ = transform.position.z;
+        // Calculate the clamped position based on the object's bounds
+        float clampedX = Mathf.Clamp(position.x, objectBounds.min.x, objectBounds.max.x);
+        float clampedY = Mathf.Clamp(position.y, objectBounds.min.y, objectBounds.max.y);
+        float clampedZ = position.z;
 
-        transform.position = new Vector3(clampedX, clampedY, clampedZ);
+        return new Vector3(clampedX, clampedY, clampedZ);
     }
 
     [Command]
