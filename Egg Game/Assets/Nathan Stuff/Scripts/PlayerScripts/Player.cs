@@ -305,7 +305,8 @@ public class Player : NetworkBehaviour
         ActivatePlayerPlacement();
         ActivateTrapInteraction();
 
-        if(!roundControl.placingItems){
+        if(!roundControl.placingItems)
+        {
             if (roundControl.timerOn)
             {
                 if (!isKing)
@@ -317,6 +318,7 @@ public class Player : NetworkBehaviour
                         animator.SetBool("Landed", true);
                         if (jumped)
                         {
+                            animator.SetBool("Running", false);
                             animator.SetBool("Landed", false);
                             rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
                             animator.SetTrigger("Jumped");
@@ -324,8 +326,10 @@ public class Player : NetworkBehaviour
                         else
                         {
                             // Set the local isRunning variable based on the rigidbody velocity
-                            isRunningLocal = Mathf.Abs(rigid.velocity.x) > 0.1f;
+                            isRunningLocal = Mathf.Abs(rigid.velocity.x) >= 0.1f;
                         }
+                    }else{
+                        animator.SetBool("Landed", false);
                     }
 
                     wasGrounded = isGrounded;

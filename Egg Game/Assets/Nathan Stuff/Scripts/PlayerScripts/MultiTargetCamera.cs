@@ -90,40 +90,38 @@ public class MultiTargetCamera : NetworkBehaviour
         players.Remove(playerToRemove);
     }
 
-void ZoomOutToSeeMap()
-{
-    Bounds customBounds = new Bounds(mapObject.transform.position, new Vector3(width, height, 0f));
-    float customAspectRatio = customBounds.size.x / customBounds.size.y;
-    float targetSize = Mathf.Max(customBounds.size.x, customBounds.size.y) * 0.5f;
-    targetSize = Mathf.Max(targetSize, Mathf.Max(minZoom, maxZoom / cam.aspect * customAspectRatio));
+    void ZoomOutToSeeMap()
+    {
+        Bounds customBounds = new Bounds(mapObject.transform.position, new Vector3(width, height, 0f));
+        float customAspectRatio = customBounds.size.x / customBounds.size.y;
+        float targetSize = Mathf.Max(customBounds.size.x, customBounds.size.y) * 0.5f;
+        targetSize = Mathf.Max(targetSize, Mathf.Max(minZoom, maxZoom / cam.aspect * customAspectRatio));
 
-    // Calculate the maximum and minimum orthographic size based on map bounds
-    float maxOrthographicSize = Mathf.Min(customBounds.size.x / cam.aspect, customBounds.size.y);
-    float minOrthographicSize = Mathf.Max(width / cam.aspect, height);
+        // Calculate the maximum and minimum orthographic size based on map bounds
+        float maxOrthographicSize = Mathf.Min(customBounds.size.x / cam.aspect, customBounds.size.y);
+        float minOrthographicSize = Mathf.Max(width / cam.aspect, height);
 
-    // Clamp the targetSize to stay within the bounds of the map area
-    targetSize = Mathf.Clamp(targetSize, minOrthographicSize, maxOrthographicSize);
+        // Clamp the targetSize to stay within the bounds of the map area
+        targetSize = Mathf.Clamp(targetSize, minOrthographicSize, maxOrthographicSize);
 
-    // Set the new orthographic size while maintaining the current aspect ratio
-    cam.orthographicSize = targetSize;
+        // Set the new orthographic size while maintaining the current aspect ratio
+        cam.orthographicSize = targetSize;
 
-    // Synchronize camera orthographic size for clients
-    currentZoomLevel = targetSize;
+        // Synchronize camera orthographic size for clients
+        currentZoomLevel = targetSize;
 
-    // Calculate the center position of the map
-    Vector3 mapCenter = customBounds.center;
+        // Calculate the center position of the map
+        Vector3 mapCenter = customBounds.center;
 
-    // Calculate the camera position based on the map center and the new orthographic size
-    Vector3 newPosition = new Vector3(mapCenter.x, mapCenter.y, initialZ) + offset;
-    
-    // Apply the new camera position
-    transform.position = newPosition;
+        // Calculate the camera position based on the map center and the new orthographic size
+        Vector3 newPosition = new Vector3(mapCenter.x, mapCenter.y, initialZ) + offset;
+        
+        // Apply the new camera position
+        transform.position = newPosition;
 
-    // Synchronize camera target position for clients
-    cameraTargetPosition = transform.position;
-}
-
-
+        // Synchronize camera target position for clients
+        cameraTargetPosition = transform.position;
+    }
 
     void Zoom()
     {
