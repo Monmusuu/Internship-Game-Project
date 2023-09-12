@@ -51,7 +51,7 @@ public class MultiTargetCamera : NetworkBehaviour
             if (roundControl.placingItems)
             {
                 ZoomOutToSeeMap();
-                Debug.Log("Zooming Out");
+                //Debug.Log("Zooming Out");
             }
             else
             {

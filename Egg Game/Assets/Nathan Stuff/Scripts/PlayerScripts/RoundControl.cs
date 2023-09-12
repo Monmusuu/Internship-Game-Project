@@ -27,6 +27,7 @@ public class RoundControl : NetworkBehaviour
 
     public bool playerRemovingItem = false;
     public Transform playerSpawnLocation;
+    public Transform kingSpawnLocation;
     [SerializeField]
     private CustomNetworkManager customNetworkManager;
 
@@ -56,6 +57,7 @@ public class RoundControl : NetworkBehaviour
     {
         customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
         playerSpawnLocation = GameObject.Find("SpawnPoints").transform;
+        kingSpawnLocation = GameObject.Find("KingPoint").transform;
     }
 
     void Update()
@@ -140,6 +142,18 @@ public class RoundControl : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    private void RpcRespawnKing(NetworkIdentity playerNetIdentity)
+    {
+        // Reset player's velocity and position on all clients
+        Player player = playerNetIdentity.GetComponent<Player>();
+        if (player != null)
+        {
+            player.rigid.velocity = Vector2.zero;
+            player.transform.position = kingSpawnLocation.position;
+        }
+    }
+
     private void RespawnPlayers()
     {
         foreach (Player player in players)
@@ -148,6 +162,12 @@ public class RoundControl : NetworkBehaviour
             {
                 // Respawn the player on all clients
                 RpcRespawnPlayer(player.GetComponent<NetworkIdentity>());
+            }
+
+            if (player != null && player.isKing)
+            {
+                // Respawn the player on all clients
+                RpcRespawnKing(player.GetComponent<NetworkIdentity>());
             }
         }
 

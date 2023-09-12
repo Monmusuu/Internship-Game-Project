@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.UI;
+using TMPro.Examples;
 
 public class Player : NetworkBehaviour
 {
@@ -32,6 +34,9 @@ public class Player : NetworkBehaviour
     private bool attack = false;
     [SyncVar]
     public bool isKing = false;
+    [SyncVar]
+    public bool isDead = false;
+    public bool isAlreadyDead = false;
     public bool isPause = false;
     [SyncVar]
     public bool becameKing = false;
@@ -304,82 +309,154 @@ public class Player : NetworkBehaviour
         ActivateBuildManager();
         ActivatePlayerPlacement();
         ActivateTrapInteraction();
+        
+        if(currentHealth <= 0 && !isDead && !isAlreadyDead)
+        {
+            rigid.velocity = Vector2.zero;
+            isDead = true;
+            animator.SetTrigger("Dead");
+            isAlreadyDead = true;
+            if (weaponSpriteRenderer != null)
+            {
+                Color spriteColor = weaponSpriteRenderer.color;
+                spriteColor.a = 0.0f; // You can set the alpha value to any value between 0 (fully transparent) and 1 (fully opaque)
+                weaponSpriteRenderer.color = spriteColor;
+            }
+
+            if(healthbar != null)
+            {
+                // Iterate through all child objects
+                foreach (Transform child in healthbar.transform)
+                {
+                    // Check if the child has a SpriteRenderer component
+                    Image childImage = child.GetComponent<Image>();
+                    if (childImage != null)
+                    {
+                        // Adjust the alpha value of the sprite's color
+                        Color spriteColor = childImage.color;
+                        spriteColor.a = 0.0f;
+                        childImage.color = spriteColor;
+                    }else{
+                        Debug.Log("Is null");
+                    }
+                }
+            }else{
+                Debug.Log("Is null");
+            }
+        }
+
+        if(roundControl.placingItems)
+        {
+            isDead = false;
+            currentHealth = 6;
+            isAlreadyDead = false;
+            animator.SetTrigger("Respawn");
+            //Debug.Log("Respawned");
+
+            if (weaponSpriteRenderer != null)
+            {
+                Color spriteColor = weaponSpriteRenderer.color;
+                spriteColor.a = 1.0f; // You can set the alpha value to any value between 0 (fully transparent) and 1 (fully opaque)
+                weaponSpriteRenderer.color = spriteColor;
+            }
+
+            if(healthbar != null)
+            {
+                // Iterate through all child objects
+                foreach (Transform child in healthbar.transform)
+                {
+                    // Check if the child has a SpriteRenderer component
+                    Image childImage = child.GetComponent<Image>();
+                    if (childImage != null)
+                    {
+                        // Adjust the alpha value of the sprite's color
+                        Color spriteColor = childImage.color;
+                        spriteColor.a = 1.0f;
+                        childImage.color = spriteColor;
+                    }else{
+                        Debug.Log("Is null");
+                    }
+                }
+            }
+        }
 
         if(!roundControl.placingItems)
         {
             if (roundControl.timerOn)
             {
-                if (!isKing)
-                {
-                    GroundCheck();
-
-                    if (isGrounded)
+                if(!isDead && !isAlreadyDead){
+                    if (!isKing)
                     {
-                        animator.SetBool("Landed", true);
-                        if (jumped)
+                        GroundCheck();
+
+                        if (isGrounded)
                         {
-                            animator.SetBool("Running", false);
+                            animator.SetBool("Landed", true);
+                            if (jumped)
+                            {
+                                animator.SetBool("Running", false);
+                                animator.SetBool("Landed", false);
+                                rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
+                                animator.SetTrigger("Jumped");
+                            }
+                            else
+                            {
+                                // Set the local isRunning variable based on the rigidbody velocity
+                                isRunningLocal = Mathf.Abs(rigid.velocity.x) >= 0.1f;
+                            }
+                        }else{
                             animator.SetBool("Landed", false);
-                            rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
-                            animator.SetTrigger("Jumped");
                         }
-                        else
+
+                        wasGrounded = isGrounded;
+
+                        rigid.velocity = new Vector2(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y);
+
+                        float targetVelocityX = 0f;
+                        if (left)
                         {
-                            // Set the local isRunning variable based on the rigidbody velocity
-                            isRunningLocal = Mathf.Abs(rigid.velocity.x) >= 0.1f;
+                            targetVelocityX = -m_RunSpeed;
                         }
-                    }else{
-                        animator.SetBool("Landed", false);
-                    }
-
-                    wasGrounded = isGrounded;
-
-                    rigid.velocity = new Vector2(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y);
-
-                    float targetVelocityX = 0f;
-                    if (left)
-                    {
-                        targetVelocityX = -m_RunSpeed;
-                    }
-                    else if (right)
-                    {
-                        targetVelocityX = m_RunSpeed;
-                    }
-
-                    float acceleration = left || right ? 0.1f : 0.008f;
-                    rigid.velocity = new Vector2(Mathf.Lerp(rigid.velocity.x, targetVelocityX, acceleration), rigid.velocity.y);
-
-                    if (isAttacking)
-                    {
-
-                        internalTimer -= Time.deltaTime;
-                        if (internalTimer <= 0)
+                        else if (right)
                         {
-                            weaponCollider.enabled = false;
-                            isAttacking = false;
-                            internalTimer = weaponTimer;
-                            attackFinished = true;
+                            targetVelocityX = m_RunSpeed;
+                        }
+
+                        float acceleration = left || right ? 0.1f : 0.008f;
+                        rigid.velocity = new Vector2(Mathf.Lerp(rigid.velocity.x, targetVelocityX, acceleration), rigid.velocity.y);
+
+                        if (isAttacking)
+                        {
+
+                            internalTimer -= Time.deltaTime;
+                            if (internalTimer <= 0)
+                            {
+                                weaponCollider.enabled = false;
+                                isAttacking = false;
+                                internalTimer = weaponTimer;
+                                attackFinished = true;
+                            }
+                        }
+                        if (attackFinished)
+                        {
+                            weaponCooldown -= Time.deltaTime;
+                        }
+                        if (weaponCooldown <= 0)
+                        {
+                            weaponCooldown = 0.8f;
+                            attackFinished = false;
                         }
                     }
-                    if (attackFinished)
-                    {
-                        weaponCooldown -= Time.deltaTime;
-                    }
-                    if (weaponCooldown <= 0)
-                    {
-                        weaponCooldown = 0.8f;
-                        attackFinished = false;
-                    }
-                }
 
-                if (becameKing)
-                {
-                    rigid.velocity = Vector2.zero;
-                    transform.position = kingSpawnLocation.position;
+                    if (becameKing)
+                    {
+                        rigid.velocity = Vector2.zero;
+                        transform.position = kingSpawnLocation.position;
+                    }
                 }
             }
-
-            if (isLocalPlayer)
+            
+            if (isLocalPlayer && !isDead && !isKing)
             {
                 // If the player changes direction, update the lastDirRight and isFacingRight variables
                 if (left && !lastDirRight)
@@ -531,7 +608,7 @@ public class Player : NetworkBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("KingPoint"))
+        if (other.gameObject.CompareTag("KingPoint") && !isDead && !isAlreadyDead)
         {
             becameKing = true;
         }
@@ -539,7 +616,7 @@ public class Player : NetworkBehaviour
         if (other.gameObject.CompareTag("Trap") && !isflashing)
         {
             isflashing = true;
-            currentHealth -= 1;
+            currentHealth -= 3;
             StartCoroutine(InvincibleFlash());
         }
     }
