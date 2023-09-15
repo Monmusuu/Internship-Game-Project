@@ -47,6 +47,8 @@ public class Player : NetworkBehaviour
     private float maxSpeed = 15.0f;
     private int maxHealth = 6;
     private int currentHealth = 6;
+    [SyncVar]
+    public int currentScore = 0;
     [SerializeField] private Healthbar healthbar;
 
     public Player[] player;
@@ -309,7 +311,7 @@ public class Player : NetworkBehaviour
         ActivateBuildManager();
         ActivatePlayerPlacement();
         ActivateTrapInteraction();
-        
+
         if(currentHealth <= 0 && !isDead && !isAlreadyDead)
         {
             rigid.velocity = Vector2.zero;

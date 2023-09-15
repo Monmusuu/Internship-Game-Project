@@ -89,6 +89,11 @@ public class RoundControl : NetworkBehaviour
                             players[j].isKing = (j == i);
                             players[j].isPlayer = (j != i);
                         }
+
+                        if (j == i)
+                        {
+                            players[j].currentScore += 1;
+                        }
                     }
 
                     // Set respawn and round variables
@@ -119,6 +124,15 @@ public class RoundControl : NetworkBehaviour
                     timerOn = false;
                     RoundTime = 360f;
                     placingItems = true;
+
+                    // Check if there's a current king
+                    Player currentKing = players.Find(player => player != null && player.isKing);
+
+                    if (currentKing != null)
+                    {
+                        // Increase the currentScore of the current king
+                        currentKing.currentScore += 1;
+                    }
                 }
             }
         }
