@@ -9,8 +9,13 @@ using TMPro;
 public class SteamLobby : MonoBehaviour
 {
     public GameObject hostButton = null;
-    public Button refreshButton;
+    public GameObject refreshButton;
     public TMP_Dropdown lobbyDropdown;
+    public GameObject serverNameInputField;
+    public GameObject serverPasswordInputField;
+    public GameObject background;
+    public Toggle passwordProtectedToggle;
+    public Toggle friendsOnlyToggle;
 
     private CustomNetworkManager customNetworkManager;
 
@@ -42,8 +47,30 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
-        hostButton.SetActive(false);
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, customNetworkManager.maxConnections);
+        background.SetActive(false);
+        serverNameInputField.SetActive(false);
+
+        Debug.Log("Public Lobby");
+        ELobbyType lobbyType = ELobbyType.k_ELobbyTypePublic;
+
+        string passwordName = serverPasswordInputField.GetComponent<TMP_InputField>().text;
+
+        if (passwordProtectedToggle.isOn)
+        {
+            CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(0);
+            string password = passwordName; // Replace with your desired password.
+            SteamMatchmaking.SetLobbyData(lobbyID, "Password", password);
+
+            Debug.Log("Password " + passwordName);
+        }
+        else if (friendsOnlyToggle.isOn)
+        {
+            Debug.Log("Friend Lobby");
+            // If friends-only toggle is on, set the lobby type to friends-only.
+            lobbyType = ELobbyType.k_ELobbyTypeFriendsOnly;
+        }
+
+        SteamMatchmaking.CreateLobby(lobbyType, customNetworkManager.maxConnections);
     }
 
     private void OnLobbyCreated(LobbyCreated_t callback)
@@ -60,15 +87,18 @@ public class SteamLobby : MonoBehaviour
         // Get the lobby ID
         CSteamID lobbyID = new CSteamID(callback.m_ulSteamIDLobby);
 
-        // Get the host's Steam name
-        string hostSteamName = SteamFriends.GetPersonaName();
+        string serverName = serverNameInputField.GetComponent<TMP_InputField>().text;
+        if (string.IsNullOrEmpty(serverName))
+        {
+            serverName = SteamFriends.GetPersonaName();
+        }
 
         // Set lobby data with the host's Steam name
         SteamMatchmaking.SetLobbyData(lobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
-        SteamMatchmaking.SetLobbyData(lobbyID, "LobbyName", hostSteamName);
+        SteamMatchmaking.SetLobbyData(lobbyID, "LobbyName", serverName );
         Debug.Log("Lobby created successfully!");
         Debug.Log("Lobby ID: " + lobbyID);
-        Debug.Log("Host Steam Name: " + hostSteamName);
+        Debug.Log("Host Steam Name: " + serverName);
     }
 
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
@@ -97,6 +127,39 @@ public class SteamLobby : MonoBehaviour
 
         // Request the lobby list from Steam
         SteamMatchmaking.RequestLobbyList();
+    }
+
+    public void JoinSelectedLobby()
+    {
+        background.SetActive(false);
+        serverNameInputField.SetActive(false);
+        
+        // Get the currently selected lobby from the dropdown
+        int selectedIndex = lobbyDropdown.value;
+        
+        // Check if a valid lobby index is selected
+        if (selectedIndex >= 0 && selectedIndex < lobbyDropdown.options.Count)
+        {
+            // Get the lobby name from the selected option
+            string selectedLobbyName = lobbyDropdown.options[selectedIndex].text;
+
+            Debug.Log("Joining lobby: " + selectedLobbyName);
+            background.SetActive(false);
+            
+            // Iterate through the lobbies to find the one with the matching name
+            for (int i = 0; i < lobbyDropdown.options.Count; i++)
+            {
+                CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
+                string lobbyName = SteamMatchmaking.GetLobbyData(lobbyID, "LobbyName");
+
+                if (lobbyName == selectedLobbyName)
+                {
+                    // Join the selected lobby
+                    SteamMatchmaking.JoinLobby(lobbyID);
+                    break;
+                }
+            }
+        }
     }
 
     private void OnLobbyMatchList(LobbyMatchList_t callback)
