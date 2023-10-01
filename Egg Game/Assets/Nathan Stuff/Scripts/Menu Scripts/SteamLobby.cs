@@ -15,7 +15,9 @@ public class SteamLobby : MonoBehaviour
     public GameObject serverPasswordInputField;
     public GameObject background;
     public Toggle passwordProtectedToggle;
+    public TMP_InputField serverPasswordJoinInputField;
     public Toggle friendsOnlyToggle;
+    public Toggle privateOnlyToggle;
 
     private CustomNetworkManager customNetworkManager;
 
@@ -47,31 +49,32 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
-        background.SetActive(false);
-        serverNameInputField.SetActive(false);
-
-        Debug.Log("Public Lobby");
-        ELobbyType lobbyType = ELobbyType.k_ELobbyTypePublic;
-
-        string passwordName = serverPasswordInputField.GetComponent<TMP_InputField>().text;
+        //background.SetActive(false);
+        ELobbyType lobbyType;
 
         if (passwordProtectedToggle.isOn)
         {
-            CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(0);
-            string password = passwordName; // Replace with your desired password.
-            SteamMatchmaking.SetLobbyData(lobbyID, "Password", password);
-
-            Debug.Log("Password " + passwordName);
+            Debug.Log("Password Public Lobby");
+            // Set it to the appropriate lobby type for password protection.
+            lobbyType = ELobbyType.k_ELobbyTypePublic; // Or another appropriate type.
         }
         else if (friendsOnlyToggle.isOn)
         {
             Debug.Log("Friend Lobby");
-            // If friends-only toggle is on, set the lobby type to friends-only.
             lobbyType = ELobbyType.k_ELobbyTypeFriendsOnly;
+        }else if (privateOnlyToggle.isOn){
+            Debug.Log("Private Lobby");
+            lobbyType = ELobbyType.k_ELobbyTypePrivate;
+        }
+        else
+        {
+            Debug.Log("Public Lobby");
+            lobbyType = ELobbyType.k_ELobbyTypePublic;
         }
 
         SteamMatchmaking.CreateLobby(lobbyType, customNetworkManager.maxConnections);
     }
+
 
     private void OnLobbyCreated(LobbyCreated_t callback)
     {
@@ -91,6 +94,16 @@ public class SteamLobby : MonoBehaviour
         if (string.IsNullOrEmpty(serverName))
         {
             serverName = SteamFriends.GetPersonaName();
+        }
+
+        if (passwordProtectedToggle.isOn)
+        {
+            string passwordName = serverPasswordInputField.GetComponent<TMP_InputField>().text;
+            // After creating the lobby, set the password data
+            string password = passwordName; // Replace with your desired password.
+            SteamMatchmaking.SetLobbyData(lobbyID, "Password", password);
+
+            Debug.Log("Password: " + password);
         }
 
         // Set lobby data with the host's Steam name
@@ -119,68 +132,114 @@ public class SteamLobby : MonoBehaviour
         hostButton.SetActive(false);
     }
 
-    public void RefreshLobbies()
-    {
-        Debug.Log("Looking for Lobbies");
-        // Clear the existing dropdown options
-        lobbyDropdown.ClearOptions();
+public void RefreshLobbies()
+{
+    Debug.Log("Looking for Lobbies");
+    // Clear the existing dropdown options
+    lobbyDropdown.ClearOptions();
 
-        // Request the lobby list from Steam
-        SteamMatchmaking.RequestLobbyList();
-    }
+    // Request the lobby list from Steam
+    SteamMatchmaking.RequestLobbyList();
 
-    public void JoinSelectedLobby()
+    // Iterate through the lobbies and add their names to the dropdown
+    List<string> lobbyNames = new List<string>();
+
+    // Add the lobby names to the dropdown
+    lobbyDropdown.AddOptions(lobbyNames);
+
+    Debug.Log("Added lobby names to the dropdown.");
+}
+
+
+
+public void JoinSelectedLobby()
+{
+    // Get the currently selected lobby from the dropdown
+    int selectedIndex = lobbyDropdown.value;
+
+    // Check if a valid lobby index is selected
+    if (selectedIndex >= 0 && selectedIndex < lobbyDropdown.options.Count)
     {
-        background.SetActive(false);
-        serverNameInputField.SetActive(false);
-        
-        // Get the currently selected lobby from the dropdown
-        int selectedIndex = lobbyDropdown.value;
-        
-        // Check if a valid lobby index is selected
-        if (selectedIndex >= 0 && selectedIndex < lobbyDropdown.options.Count)
+        // Get the lobby name from the selected option
+        string selectedLobbyName = lobbyDropdown.options[selectedIndex].text;
+        Debug.Log("Selected lobby name: " + selectedLobbyName);
+
+        // Get the CSteamID for the selected lobby
+        CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(selectedIndex);
+        Debug.Log("Selected lobby ID: " + lobbyID);
+
+        // Print lobby data for debugging
+        Debug.Log("Lobby Data for " + selectedLobbyName + ": " + SteamMatchmaking.GetLobbyData(lobbyID, "Password"));
+
+        // Check if this lobby is password-protected
+        bool isPasswordProtected = !string.IsNullOrEmpty(SteamMatchmaking.GetLobbyData(lobbyID, "Password"));
+        Debug.Log("Is Password Protected: " + isPasswordProtected);
+
+        if (isPasswordProtected)
         {
-            // Get the lobby name from the selected option
-            string selectedLobbyName = lobbyDropdown.options[selectedIndex].text;
+            Debug.Log("Selected index: " + selectedIndex);
+            Debug.Log("Selected lobby name: " + selectedLobbyName);
 
-            Debug.Log("Joining lobby: " + selectedLobbyName);
-            background.SetActive(false);
-            
-            // Iterate through the lobbies to find the one with the matching name
-            for (int i = 0; i < lobbyDropdown.options.Count; i++)
+            if (serverPasswordJoinInputField != null)
             {
-                CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
-                string lobbyName = SteamMatchmaking.GetLobbyData(lobbyID, "LobbyName");
+                // Debug the selected item's name for verification
+                Debug.Log("Selected lobby item name: " + selectedLobbyName);
 
-                if (lobbyName == selectedLobbyName)
+                // Prompt the player for the password
+                string enteredPassword = serverPasswordJoinInputField.text;
+                Debug.Log("Entered password: " + enteredPassword);
+
+                if (enteredPassword == SteamMatchmaking.GetLobbyData(lobbyID, "Password"))
                 {
-                    // Join the selected lobby
+                    //background.SetActive(false);
+                    serverNameInputField.SetActive(false);
+                    Debug.Log("Joining lobby: " + selectedLobbyName);
+                    // Correct password entered, join the lobby
                     SteamMatchmaking.JoinLobby(lobbyID);
-                    break;
+                }
+                else
+                {
+                    Debug.Log("Wrong Password");
+                    // Incorrect password entered, handle accordingly (e.g., display an error message)
+                    Debug.LogError("Incorrect password entered for the lobby.");
                 }
             }
+            else
+            {
+                Debug.LogWarning("Password input field not found for selected lobby.");
+            }
+            
+        }
+        else
+        {
+            //background.SetActive(false);
+            Debug.Log("Joining lobby: " + selectedLobbyName);
+            // Lobby is not password-protected, join directly
+            SteamMatchmaking.JoinLobby(lobbyID);
         }
     }
+}
+
 
     private void OnLobbyMatchList(LobbyMatchList_t callback)
     {
         int numLobbies = (int)callback.m_nLobbiesMatching;
 
-        // Iterate through the lobbies and add their names to the dropdown
-        List<string> lobbyNames = new List<string>();
+        // Clear the existing dropdown options
+        lobbyDropdown.ClearOptions();
 
         for (int i = 0; i < numLobbies; i++)
         {
             CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
             string lobbyName = SteamMatchmaking.GetLobbyData(lobbyID, "LobbyName");
+            bool isPasswordProtected = !string.IsNullOrEmpty(SteamMatchmaking.GetLobbyData(lobbyID, "Password"));
 
             if (!string.IsNullOrEmpty(lobbyName))
             {
-                lobbyNames.Add(lobbyName);
+                // Add the lobby name to the dropdown
+                lobbyDropdown.AddOptions(new List<string> { lobbyName });
+
             }
         }
-
-        // Add the lobby names to the dropdown
-        lobbyDropdown.AddOptions(lobbyNames);
     }
 }
