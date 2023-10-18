@@ -8,7 +8,6 @@ using TMPro.Examples;
 public class Player : NetworkBehaviour
 {
     public Rigidbody2D rigid;
-    [SerializeField] private GameManager gameManager;
     [SerializeField] private float jumpSpeed = 5;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask kingLayer;
@@ -37,7 +36,6 @@ public class Player : NetworkBehaviour
     [SyncVar]
     public bool isDead = false;
     public bool isAlreadyDead = false;
-    public bool isPause = false;
     [SyncVar]
     public bool becameKing = false;
     [SyncVar]
@@ -205,7 +203,6 @@ public class Player : NetworkBehaviour
         Debug.Log("PlayerNumber: " + PlayerNumber);
 
         customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
-        gameManager = GameObject.Find("GameState").GetComponent<GameManager>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         multiTargetCamera = GameObject.Find("Main Camera").GetComponent<MultiTargetCamera>();
         playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
@@ -293,19 +290,6 @@ public class Player : NetworkBehaviour
         if (player == null || player.Length == 0)
         {
             InitializePlayerArray();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            isPause = !isPause;
-            if (isPause)
-            {
-                gameManager.PauseGame();
-            }
-            else
-            {
-                gameManager.UnpauseGame();
-            }
         }
 
         ActivateBuildManager();

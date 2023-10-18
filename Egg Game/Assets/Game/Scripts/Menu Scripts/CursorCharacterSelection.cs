@@ -41,6 +41,9 @@ public class CursorCharacterSelection : NetworkBehaviour
     [SerializeField]
     private GameObject MapCanvas;
 
+    [SerializeField]
+    private MenuScript menuScript;
+
     private void Awake()
     {
         cursorCollider = GetComponent<Collider2D>();
@@ -67,6 +70,8 @@ public class CursorCharacterSelection : NetworkBehaviour
         mapButton = GameObject.Find("Back Button").GetComponent<Button>();
 
         clickableImages = GameObject.FindObjectsOfType<ClickableImage>();
+
+        menuScript = FindObjectOfType<MenuScript>();
 
         // If the mapObjectContainer is not assigned, find map objects with the "Map" tag
         if (mapObjectContainer.mapObjects == null || mapObjectContainer.mapObjects.Length == 0)
@@ -118,7 +123,7 @@ public class CursorCharacterSelection : NetworkBehaviour
         bool isMapSelectionActive = MapCanvas.activeSelf;
 
         // Process mouse click
-        if (isLocalPlayer && Input.GetMouseButtonDown(0))
+        if (isLocalPlayer && Input.GetMouseButtonDown(0) && !menuScript.isPause)
         {
             if(isMapSelectionActive){
                 HandleMapMouseClick();
