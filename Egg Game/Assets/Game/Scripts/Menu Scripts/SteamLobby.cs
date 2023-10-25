@@ -26,6 +26,8 @@ public class SteamLobby : MonoBehaviour
     protected Callback<LobbyEnter_t> lobbyEntered;
     private Callback<LobbyMatchList_t> lobbyMatchList; // Callback for lobby list
 
+    private CSteamID createdLobbyID;
+
     private const string HostAddressKey = "HostAddress";
 
     private void Start()
@@ -34,6 +36,7 @@ public class SteamLobby : MonoBehaviour
 
         if (!SteamManager.Initialized)
         {
+            Debug.LogError("Steam is not initialized.");
             return;
         }
 
@@ -102,7 +105,7 @@ public class SteamLobby : MonoBehaviour
         customNetworkManager.StartHost();
 
         // Get the lobby ID
-        CSteamID lobbyID = new CSteamID(callback.m_ulSteamIDLobby);
+        createdLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
 
         string serverName = serverNameInputField.GetComponent<TMP_InputField>().text;
         if (string.IsNullOrEmpty(serverName))
@@ -115,16 +118,16 @@ public class SteamLobby : MonoBehaviour
             string passwordName = serverPasswordInputField.GetComponent<TMP_InputField>().text;
             // After creating the lobby, set the password data
             string password = passwordName; // Replace with your desired password.
-            SteamMatchmaking.SetLobbyData(lobbyID, "Password", password);
+            SteamMatchmaking.SetLobbyData(createdLobbyID, "Password", password);
 
             Debug.Log("Password: " + password);
         }
 
         // Set lobby data with the host's Steam name
-        SteamMatchmaking.SetLobbyData(lobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
-        SteamMatchmaking.SetLobbyData(lobbyID, "LobbyName", serverName );
+        SteamMatchmaking.SetLobbyData(createdLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
+        SteamMatchmaking.SetLobbyData(createdLobbyID, "LobbyName", serverName );
         Debug.Log("Lobby created successfully!");
-        Debug.Log("Lobby ID: " + lobbyID);
+        Debug.Log("Lobby ID: " + createdLobbyID);
         Debug.Log("Host Steam Name: " + serverName);
     }
 
@@ -137,13 +140,18 @@ public class SteamLobby : MonoBehaviour
     {
         if (NetworkServer.active)
         {
+            Debug.Log("Entering Server");
             return;
+        }else{
+            Debug.Log("Can't Enter Server");
         }
 
         string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
         customNetworkManager.networkAddress = hostAddress;
         customNetworkManager.StartClient();
         hostButton.SetActive(false);
+
+        Debug.Log("Entered lobby with host address: " + hostAddress);
     }
 
 public void RefreshLobbies()
@@ -272,23 +280,68 @@ public void JoinSelectedLobby()
         int numLobbies = (int)callback.m_nLobbiesMatching;
 
         // Clear the existing dropdown options
-        lobbyDropdown.GetComponent<TMP_Dropdown>().ClearOptions();
+        TMP_Dropdown dropdown = lobbyDropdown.GetComponent<TMP_Dropdown>();
+        dropdown.ClearOptions();
 
         for (int i = 0; i < numLobbies; i++)
         {
             CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
             string lobbyName = SteamMatchmaking.GetLobbyData(lobbyID, "LobbyName");
-            bool isPasswordProtected = !string.IsNullOrEmpty(SteamMatchmaking.GetLobbyData(lobbyID, "Password"));
+
+            // Check if the lobby is still active (for example, check if it has players)
+            // You might need to implement a mechanism to check if the lobby is valid.
 
             if (!string.IsNullOrEmpty(lobbyName))
             {
                 // Add the lobby name to the dropdown
-                lobbyDropdown.GetComponent<TMP_Dropdown>().AddOptions(new List<string> { lobbyName });
-
+                dropdown.AddOptions(new List<string> { lobbyName });
+            }
+            else
+            {
+                // Lobby is not valid, remove it from Steam's lobby list
+                SteamMatchmaking.LeaveLobby(lobbyID);
             }
         }
 
         // Call the function to toggle the password input field
         TogglePasswordInputField();
+    }
+
+    public void LeaveLobby()
+    {
+        CSteamID lobbyID = createdLobbyID;
+        if (lobbyID.IsValid())
+        {
+            SteamMatchmaking.LeaveLobby(lobbyID);
+            Debug.Log("Left lobby with ID: " + lobbyID);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from Steamworks callbacks in OnDestroy
+        if (lobbyCreated != null)
+        {
+            lobbyCreated.Dispose();
+            lobbyCreated = null;
+        }
+
+        if (gameLobbyJoinRequested != null)
+        {
+            gameLobbyJoinRequested.Dispose();
+            gameLobbyJoinRequested = null;
+        }
+
+        if (lobbyEntered != null)
+        {
+            lobbyEntered.Dispose();
+            lobbyEntered = null;
+        }
+
+        if (lobbyMatchList != null)
+        {
+            lobbyMatchList.Dispose();
+            lobbyMatchList = null;
+        }
     }
 }

@@ -8368,6 +8368,7 @@ GameObject:
   - component: {fileID: 1895601154}
   - component: {fileID: 1895601153}
   - component: {fileID: 1895601152}
+  - component: {fileID: 1895601155}
   m_Layer: 5
   m_Name: Menu Button
   m_TagString: Untagged
@@ -8440,10 +8441,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ChangeScene, Assembly-CSharp
-        m_MethodName: LoadScene
-        m_Mode: 5
+      - m_Target: {fileID: 1895601155}
+        m_TargetAssemblyTypeName: DisconnectButton, Assembly-CSharp
+        m_MethodName: Disconnect
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8490,6 +8491,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1895601150}
   m_CullTransparentMesh: 1
+--- !u!114 &1895601155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1895601150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18d2f0380e4603047be197129832804b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  customNetworkManager: {fileID: 0}
 --- !u!1 &1902107683
 GameObject:
   m_ObjectHideFlags: 0
@@ -9268,10 +9285,10 @@ MonoBehaviour:
   - {fileID: 9100000, guid: c8e087b595453984698fe11b9a3ce378, type: 2}
   playerNumber: 0
   playerReadyNumber: 0
-  playerHatSpriteNumbers: 
-  playerBodySpriteNumbers: 
-  playerWeaponSpriteNumbers: 
-  playerAnimatorNumbers: 
+  playerHatSpriteNumbers: 000000000000000000000000000000000000000000000000
+  playerBodySpriteNumbers: 000000000000000000000000000000000000000000000000
+  playerWeaponSpriteNumbers: 000000000000000000000000000000000000000000000000
+  playerAnimatorNumbers: 000000000000000000000000000000000000000000000000
   playerSpriteHats: []
   playerSpriteBodies: []
   playerSpriteWeapons: []

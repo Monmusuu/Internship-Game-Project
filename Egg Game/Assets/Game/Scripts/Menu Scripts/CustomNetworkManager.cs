@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.SceneManagement;
-
+using Steamworks;
 public class CustomNetworkManager : NetworkManager
 {
     [System.Serializable]
@@ -20,6 +20,13 @@ public class CustomNetworkManager : NetworkManager
     public int playerCount = 0;
 
     private Dictionary<NetworkConnectionToClient, Transform> playerSpawnPositions = new Dictionary<NetworkConnectionToClient, Transform>();
+
+    private SteamLobby steamLobby; // Reference to the SteamLobby script.
+
+    private void Start() {
+        steamLobby = GameObject.Find("NetworkManager").GetComponent<SteamLobby>();
+        UnityEngine.Cursor.visible = true;
+    }
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
@@ -77,19 +84,19 @@ public class CustomNetworkManager : NetworkManager
         currentPlayerPrefabIndex = 0; // Reset the player prefab index when changing scenes
     }
 
-        public override void OnServerDisconnect(NetworkConnectionToClient conn)
+    public override void OnServerDisconnect(NetworkConnectionToClient conn)
+    {
+        base.OnServerDisconnect(conn);
+
+        // Decrease the player count when a player disconnects.
+        playerCount--;
+
+        // Free up the spawn position of the disconnected player
+        if (playerSpawnPositions.ContainsKey(conn))
         {
-            base.OnServerDisconnect(conn);
-
-            // Decrease the player count when a player disconnects.
-            playerCount--;
-
-            // Free up the spawn position of the disconnected player
-            if (playerSpawnPositions.ContainsKey(conn))
-            {
-                playerSpawnPositions.Remove(conn);
-            }
+            playerSpawnPositions.Remove(conn);
         }
+    }
 
     public void ClientChangeScene(string sceneName)
     {

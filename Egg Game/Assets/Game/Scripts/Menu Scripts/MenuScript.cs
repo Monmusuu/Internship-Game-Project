@@ -34,6 +34,7 @@ public class MenuScript : NetworkBehaviour
         if(SceneManager.GetActiveScene().name == "CharacterSelection"){
             m_menuScreen.SetActive(false);
         }
+        UnityEngine.Cursor.visible = true;
     }
 
     private void Update() {
