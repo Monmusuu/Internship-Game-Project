@@ -12,7 +12,7 @@ public class CustomNetworkManager : NetworkManager
         public string sceneName;
         public GameObject playerPrefab;
     }
-
+    
     public ScenePlayerPrefabs[] scenePlayerPrefabs;
     private int currentPlayerPrefabIndex = 0;
 
@@ -86,8 +86,6 @@ public class CustomNetworkManager : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
-        base.OnServerDisconnect(conn);
-
         // Decrease the player count when a player disconnects.
         playerCount--;
 
@@ -96,6 +94,15 @@ public class CustomNetworkManager : NetworkManager
         {
             playerSpawnPositions.Remove(conn);
         }
+
+        base.OnServerDisconnect(conn);
+    }
+
+     public override void OnStopClient()
+    {
+        steamLobby.RequestLeaveLobby();
+
+        base.OnStopClient();
     }
 
     public void ClientChangeScene(string sceneName)

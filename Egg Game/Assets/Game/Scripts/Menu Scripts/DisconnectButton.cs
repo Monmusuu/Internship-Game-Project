@@ -15,25 +15,17 @@ public class DisconnectButton : NetworkBehaviour
 
     public void Disconnect()
     {
-        if (customNetworkManager.isNetworkActive)
+        if (isServer)
         {
-            if (isServer)
-            {
-                if (steamLobby != null)
-                {
-                    steamLobby.LeaveLobby(); // Call the LeaveLobby method from the SteamLobby script.
-                }
-                customNetworkManager.StopHost(); // Stop the host, which includes stopping the server.
-            }
-            else if (isClient)
-            {
-                if (steamLobby != null)
-                {
-                    steamLobby.LeaveLobby(); // Call the LeaveLobby method from the SteamLobby script.
-                }
-                customNetworkManager.StopClient();
-                
-            }
+            steamLobby.RequestLeaveLobby();
+            customNetworkManager.StopHost();
+            Debug.Log("Server disconnecting.");
+        }
+        else
+        {
+            steamLobby.RequestLeaveLobby();
+            customNetworkManager.StopClient();
+            Debug.Log("Client disconnecting.");
         }
     }
 }

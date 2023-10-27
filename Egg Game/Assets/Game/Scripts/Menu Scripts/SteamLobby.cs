@@ -6,7 +6,7 @@ using Steamworks;
 using UnityEngine.UI;
 using TMPro;
 
-public class SteamLobby : MonoBehaviour
+public class SteamLobby : NetworkBehaviour
 {
     public GameObject hostButton = null;
     public GameObject refreshButton;
@@ -26,7 +26,7 @@ public class SteamLobby : MonoBehaviour
     protected Callback<LobbyEnter_t> lobbyEntered;
     private Callback<LobbyMatchList_t> lobbyMatchList; // Callback for lobby list
 
-    private CSteamID createdLobbyID;
+    public CSteamID createdLobbyID;
 
     private const string HostAddressKey = "HostAddress";
 
@@ -140,18 +140,22 @@ public class SteamLobby : MonoBehaviour
     {
         if (NetworkServer.active)
         {
-            Debug.Log("Entering Server");
+            Debug.Log("Already In Server");
             return;
         }else{
-            Debug.Log("Can't Enter Server");
+            Debug.Log("Client Joining");
+    
+            string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
+            customNetworkManager.networkAddress = hostAddress;
+            // Get the lobby ID
+            createdLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
+            customNetworkManager.StartClient();
+            hostButton.SetActive(false);
+
+            Debug.Log("Entered lobby with host address: " + hostAddress);
         }
 
-        string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
-        customNetworkManager.networkAddress = hostAddress;
-        customNetworkManager.StartClient();
-        hostButton.SetActive(false);
 
-        Debug.Log("Entered lobby with host address: " + hostAddress);
     }
 
 public void RefreshLobbies()
@@ -307,15 +311,16 @@ public void JoinSelectedLobby()
         TogglePasswordInputField();
     }
 
-    public void LeaveLobby()
+
+    public void RequestLeaveLobby()
     {
-        CSteamID lobbyID = createdLobbyID;
-        if (lobbyID.IsValid())
+        if (SteamManager.Initialized)
         {
-            SteamMatchmaking.LeaveLobby(lobbyID);
-            Debug.Log("Left lobby with ID: " + lobbyID);
+            // Ensure all players leave the lobby
+            SteamMatchmaking.LeaveLobby(createdLobbyID);
         }
     }
+
 
     private void OnDestroy()
     {
