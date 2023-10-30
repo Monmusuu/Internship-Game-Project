@@ -112,6 +112,21 @@ public class PlayerSaveData : NetworkBehaviour
 
     }
 
+    public void ResetPlayerData(int connectionId)
+    {
+        int playerIndex = connectionId;
+
+        if (playerIndex >= 0 && playerIndex < playerHatSpriteNumbers.Length)
+        {
+            playerHatSpriteNumbers[playerIndex] = 0;
+            playerBodySpriteNumbers[playerIndex] = 0;
+            playerWeaponSpriteNumbers[playerIndex] = 0;
+            playerAnimatorNumbers[playerIndex] = 0;
+
+            // Reset any other player-specific data as needed
+        }
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "CharacterSelection")

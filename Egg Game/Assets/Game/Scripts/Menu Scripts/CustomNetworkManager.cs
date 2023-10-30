@@ -95,6 +95,15 @@ public class CustomNetworkManager : NetworkManager
             playerSpawnPositions.Remove(conn);
         }
 
+        // Reset player data based on connection ID
+        PlayerSaveData playerSaveData = PlayerSaveData.Instance;
+        if (playerSaveData != null)
+        {
+            playerSaveData.ResetPlayerData(conn.connectionId);
+        }else{
+            Debug.Log("Reference not found");
+        }
+
         base.OnServerDisconnect(conn);
     }
 

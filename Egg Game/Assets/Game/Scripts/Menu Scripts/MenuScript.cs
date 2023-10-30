@@ -16,6 +16,9 @@ public class MenuScript : NetworkBehaviour
 
     public GameObject m_controlsScreen;
 
+    public GameObject LobbyHostObject;
+    public GameObject LobbyListObject;
+
     // Variables
     [HideInInspector]
     public bool m_menuScreenIsActive = true;
@@ -136,4 +139,15 @@ public class MenuScript : NetworkBehaviour
         m_controlsScreen.SetActive(true);
         m_controlsScreenIsActive = true;
     }
+
+    public void SwitchToLobby(){
+        LobbyHostObject.SetActive(true);
+        LobbyListObject.SetActive(true);
+    }
+
+    public void SwitchToMenu(){
+        LobbyHostObject.SetActive(false);
+        LobbyListObject.SetActive(false);
+    }
+
 }

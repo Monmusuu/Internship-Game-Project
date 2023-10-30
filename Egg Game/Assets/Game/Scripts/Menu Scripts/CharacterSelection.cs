@@ -64,13 +64,21 @@ public class CharacterSelection : NetworkBehaviour
         bodyRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
         weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
 
-        //MapCanvas.SetActive(false);
+        if (playerSaveData != null)
+        {
+            _hatValue = playerSaveData.playerHatSpriteNumbers[connectionToClient.connectionId];
+            _bodyValue = playerSaveData.playerBodySpriteNumbers[connectionToClient.connectionId];
+            _weaponValue = playerSaveData.playerWeaponSpriteNumbers[connectionToClient.connectionId];
+        }
 
         // Update the initial sprites for all player objects on the client
         if (isServer)
         {
             RpcUpdateSprites(_hatValue, _bodyValue, _weaponValue);
         }
+
+        // Add this line to ensure the sprites update on start
+        UpdateSprites();
     }
 
     [Command]
