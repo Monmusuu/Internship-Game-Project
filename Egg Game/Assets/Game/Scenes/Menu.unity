@@ -6138,9 +6138,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 206e50ed66de64e4fb966404aed451d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   m_menuScreen: {fileID: 290714682}
   m_hostMenuScreen: {fileID: 290714682}
   m_settingsScreen: {fileID: 386201523}
@@ -9265,9 +9262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8849d11eb4d804042a4aa7a188e735e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   hostButton: {fileID: 921210452}
   refreshButton: {fileID: 778190525}
   lobbyDropdown: {fileID: 139293482}
@@ -9316,15 +9310,17 @@ MonoBehaviour:
   offlineScene: Assets/Game/Scenes/Menu.unity
   onlineScene: Assets/Game/Scenes/CharacterSelection.unity
   transport: {fileID: 1764644809}
-  networkAddress: 142.177.27.102
+  networkAddress: localhost
   maxConnections: 6
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 1583603190512241176, guid: bd9225c51aef3f147b390c61cf8e910e, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
-  - {fileID: 1518570509379224512, guid: 7fb6265005b21d3439f7abd7815db980, type: 3}
   - {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
+  - {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
+  - {fileID: 5242640545504936685, guid: 6eca6a95db15f2449b399251ffbf11e3, type: 3}
+  - {fileID: 5598887861678562917, guid: 0c0232dbb40adf442ba62d410e76edf4, type: 3}
   - {fileID: 6525572584686347409, guid: fe093d491171ca3458b48eeeae245633, type: 3}
   - {fileID: 7606387864496508036, guid: e25dda4c8d832734a8a08a0d0decf5e6, type: 3}
   - {fileID: 6653591027728031132, guid: a7c8017d8f0893e4c8af461daf5529f2, type: 3}
@@ -9361,6 +9357,9 @@ MonoBehaviour:
   - sceneName: Nathan
     playerPrefab: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
   playerCount: 0
+  GameManager: {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
+  VotingSystem: {fileID: 5242640545504936685, guid: 6eca6a95db15f2449b399251ffbf11e3, type: 3}
+  steamLobby: {fileID: 1764644808}
 --- !u!4 &1764644811
 Transform:
   m_ObjectHideFlags: 0

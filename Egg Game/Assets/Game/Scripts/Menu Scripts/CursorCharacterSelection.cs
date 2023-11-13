@@ -38,7 +38,9 @@ public class CursorCharacterSelection : NetworkBehaviour
     [SerializeField]
     private Button mapButton;
 
-    [SerializeField]
+    private bool mapCanvasFound = false;
+
+    [SerializeField] 
     private GameObject MapCanvas;
 
     [SerializeField]
@@ -62,16 +64,25 @@ public class CursorCharacterSelection : NetworkBehaviour
         }
     }
 
-    private void Start()
+    IEnumerator WaitForMapCanvas()
     {
-        MapCanvas = GameObject.Find("Map Canvas");
+        while (true) {
+            GameObject mapCanvas = GameObject.Find("Map Canvas");
+
+            if (mapCanvas != null) {
+                MapCanvas = mapCanvas;
+                Debug.Log("MapCanvas found!");
+                mapCanvasFound = true;
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
 
         // Find and assign the button object
         mapButton = GameObject.Find("Back Button").GetComponent<Button>();
 
         clickableImages = GameObject.FindObjectsOfType<ClickableImage>();
-
-        menuScript = FindObjectOfType<MenuScript>();
 
         // If the mapObjectContainer is not assigned, find map objects with the "Map" tag
         if (mapObjectContainer.mapObjects == null || mapObjectContainer.mapObjects.Length == 0)
@@ -94,18 +105,28 @@ public class CursorCharacterSelection : NetworkBehaviour
         {
             mapButton.onClick.AddListener(OnClickBackButton);
         }
+    }
 
-        if (isLocalPlayer){
-            MapCanvas.SetActive(false);
-        }
+    private void Start()
+    {
+
+        menuScript = FindObjectOfType<MenuScript>();
+
+        // if (isLocalPlayer){
+        //     MapCanvas.SetActive(false);
+        // }
         
         UnityEngine.Cursor.visible = false;
-        
     }
 
     private void Update()
     {
+        if (!mapCanvasFound) {
+            StartCoroutine(WaitForMapCanvas());
+        }
+
         if (!isGameFocused) return; // Only process input if the game is focused
+        if (!isLocalPlayer) return;
 
         // Process movement input based on the mouse position
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -119,7 +140,12 @@ public class CursorCharacterSelection : NetworkBehaviour
             CmdMoveCursor(transform.position);
         }
 
-        // Check if the mapCanvas is active
+        // Check if MapCanvas is null before using it
+        if (MapCanvas == null)
+        {
+            return;
+        }
+        
         bool isMapSelectionActive = MapCanvas.activeSelf;
 
         // Process mouse click
@@ -309,7 +335,6 @@ public class CursorCharacterSelection : NetworkBehaviour
         return mapIndex;
     }
 
-    [Command]
     public void OnClickBackButton()
     {
         Debug.Log("Local player clicked Back Button 2.");
@@ -318,6 +343,13 @@ public class CursorCharacterSelection : NetworkBehaviour
         NetworkIdentity networkIdentity = GetComponentInParent<NetworkIdentity>();
 
         // Call the voting system's Undo-Vote method on the server
-        VotingSystem.Instance.UndoVote(networkIdentity.connectionToClient.connectionId);
+        if (networkIdentity != null)
+        {
+            VotingSystem.Instance.UndoVote(networkIdentity.connectionToClient.connectionId);
+        }else
+        {
+            Debug.LogError("NetworkIdentity not found on parent object.");
+        }
     }
+
 }

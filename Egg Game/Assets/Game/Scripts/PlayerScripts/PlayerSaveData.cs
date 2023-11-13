@@ -42,8 +42,6 @@ public class PlayerSaveData : NetworkBehaviour
     [SerializeField]
     private CustomNetworkManager customNetworkManager;
 
-    private bool isSceneChanging = false;
-
     private static PlayerSaveData instance;
     public static PlayerSaveData Instance { get { return instance; } }
 

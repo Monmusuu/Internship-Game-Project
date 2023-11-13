@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
 using Mirror;
 
 public class CharacterSelection : NetworkBehaviour
@@ -39,6 +38,9 @@ public class CharacterSelection : NetworkBehaviour
     
     public PlayerSaveData playerSaveData;
 
+    private bool gameManagerFound = false;
+    private bool mapCanvasFound = false;
+
     [SerializeField]
     private CustomNetworkManager customNetworkManager;
 
@@ -55,8 +57,6 @@ public class CharacterSelection : NetworkBehaviour
         customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
         canvas = GameObject.Find("Canvas").transform;
         this.transform.SetParent(canvas.transform);
-        playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
-        MapCanvas = GameObject.Find("Map Canvas");
         // Check if the mapButton GameObject exists before attempting to find the Button component
         GameObject backButton2 = GameObject.Find("Back Button 2");
 
@@ -64,16 +64,63 @@ public class CharacterSelection : NetworkBehaviour
         bodyRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
         weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
 
-        if (playerSaveData != null)
-        {
-            _hatValue = playerSaveData.playerHatSpriteNumbers[connectionToClient.connectionId];
-            _bodyValue = playerSaveData.playerBodySpriteNumbers[connectionToClient.connectionId];
-            _weaponValue = playerSaveData.playerWeaponSpriteNumbers[connectionToClient.connectionId];
+
+
+        // if (playerSaveData != null)
+        // {
+        //     _hatValue = playerSaveData.playerHatSpriteNumbers[connectionToClient.connectionId];
+        //     _bodyValue = playerSaveData.playerBodySpriteNumbers[connectionToClient.connectionId];
+        //     _weaponValue = playerSaveData.playerWeaponSpriteNumbers[connectionToClient.connectionId];
+        // }
+
+
+    }
+
+    private void Update() {
+        if (!gameManagerFound) {
+            StartCoroutine(WaitForGameManager());
         }
 
+        if (!mapCanvasFound) {
+            StartCoroutine(WaitForMapCanvas());
+        }
+    }
+
+    IEnumerator WaitForGameManager() {
+        while (true) {
+            GameObject gameManager = GameObject.Find("GameManager(Clone)");
+
+            if (gameManager != null) {
+                playerSaveData = gameManager.GetComponent<PlayerSaveData>();
+                Debug.Log("GameManager found!");
+                gameManagerFound = true;
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
+    }
+
+    IEnumerator WaitForMapCanvas() {
+        while (true) {
+            GameObject mapCanvas = GameObject.Find("Map Canvas");
+
+            if (mapCanvas != null) {
+                MapCanvas = mapCanvas;
+                Debug.Log("MapCanvas found!");
+                mapCanvasFound = true;
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
+
+        // Continue with your Start logic...
+        canvas = GameObject.Find("Canvas").transform;
+        this.transform.SetParent(canvas.transform);
+
         // Update the initial sprites for all player objects on the client
-        if (isServer)
-        {
+        if (isServer) {
             RpcUpdateSprites(_hatValue, _bodyValue, _weaponValue);
         }
 
@@ -86,6 +133,7 @@ public class CharacterSelection : NetworkBehaviour
     {
         _hatValue = value;
         RpcUpdateSprites(_hatValue, _bodyValue, _weaponValue);
+        Debug.Log($"CmdSetHatValue called on server. New Hat Value: {_hatValue}");
     }
 
     [Command]
@@ -94,6 +142,7 @@ public class CharacterSelection : NetworkBehaviour
         _bodyValue = bodyValue;
         _animatorValue = animatorValue;
         RpcUpdateSprites(_hatValue, _bodyValue, _weaponValue);
+        Debug.Log($"CmdSetBodyValue called on server. New Body Value: {_bodyValue}, New Animator Value: {_animatorValue}");
     }
 
     [Command]
@@ -101,11 +150,13 @@ public class CharacterSelection : NetworkBehaviour
     {
         _weaponValue = value;
         RpcUpdateSprites(_hatValue, _bodyValue, _weaponValue);
+        Debug.Log($"CmdSetWeaponValue called on server. New Weapon Value: {_weaponValue}");
     }
 
     [ClientRpc]
     private void RpcUpdateSprites(int hatValue, int bodyValue, int weaponValue)
     {
+        Debug.Log("RpcUpdateSprites called on client.");
         _hatValue = hatValue;
         _bodyValue = bodyValue;
         _weaponValue = weaponValue;
@@ -244,6 +295,7 @@ public class CharacterSelection : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
+            Debug.Log("Initial Trying to Ready/UnReady");
             CmdSetReadyState(!_isReady);
         }
     }
@@ -251,6 +303,8 @@ public class CharacterSelection : NetworkBehaviour
     [Command]
     public void CmdSetReadyState(bool readyState)
     {
+        Debug.Log("Trying to Ready/UnReady");
+        
         if (_isReady != readyState)
         {
             _isReady = readyState;
@@ -288,6 +342,8 @@ public class CharacterSelection : NetworkBehaviour
     [ClientRpc]
     private void RpcSaveCustomizationChoices(int hatValue, int bodyValue, int weaponValue, int animatorValue)
     {
+        Debug.Log("RpcSaveCustomizationChoices called on client.");
+
         for (int i = 0; i < customNetworkManager.playerCount; i++)
         {
             GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));

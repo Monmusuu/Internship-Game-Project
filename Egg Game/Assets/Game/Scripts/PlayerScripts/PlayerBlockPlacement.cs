@@ -9,19 +9,38 @@ public class PlayerBlockPlacement : NetworkBehaviour
     // Variables
     public Tilemap kingTilemap;
     public GameObject[] blockTileObjects;
+
+    public GameObject[] autoTrapTileObjects;
+    public GameObject[] manualTrapTileObjects;
+    public GameObject[] manualTrap2TileObjects;
+
     public Transform tileGridUI;
 
     private Collider2D cursorCollider;
     private int kingLayerValue;
     private LayerMask borderLayer;
-    private RoundControl roundControl;
+    [SerializeField] private RoundControl roundControl;
     private Vector2 movementInput;
+
+    [SerializeField] private Player playerScript;
 
     [SyncVar(hook = nameof(OnSelectedTileChanged))]
     private int selectedTile = 0;
 
+
     [SyncVar(hook = nameof(OnSelectedBlockIndexChanged))]
     private int selectedBlockIndex;
+
+
+    [SyncVar(hook = nameof(OnSelectedAutoTrapIndexChanged))]
+    private int selectedAutoTrapIndex;
+    
+    [SyncVar(hook = nameof(OnSelectedManualTrapIndexChanged))]
+    private int selectedManualTrapIndex;
+    
+    [SyncVar(hook = nameof(OnSelectedManualTrap2IndexChanged))]
+    private int selectedManualTrap2Index;
+
 
     [SyncVar(hook = nameof(OnPreviewOpacityChanged))]
     private float previewOpacity = 0.5f;
@@ -30,10 +49,17 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private float rotationAngle = 0f;
 
     private int previousBlockIndex;
+    private int previousAutoTrapIndex;
+    private int previousManualTrapIndex;
+    private int previousManualTrap2Index;
 
     private bool blockPlaced = false;
+    private bool autoTrapPlaced = false;
+    private bool manualTrapPlaced = false;
+    private bool manualTrapPlaced2 = false;
 
     private GameObject previewObject;
+
     private SpriteRenderer previewSpriteRenderer;
     private Vector3 initialPosition;
     private bool isGameFocused = true;
@@ -55,24 +81,60 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
         Application.focusChanged += OnApplicationFocus;
 
-        CmdInitializeSelectedIndexes();
+        if (isOwned)
+        {
+            CmdInitializeSelectedIndexes();
+            CmdInitializeSelectedKingIndexes();
+        }
     }
 
     private void OnEnable()
     {
         selectedTile = 0;
+        playerScript = gameObject.transform.parent.GetComponent<Player>();;
+        
+        if(playerScript.isKing){
+            autoTrapPlaced = false;
+            manualTrapPlaced = false;
+            manualTrapPlaced2 = false;
 
-        blockPlaced = false;
+            do
+            {
+                selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+            } while (selectedAutoTrapIndex == previousAutoTrapIndex);
 
-        do
-        {
-            selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
-        } while (selectedBlockIndex == previousBlockIndex);
+            // Randomly select a new tile from the manual trap array
+            do
+            {
+                selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+            } while (selectedManualTrapIndex == previousManualTrapIndex);
 
-        previousBlockIndex = selectedBlockIndex;
+            // Randomly select a new tile from the manual trap 2 array
+            do
+            {
+                selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+            } while (selectedManualTrap2Index == previousManualTrap2Index);
 
-        // Use a command to sync the selected indexes with the server
-        CmdSyncSelectedIndexes(selectedBlockIndex);
+            previousAutoTrapIndex = selectedAutoTrapIndex;
+            previousManualTrapIndex = selectedManualTrapIndex;
+            previousManualTrap2Index = selectedManualTrap2Index;
+
+            // Use a command to sync the selected indexes with the server
+            CmdSyncKingSelectedIndexes(selectedAutoTrapIndex, selectedManualTrapIndex, selectedManualTrap2Index);
+        }else if(playerScript.isPlayer){
+            blockPlaced = false;
+
+            do
+            {
+                selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+            } while (selectedBlockIndex == previousBlockIndex);
+
+            
+            previousBlockIndex = selectedBlockIndex;
+            
+            // Use a command to sync the selected indexes with the server
+            CmdSyncSelectedIndexes(selectedBlockIndex);
+        }
     }
 
     private void OnDisable()
@@ -139,17 +201,48 @@ public class PlayerBlockPlacement : NetworkBehaviour
     [Command]
     private void CmdCreateAllPreviews()
     {
-        if (!blockPlaced && selectedTile == 0)
-        {
-            CreatePreviewObject(blockTileObjects, selectedBlockIndex);
+        if(playerScript.isPlayer){
+            if (!blockPlaced && selectedTile == 0)
+            {
+                CreatePreviewObject(blockTileObjects, selectedBlockIndex);
 
-            // Manually synchronize the preview opacity on the server and all clients
-            RpcUpdatePreviewOpacity(previewObject, previewOpacity);
+                // Manually synchronize the preview opacity on the server and all clients
+                RpcUpdatePreviewOpacity(previewObject, previewOpacity);
+            }
+            else
+            {
+                DestroyPreviewObject();
+            }
         }
-        else
-        {
-            DestroyPreviewObject();
+
+        if(playerScript.isKing){
+            if (!autoTrapPlaced && selectedTile == 0)
+            {
+                CreatePreviewObject(autoTrapTileObjects, selectedAutoTrapIndex);
+
+                // Manually synchronize the preview opacity on the server and all clients
+                RpcUpdatePreviewOpacity(previewObject, previewOpacity);
+            }
+            else if (!manualTrapPlaced && selectedTile == 1)
+            {
+                CreatePreviewObject(manualTrapTileObjects, selectedManualTrapIndex);
+
+                // Manually synchronize the preview opacity on the server and all clients
+                RpcUpdatePreviewOpacity(previewObject, previewOpacity);
+            }
+            else if (!manualTrapPlaced2 && selectedTile == 2 && manualTrap2TileObjects.Length > 0)
+            {
+                CreatePreviewObject(manualTrap2TileObjects, selectedManualTrap2Index);
+
+                // Manually synchronize the preview opacity on the server and all clients
+                RpcUpdatePreviewOpacity(previewObject, previewOpacity);
+            }
+            else
+            {
+                DestroyPreviewObject();
+            }
         }
+
     }
 
     [Command]
@@ -171,17 +264,46 @@ public class PlayerBlockPlacement : NetworkBehaviour
         }
 
         // Place the block on the server
-        GameObject placedBlock;
-        if (selectedTile == 0 && !blockPlaced)
-        {
-            blockPlaced = true;
-            placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
-            roundControl.playersPlacedBlocks += 1;
+        GameObject placedBlock = null;
+
+        if(playerScript.isPlayer){
+            if (selectedTile == 0 && !blockPlaced)
+            {
+                blockPlaced = true;
+                placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
+                roundControl.playersPlacedBlocks += 1;
+            }
+            else
+            {
+                return;
+            }
         }
-        else
-        {
-            return;
+
+        if(playerScript.isKing){
+            if (selectedTile == 0 && !autoTrapPlaced)
+            {
+                autoTrapPlaced = true;
+                placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, rotation);
+                roundControl.playersPlacedBlocks +=1;
+            }
+            else if (selectedTile == 1 && !manualTrapPlaced)
+            {
+                manualTrapPlaced = true;
+                placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, rotation);
+                roundControl.playersPlacedBlocks +=1;
+            }
+            else if (selectedTile == 2 && !manualTrapPlaced2 && manualTrap2TileObjects.Length > 0)
+            {
+                manualTrapPlaced2 = true;
+                placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, rotation);
+                roundControl.playersPlacedBlocks +=1;
+            }
+            else
+            {
+                return;
+            }
         }
+
 
         // Add NetworkIdentity component to the placed block object
         var networkIdentity = placedBlock.GetComponent<NetworkIdentity>();
@@ -237,6 +359,24 @@ public class PlayerBlockPlacement : NetworkBehaviour
     {
         // Sync the selected indexes with the server
         selectedBlockIndex = blockIndex;
+    }
+
+    [Command]
+    private void CmdInitializeSelectedKingIndexes()
+    {
+        // Initialize the selected indexes on the server for this player
+        selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+        selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+        selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+    }
+
+    [Command]
+    private void CmdSyncKingSelectedIndexes(int autoTrapIndex, int manualTrapIndex, int manualTrap2Index)
+    {
+        // Sync the selected indexes with the server
+        selectedAutoTrapIndex = autoTrapIndex;
+        selectedManualTrapIndex = manualTrapIndex;
+        selectedManualTrap2Index = manualTrap2Index;
     }
 
     private void ResetMovementInput()
@@ -350,6 +490,21 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private void OnSelectedBlockIndexChanged(int oldValue, int newValue)
     {
         selectedBlockIndex = newValue;
+    }
+
+    private void OnSelectedAutoTrapIndexChanged(int oldValue, int newValue)
+    {
+        selectedAutoTrapIndex = newValue;
+    }
+
+    private void OnSelectedManualTrapIndexChanged(int oldValue, int newValue)
+    {
+        selectedManualTrapIndex = newValue;
+    }
+
+    private void OnSelectedManualTrap2IndexChanged(int oldValue, int newValue)
+    {
+        selectedManualTrap2Index = newValue;
     }
 
     private void OnPreviewOpacityChanged(float oldValue, float newValue)

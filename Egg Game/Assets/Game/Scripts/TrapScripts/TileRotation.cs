@@ -4,7 +4,6 @@ using Mirror;
 public class TileRotation : NetworkBehaviour
 {
     public RoundControl roundControl;
-    private bool rotationRequested = false;
 
     [SerializeField]
     private float parentRotationSpeed = 40f;
@@ -32,14 +31,12 @@ public class TileRotation : NetworkBehaviour
     {
         if (roundControl.timerOn)
         {
-            rotationRequested = true;
             currentRotation += parentRotationSpeed * Time.deltaTime;
         }
     }
 
     private void OnRotationStateChanged(float oldRotation, float newRotation)
     {
-        rotationRequested = true;
         currentRotation = newRotation;
 
         transform.rotation = Quaternion.Euler(0f, 0f, currentRotation);

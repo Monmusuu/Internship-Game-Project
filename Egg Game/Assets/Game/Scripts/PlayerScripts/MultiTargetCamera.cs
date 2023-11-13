@@ -25,6 +25,13 @@ public class MultiTargetCamera : NetworkBehaviour
         cam = GetComponent<Camera>();
         initialZ = transform.position.z;
 
+        // Assuming each player has a Player script attached
+        Player[] playersInScene = FindObjectsOfType<Player>();
+        foreach (Player player in playersInScene)
+        {
+            AddPlayer(player);
+        }
+
         // If this script is on the local player object, set the offset
         if (isLocalPlayer)
         {

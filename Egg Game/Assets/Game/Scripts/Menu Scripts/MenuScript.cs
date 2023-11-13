@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Mirror;
 
-public class MenuScript : NetworkBehaviour
+public class MenuScript : MonoBehaviour
 {
     // Reference to the PauseScreen game object
     public GameObject m_menuScreen;
@@ -54,7 +54,7 @@ public class MenuScript : NetworkBehaviour
                 MenuOFF();
             }
         }else if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name != "CharacterSelection" && SceneManager.GetActiveScene().name != "Menu"){
-            if(isServer){
+            if (NetworkServer.active){
                 isPause = !isPause;
                 if(isPause){
                     MenuONHost();

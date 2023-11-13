@@ -53,9 +53,8 @@ public class Player : NetworkBehaviour
     public PlayerSaveData playerSaveData;
     public RoundControl roundControl;
     public MultiTargetCamera multiTargetCamera;
-    public GameObject BuildManager;
-    public GameObject playerBlockPlacement;
-    public GameObject trapInteraction;
+    [SerializeField] public GameObject playerBlockPlacement;
+    [SerializeField] public GameObject trapInteraction;
     public Transform kingSpawnLocation;
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
@@ -104,6 +103,8 @@ public class Player : NetworkBehaviour
 
     [SerializeField]
     private SpriteRenderer bodySpriteRenderer;
+
+    private bool gameManagerFound = false;
 
     public void bodyChangeSprite(int newIndex)
     {
@@ -163,7 +164,6 @@ public class Player : NetworkBehaviour
         animator.runtimeAnimatorController = animatorVariations[newIndex];
     }
     
-
     private void Awake()
     {
         Transform hatChild = transform.GetChild(5);
@@ -178,8 +178,6 @@ public class Player : NetworkBehaviour
     {
         internalTimer = weaponTimer;
     }
-
-
 
     void Start()
     {
@@ -205,7 +203,6 @@ public class Player : NetworkBehaviour
         customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
         roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         multiTargetCamera = GameObject.Find("Main Camera").GetComponent<MultiTargetCamera>();
-        playerSaveData = GameObject.Find("GameManager").GetComponent<PlayerSaveData>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         isPlayer = true;
         healthbar.SetMaxHealth(maxHealth);
@@ -214,7 +211,7 @@ public class Player : NetworkBehaviour
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
 
-        ApplyPlayerSprites(gameObject, PlayerNumber-1);
+
         
 
         if (isServer)
@@ -226,44 +223,58 @@ public class Player : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    private void RpcActivateBuildManager(bool activate)
-    {   
-        BuildManager.SetActive(activate);
+    IEnumerator WaitForGameManager() {
+        while (true) {
+            GameObject gameManager = GameObject.Find("GameManager(Clone)");
+
+            if (gameManager != null) {
+                playerSaveData = gameManager.GetComponent<PlayerSaveData>();
+                Debug.Log("GameManager found!");
+                gameManagerFound = true;
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
+
+        ApplyPlayerSprites(gameObject, PlayerNumber-1);
     }
 
  
-    [ClientRpc]
-    private void RpcActivatePlayerPlacement(bool activate)
-    {
-        playerBlockPlacement.SetActive(activate);
-    }
+    // [ClientRpc]
+    // private void RpcActivatePlayerPlacement(bool activate)
+    // {
+    //     playerBlockPlacement.SetActive(activate);
+    // }
 
-    [ClientRpc]
-    private void RpcActivateTrapInteraction(bool activate)
-    {
-        trapInteraction.SetActive(activate);
-    }
+    // [ClientRpc]
+    // private void RpcActivateTrapInteraction(bool activate)
+    // {
+    //     trapInteraction.SetActive(activate);
+    // }
 
-    [Client]
-    private void ActivateBuildManager()
-    {
-        bool activate = roundControl.placingItems && isKing && roundControl.Round >= 1;
-        RpcActivateBuildManager(activate);
-    }
-
-    [Client]
+    [Command]
     private void ActivatePlayerPlacement()
     {
-        bool activate = roundControl.placingItems && isPlayer && roundControl.Round >= 1;
-        RpcActivatePlayerPlacement(activate);
+        playerBlockPlacement.SetActive(true);
     }
 
-    [Client]
+    [Command]
     private void ActivateTrapInteraction()
     {
-        bool activate = roundControl.timerOn && isKing && roundControl.Round >= 1;
-        RpcActivateTrapInteraction(activate);
+        trapInteraction.SetActive(true);
+    }
+
+    [Command]
+    private void DeActivatePlayerPlacement()
+    {
+        playerBlockPlacement.SetActive(false);
+    }
+
+    [Command]
+    private void DeActivateTrapInteraction()
+    {
+        trapInteraction.SetActive(false);
     }
 
     // OnDestroy is called when the player GameObject is destroyed
@@ -282,19 +293,29 @@ public class Player : NetworkBehaviour
 
     void Update()
     {
+        if (!gameManagerFound) {
+            StartCoroutine(WaitForGameManager());
+        }
+        
         left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
         right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
         jumped = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
         attack = Input.GetKeyDown(KeyCode.Mouse0);
 
-        if (player == null || player.Length == 0)
-        {
-            InitializePlayerArray();
-        }
+        if(isServer){
+            if(roundControl.placingItems && roundControl.Round >= 1){
+                ActivatePlayerPlacement();
+            }else{
+                DeActivatePlayerPlacement();
+            }
+           
 
-        ActivateBuildManager();
-        ActivatePlayerPlacement();
-        ActivateTrapInteraction();
+            if(roundControl.timerOn && isKing && roundControl.Round >= 1){
+                ActivateTrapInteraction();
+            }else{
+                DeActivateTrapInteraction();
+            }
+        }
 
         if(currentHealth <= 0 && !isDead && !isAlreadyDead)
         {
@@ -331,8 +352,17 @@ public class Player : NetworkBehaviour
             }
         }
 
+        if (isKing)
+        {
+            rigid.velocity = Vector2.zero;
+            if(roundControl.placingItems){
+                transform.position = kingSpawnLocation.position;
+            }
+        }
+
         if(roundControl.placingItems)
         {
+            rigid.velocity = Vector2.zero;
             isDead = false;
             currentHealth = 6;
             isAlreadyDead = false;
@@ -433,12 +463,6 @@ public class Player : NetworkBehaviour
                             attackFinished = false;
                         }
                     }
-
-                    if (becameKing)
-                    {
-                        rigid.velocity = Vector2.zero;
-                        transform.position = kingSpawnLocation.position;
-                    }
                 }
             }
             
@@ -479,26 +503,6 @@ public class Player : NetworkBehaviour
         }
         
 
-    }
-
-    void InitializePlayerArray()
-    {
-        List<Player> playerList = new List<Player>();
-
-        for (int i = 1; i <= 6; i++)
-        {
-            GameObject playerObject = GameObject.FindGameObjectWithTag("Player" + i);
-            if (playerObject != null)
-            {
-                Player playerComponent = playerObject.GetComponent<Player>();
-                if (playerComponent != null)
-                {
-                    playerList.Add(playerComponent);
-                }
-            }
-        }
-
-        player = playerList.ToArray();
     }
 
     void GroundCheck()
@@ -594,7 +598,7 @@ public class Player : NetworkBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("KingPoint") && !isDead && !isAlreadyDead)
+        if (other.gameObject.CompareTag("KingPoint"))
         {
             becameKing = true;
         }

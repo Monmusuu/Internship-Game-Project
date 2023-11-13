@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 using Steamworks;
 using UnityEngine.UI;
+using Mirror;
 using TMPro;
 
-public class SteamLobby : NetworkBehaviour
+public class SteamLobby : MonoBehaviour
 {
     public GameObject hostButton = null;
     public GameObject refreshButton;
@@ -138,7 +138,7 @@ public class SteamLobby : NetworkBehaviour
 
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
-        if (NetworkServer.active)
+        if (Mirror.NetworkServer.active)
         {
             Debug.Log("Already In Server");
             return;

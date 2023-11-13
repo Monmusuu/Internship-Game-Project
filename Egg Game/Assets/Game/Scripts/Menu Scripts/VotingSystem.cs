@@ -30,9 +30,9 @@ public class VotingSystem : NetworkBehaviour
     {
         Instance = this;
 
-        InitializeVotingSystem();
-
-        mapCanvas = GameObject.Find("Map Canvas");
+        if(isServer){
+            InitializeVotingSystem();
+        }
 
         // Initialize playersVoted to 0
         playersVoted = 0;

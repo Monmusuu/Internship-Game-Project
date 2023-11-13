@@ -19,14 +19,14 @@ public class CustomNetworkManager : NetworkManager
     [SerializeField]
     public int playerCount = 0;
 
+    public GameObject GameManager;
+
+    public GameObject VotingSystem;
+
     private Dictionary<NetworkConnectionToClient, Transform> playerSpawnPositions = new Dictionary<NetworkConnectionToClient, Transform>();
 
+    [SerializeField]
     private SteamLobby steamLobby; // Reference to the SteamLobby script.
-
-    private void Start() {
-        steamLobby = GameObject.Find("NetworkManager").GetComponent<SteamLobby>();
-        UnityEngine.Cursor.visible = true;
-    }
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
@@ -82,6 +82,48 @@ public class CustomNetworkManager : NetworkManager
 
         playerCount = 0;
         currentPlayerPrefabIndex = 0; // Reset the player prefab index when changing scenes
+
+        Debug.Log("Changing scene to: " + newSceneName);
+
+        // Extract the scene name without the path
+        string sceneNameWithoutPath = System.IO.Path.GetFileNameWithoutExtension(newSceneName);
+
+        if (sceneNameWithoutPath == "CharacterSelection")
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded; // Subscribe to the sceneLoaded event
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "CharacterSelection")
+        {
+            Debug.Log("Instantiating GameManager");
+            GameObject GameManagerObject = Instantiate(GameManager);
+            if (GameManagerObject != null)
+            {
+                NetworkServer.Spawn(GameManagerObject);
+                Debug.Log("GameManager spawned on the server.");
+            }
+            else
+            {
+                Debug.LogError("GameManagerObject is null");
+            }
+
+            Debug.Log("Instantiating VotingSystem");
+            GameObject VotingSystemObject = Instantiate(VotingSystem);
+            if (VotingSystemObject != null)
+            {
+                NetworkServer.Spawn(VotingSystemObject);
+                Debug.Log("VotingSystem spawned on the server.");
+            }
+            else
+            {
+                Debug.LogError("VotingSystemObject is null");
+            }
+
+            SceneManager.sceneLoaded -= OnSceneLoaded; // Unsubscribe from the event
+        }
     }
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
