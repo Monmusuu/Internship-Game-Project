@@ -98,22 +98,22 @@ public class PlayerBlockPlacement : NetworkBehaviour
             manualTrapPlaced = false;
             manualTrapPlaced2 = false;
 
-            do
-            {
-                selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
-            } while (selectedAutoTrapIndex == previousAutoTrapIndex);
+            // do
+            // {
+            //     selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+            // } while (selectedAutoTrapIndex == previousAutoTrapIndex);
 
-            // Randomly select a new tile from the manual trap array
-            do
-            {
-                selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
-            } while (selectedManualTrapIndex == previousManualTrapIndex);
+            // // Randomly select a new tile from the manual trap array
+            // do
+            // {
+            //     selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+            // } while (selectedManualTrapIndex == previousManualTrapIndex);
 
-            // Randomly select a new tile from the manual trap 2 array
-            do
-            {
-                selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
-            } while (selectedManualTrap2Index == previousManualTrap2Index);
+            // // Randomly select a new tile from the manual trap 2 array
+            // do
+            // {
+            //     selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+            // } while (selectedManualTrap2Index == previousManualTrap2Index);
 
             previousAutoTrapIndex = selectedAutoTrapIndex;
             previousManualTrapIndex = selectedManualTrapIndex;

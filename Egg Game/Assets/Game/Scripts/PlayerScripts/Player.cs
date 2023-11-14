@@ -36,9 +36,9 @@ public class Player : NetworkBehaviour
     [SyncVar]
     public bool isDead = false;
     public bool isAlreadyDead = false;
-    [SyncVar]
+    //[SyncVar]
     public bool becameKing = false;
-    [SyncVar]
+    //[SyncVar]
     public bool isPlayer = false;
     [SyncVar(hook = nameof(OnIsFlashingChanged))]
     private bool isflashing = false;
@@ -49,7 +49,6 @@ public class Player : NetworkBehaviour
     public int currentScore = 0;
     [SerializeField] private Healthbar healthbar;
 
-    public Player[] player;
     public PlayerSaveData playerSaveData;
     public RoundControl roundControl;
     public MultiTargetCamera multiTargetCamera;
@@ -105,6 +104,8 @@ public class Player : NetworkBehaviour
     private SpriteRenderer bodySpriteRenderer;
 
     private bool gameManagerFound = false;
+
+    private bool roundControlFound = false;
 
     public void bodyChangeSprite(int newIndex)
     {
@@ -201,7 +202,6 @@ public class Player : NetworkBehaviour
         Debug.Log("PlayerNumber: " + PlayerNumber);
 
         customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
-        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         multiTargetCamera = GameObject.Find("Main Camera").GetComponent<MultiTargetCamera>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         isPlayer = true;
@@ -211,13 +211,8 @@ public class Player : NetworkBehaviour
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
 
-
-        
-
         if (isServer)
         {
-            roundControl = GameObject.FindObjectOfType<RoundControl>();
-            roundControl.AddPlayer(this); // Add this player to the players list
             multiTargetCamera = GameObject.FindObjectOfType<MultiTargetCamera>();
             multiTargetCamera.AddPlayer(this);
         }
@@ -231,50 +226,67 @@ public class Player : NetworkBehaviour
                 playerSaveData = gameManager.GetComponent<PlayerSaveData>();
                 Debug.Log("GameManager found!");
                 gameManagerFound = true;
+
+                ApplyPlayerSprites(gameObject, PlayerNumber-1);
+
                 break;
             }
 
             yield return null; // Wait for a frame before checking again
         }
-
-        ApplyPlayerSprites(gameObject, PlayerNumber-1);
     }
 
- 
-    // [ClientRpc]
-    // private void RpcActivatePlayerPlacement(bool activate)
-    // {
-    //     playerBlockPlacement.SetActive(activate);
-    // }
+    IEnumerator WaitForRoundControl() {
+        while (true) {
+            GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
 
-    // [ClientRpc]
-    // private void RpcActivateTrapInteraction(bool activate)
-    // {
-    //     trapInteraction.SetActive(activate);
-    // }
+            if (roundControlObject != null) {
+                roundControl = roundControlObject.GetComponent<RoundControl>();
+                Debug.Log("RoundControl found!");
+                roundControlFound = true;
 
-    [Command]
+                if (isServer)
+                {
+                    roundControl.AddPlayer(this);
+                }
+
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
+    }
+
+    [ClientRpc]
+    private void RpcActivatePlayerPlacement(bool activate)
+    {
+        if (playerBlockPlacement != null)
+        {
+            playerBlockPlacement.SetActive(activate);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcActivateTrapInteraction(bool activate)
+    {
+        if (trapInteraction != null)
+        {
+            trapInteraction.SetActive(activate);
+        }
+    }
+
+    [Client]
     private void ActivatePlayerPlacement()
     {
-        playerBlockPlacement.SetActive(true);
+        bool activate = roundControl.placingItems && roundControl.Round >= 1;
+        RpcActivatePlayerPlacement(activate);
     }
 
-    [Command]
+    [Client]
     private void ActivateTrapInteraction()
     {
-        trapInteraction.SetActive(true);
-    }
-
-    [Command]
-    private void DeActivatePlayerPlacement()
-    {
-        playerBlockPlacement.SetActive(false);
-    }
-
-    [Command]
-    private void DeActivateTrapInteraction()
-    {
-        trapInteraction.SetActive(false);
+        bool activate = roundControl.timerOn && isKing && roundControl.Round >= 1;
+        RpcActivateTrapInteraction(activate);
     }
 
     // OnDestroy is called when the player GameObject is destroyed
@@ -294,28 +306,22 @@ public class Player : NetworkBehaviour
     void Update()
     {
         if (!gameManagerFound) {
+            Debug.Log("Looking for GameManager");
             StartCoroutine(WaitForGameManager());
+        }
+
+        if(!roundControlFound){
+            Debug.Log("Looking for RoundControl");
+            StartCoroutine(WaitForRoundControl());
         }
         
         left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
         right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
         jumped = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
         attack = Input.GetKeyDown(KeyCode.Mouse0);
-
-        if(isServer){
-            if(roundControl.placingItems && roundControl.Round >= 1){
-                ActivatePlayerPlacement();
-            }else{
-                DeActivatePlayerPlacement();
-            }
-           
-
-            if(roundControl.timerOn && isKing && roundControl.Round >= 1){
-                ActivateTrapInteraction();
-            }else{
-                DeActivateTrapInteraction();
-            }
-        }
+        
+        ActivatePlayerPlacement();
+        ActivateTrapInteraction();
 
         if(currentHealth <= 0 && !isDead && !isAlreadyDead)
         {
@@ -598,7 +604,7 @@ public class Player : NetworkBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("KingPoint"))
+        if (other.gameObject.CompareTag("KingPoint") && isServer)
         {
             becameKing = true;
         }

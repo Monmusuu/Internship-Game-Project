@@ -20,8 +20,8 @@ public class CustomNetworkManager : NetworkManager
     public int playerCount = 0;
 
     public GameObject GameManager;
-
     public GameObject VotingSystem;
+    public GameObject RoundControl;
 
     private Dictionary<NetworkConnectionToClient, Transform> playerSpawnPositions = new Dictionary<NetworkConnectionToClient, Transform>();
 
@@ -92,6 +92,11 @@ public class CustomNetworkManager : NetworkManager
         {
             SceneManager.sceneLoaded += OnSceneLoaded; // Subscribe to the sceneLoaded event
         }
+
+        if (sceneNameWithoutPath != "CharacterSelection")
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded; // Subscribe to the sceneLoaded event
+        }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -120,6 +125,23 @@ public class CustomNetworkManager : NetworkManager
             else
             {
                 Debug.LogError("VotingSystemObject is null");
+            }
+
+            SceneManager.sceneLoaded -= OnSceneLoaded; // Unsubscribe from the event
+        }
+
+        if (scene.name == "Nathan")
+        {
+            Debug.Log("Instantiating RoundControl");
+            GameObject RoundControlObject = Instantiate(RoundControl);
+            if (RoundControlObject != null)
+            {
+                NetworkServer.Spawn(RoundControlObject);
+                Debug.Log("RoundControl spawned on the server.");
+            }
+            else
+            {
+                Debug.LogError("RoundControlObject is null");
             }
 
             SceneManager.sceneLoaded -= OnSceneLoaded; // Unsubscribe from the event

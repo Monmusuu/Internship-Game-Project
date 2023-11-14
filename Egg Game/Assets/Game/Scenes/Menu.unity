@@ -9227,6 +9227,8 @@ GameObject:
   - component: {fileID: 1764644809}
   - component: {fileID: 1764644808}
   - component: {fileID: 1764644807}
+  - component: {fileID: 1764644813}
+  - component: {fileID: 1764644812}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -9281,7 +9283,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1764644806}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6e55fca1f4e4844593a3dd65a3ecb39, type: 3}
   m_Name: 
@@ -9309,7 +9311,7 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/Game/Scenes/Menu.unity
   onlineScene: Assets/Game/Scenes/CharacterSelection.unity
-  transport: {fileID: 1764644809}
+  transport: {fileID: 1764644813}
   networkAddress: localhost
   maxConnections: 6
   authenticator: {fileID: 0}
@@ -9320,7 +9322,7 @@ MonoBehaviour:
   - {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
   - {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
   - {fileID: 5242640545504936685, guid: 6eca6a95db15f2449b399251ffbf11e3, type: 3}
-  - {fileID: 5598887861678562917, guid: 0c0232dbb40adf442ba62d410e76edf4, type: 3}
+  - {fileID: 105841409024583306, guid: 28167e5179777194d89201805bd12103, type: 3}
   - {fileID: 6525572584686347409, guid: fe093d491171ca3458b48eeeae245633, type: 3}
   - {fileID: 7606387864496508036, guid: e25dda4c8d832734a8a08a0d0decf5e6, type: 3}
   - {fileID: 6653591027728031132, guid: a7c8017d8f0893e4c8af461daf5529f2, type: 3}
@@ -9359,6 +9361,7 @@ MonoBehaviour:
   playerCount: 0
   GameManager: {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
   VotingSystem: {fileID: 5242640545504936685, guid: 6eca6a95db15f2449b399251ffbf11e3, type: 3}
+  RoundControl: {fileID: 105841409024583306, guid: 28167e5179777194d89201805bd12103, type: 3}
   steamLobby: {fileID: 1764644808}
 --- !u!4 &1764644811
 Transform:
@@ -9376,6 +9379,44 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1764644812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764644806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
+--- !u!114 &1764644813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764644806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7424c1070fad4ba2a7a96b02fbeb4bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  port: 7777
+  NoDelay: 1
+  SendTimeout: 5000
+  ReceiveTimeout: 30000
+  serverMaxMessageSize: 16384
+  serverMaxReceivesPerTick: 10000
+  serverSendQueueLimitPerConnection: 10000
+  serverReceiveQueueLimitPerConnection: 10000
+  clientMaxMessageSize: 16384
+  clientMaxReceivesPerTick: 1000
+  clientSendQueueLimit: 10000
+  clientReceiveQueueLimit: 10000
 --- !u!1 &1768472374
 GameObject:
   m_ObjectHideFlags: 0
