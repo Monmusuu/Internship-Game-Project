@@ -66,7 +66,7 @@ public class CursorCharacterSelection : NetworkBehaviour
 
     IEnumerator WaitForMapCanvas()
     {
-        while (true) {
+        while (MapCanvas == null) {
             GameObject mapCanvas = GameObject.Find("Map Canvas");
 
             if (mapCanvas != null) {
@@ -109,6 +109,9 @@ public class CursorCharacterSelection : NetworkBehaviour
 
     private void Start()
     {
+        if (!mapCanvasFound) {
+            StartCoroutine(WaitForMapCanvas());
+        }
 
         menuScript = FindObjectOfType<MenuScript>();
 
@@ -121,9 +124,6 @@ public class CursorCharacterSelection : NetworkBehaviour
 
     private void Update()
     {
-        if (!mapCanvasFound) {
-            StartCoroutine(WaitForMapCanvas());
-        }
 
         if (!isGameFocused) return; // Only process input if the game is focused
         if (!isLocalPlayer) return;

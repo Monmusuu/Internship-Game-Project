@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
@@ -16,10 +18,25 @@ public class TileRotation : NetworkBehaviour
 
     [SerializeField]
     private Transform[] childSpawnTransforms;
+    private bool roundControlFound = false;
+
+    IEnumerator WaitForRoundControl() {
+        while (true) {
+            GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
+
+            if (roundControlObject != null) {
+                roundControl = roundControlObject.GetComponent<RoundControl>();
+                Debug.Log("RoundControl found!");
+                roundControlFound = true;
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
+    }
 
     private void Start()
     {
-        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         if (isServer)
         {
             SpawnChildObjects();
@@ -29,6 +46,12 @@ public class TileRotation : NetworkBehaviour
     [ServerCallback]
     private void Update()
     {
+
+        if(!roundControlFound){
+            Debug.Log("Looking for RoundControl");
+            StartCoroutine(WaitForRoundControl());
+        }
+
         if (roundControl.timerOn)
         {
             currentRotation += parentRotationSpeed * Time.deltaTime;

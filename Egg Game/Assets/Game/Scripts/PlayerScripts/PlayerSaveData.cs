@@ -40,10 +40,19 @@ public class PlayerSaveData : NetworkBehaviour
     public GameObject[] playerCursors;
 
     [SerializeField]
-    private CustomNetworkManager customNetworkManager;
+    private PlayerCounter playerCounter;
 
     private static PlayerSaveData instance;
     public static PlayerSaveData Instance { get { return instance; } }
+
+    private IEnumerator WaitForPlayerCounter()
+    {
+        while (playerCounter == null)
+        {
+            playerCounter = FindObjectOfType<PlayerCounter>();
+            yield return null;
+        }
+    }
 
     private void Awake()
     {
@@ -59,7 +68,8 @@ public class PlayerSaveData : NetworkBehaviour
 
     private void Start()
     {
-        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+        // Wait for the PlayerCounter to be spawned by the network manager
+        StartCoroutine(WaitForPlayerCounter());
     }
 
     private void OnEnable()
@@ -82,32 +92,33 @@ public class PlayerSaveData : NetworkBehaviour
 
         if (scene.name == "CharacterSelection")
         {
-            for (int i = 0; i < customNetworkManager.playerCount; i++)
-            {
-                GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
-                if (selectionObject != null)
+            if(playerCounter != null){
+                for (int i = 0; i < playerCounter.playerCount; i++)
                 {
-                    CharacterSelection characterSelection = selectionObject.GetComponent<CharacterSelection>();
-                    if (characterSelection != null)
+                    GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
+                    if (selectionObject != null)
                     {
-
-                       if (characterSelection.isReady)
+                        CharacterSelection characterSelection = selectionObject.GetComponent<CharacterSelection>();
+                        if (characterSelection != null)
                         {
-                            // Check if the arrays need resizing before accessing the indices
-                            if (playerHatSpriteNumbers.Length <= i)
-                                Array.Resize(ref playerHatSpriteNumbers, i + 1);
-                            if (playerBodySpriteNumbers.Length <= i)
-                                Array.Resize(ref playerBodySpriteNumbers, i + 1);
-                            if (playerWeaponSpriteNumbers.Length <= i)
-                                Array.Resize(ref playerWeaponSpriteNumbers, i + 1);
-                            if (playerAnimatorNumbers.Length <= i)
-                                Array.Resize(ref playerAnimatorNumbers, i + 1);
+
+                        if (characterSelection.isReady)
+                            {
+                                // Check if the arrays need resizing before accessing the indices
+                                if (playerHatSpriteNumbers.Length <= i)
+                                    Array.Resize(ref playerHatSpriteNumbers, i + 1);
+                                if (playerBodySpriteNumbers.Length <= i)
+                                    Array.Resize(ref playerBodySpriteNumbers, i + 1);
+                                if (playerWeaponSpriteNumbers.Length <= i)
+                                    Array.Resize(ref playerWeaponSpriteNumbers, i + 1);
+                                if (playerAnimatorNumbers.Length <= i)
+                                    Array.Resize(ref playerAnimatorNumbers, i + 1);
+                            }
                         }
                     }
                 }
             }
         }
-
     }
 
     public void ResetPlayerData(int connectionId)

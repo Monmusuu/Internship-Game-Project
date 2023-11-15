@@ -16,17 +16,25 @@ public class CustomNetworkManager : NetworkManager
     public ScenePlayerPrefabs[] scenePlayerPrefabs;
     private int currentPlayerPrefabIndex = 0;
 
-    [SerializeField]
-    public int playerCount = 0;
-
     public GameObject GameManager;
     public GameObject VotingSystem;
     public GameObject RoundControl;
+    private PlayerCounter playerCounter; // Reference to PlayerCounter script
+    public GameObject playerCounterPrefab;
 
     private Dictionary<NetworkConnectionToClient, Transform> playerSpawnPositions = new Dictionary<NetworkConnectionToClient, Transform>();
 
     [SerializeField]
     private SteamLobby steamLobby; // Reference to the SteamLobby script.
+
+    public override void OnStartServer()
+    {
+        // Instantiate the PlayerCounter script on the server
+        playerCounter = InstantiatePlayerCounter();
+
+        base.OnStartServer();
+    }
+    
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
@@ -58,9 +66,9 @@ public class CustomNetworkManager : NetworkManager
                     currentPlayerPrefabIndex = (currentPlayerPrefabIndex + 1) % scenePlayerPrefabs.Length;
 
                     // Increment the player count when a new player joins.
-                    playerCount++;
+                    playerCounter.playerCount++;
 
-                    Debug.Log("Players: " + playerCount);
+                    Debug.Log("Players: " + playerCounter.playerCount);
 
                     // Initialize player-specific data here
 
@@ -80,8 +88,11 @@ public class CustomNetworkManager : NetworkManager
     {
         base.OnServerChangeScene(newSceneName);
 
-        playerCount = 0;
         currentPlayerPrefabIndex = 0; // Reset the player prefab index when changing scenes
+
+        if(playerCounter !=null){
+            playerCounter.playerCount = 0; // Reset the player count
+        }
 
         Debug.Log("Changing scene to: " + newSceneName);
 
@@ -150,8 +161,8 @@ public class CustomNetworkManager : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
-        // Decrease the player count when a player disconnects.
-        playerCount--;
+        // Increment the player count when a new player joins.
+        playerCounter.playerCount--;
 
         // Free up the spawn position of the disconnected player
         if (playerSpawnPositions.ContainsKey(conn))
@@ -221,5 +232,22 @@ public class CustomNetworkManager : NetworkManager
             }
         }
         return null;
+    }
+
+    private PlayerCounter InstantiatePlayerCounter()
+    {
+        // Instantiate the PlayerCounter prefab
+        GameObject playerCounterObj = Instantiate(playerCounterPrefab);
+
+        // Spawn the object on the network
+        NetworkServer.Spawn(playerCounterObj);
+
+        // Prevent the object from being destroyed on scene change
+        DontDestroyOnLoad(playerCounterObj);
+
+        // Retrieve the PlayerCounter script from the instantiated object
+        var counterScript = playerCounterObj.GetComponent<PlayerCounter>();
+
+        return counterScript;
     }
 }

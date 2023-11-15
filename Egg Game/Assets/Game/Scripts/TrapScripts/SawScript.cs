@@ -19,9 +19,25 @@ public class SawScript : NetworkBehaviour
 
     private Vector3 targetPosition; // Current target position
 
+    private bool roundControlFound = false;
+
+    IEnumerator WaitForRoundControl() {
+        while (true) {
+            GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
+
+            if (roundControlObject != null) {
+                roundControl = roundControlObject.GetComponent<RoundControl>();
+                //Debug.Log("RoundControl found!");
+                roundControlFound = true;
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
+    }
+
     private void Start()
     {
-        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
         targetPosition = pointB.position; // Start at point B
 
         if (isServer)
@@ -33,6 +49,11 @@ public class SawScript : NetworkBehaviour
 
     private void Update()
     {
+        if(!roundControlFound){
+
+            StartCoroutine(WaitForRoundControl());
+        }
+
         if (!isServer)
         {
             // Interpolate the position and rotation on clients

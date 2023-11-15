@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,21 +25,21 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     [SerializeField] private Player playerScript;
 
-    [SyncVar(hook = nameof(OnSelectedTileChanged))]
+    [SerializeField][SyncVar(hook = nameof(OnSelectedTileChanged))]
     private int selectedTile = 0;
 
 
-    [SyncVar(hook = nameof(OnSelectedBlockIndexChanged))]
+    [SerializeField][SyncVar(hook = nameof(OnSelectedBlockIndexChanged))]
     private int selectedBlockIndex;
 
 
-    [SyncVar(hook = nameof(OnSelectedAutoTrapIndexChanged))]
+    [SerializeField][SyncVar(hook = nameof(OnSelectedAutoTrapIndexChanged))]
     private int selectedAutoTrapIndex;
     
-    [SyncVar(hook = nameof(OnSelectedManualTrapIndexChanged))]
+    [SerializeField][SyncVar(hook = nameof(OnSelectedManualTrapIndexChanged))]
     private int selectedManualTrapIndex;
     
-    [SyncVar(hook = nameof(OnSelectedManualTrap2IndexChanged))]
+    [SerializeField][SyncVar(hook = nameof(OnSelectedManualTrap2IndexChanged))]
     private int selectedManualTrap2Index;
 
 
@@ -65,6 +66,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private bool isGameFocused = true;
     public GameObject boundingObject;
 
+    private bool roundControlFound = false;
+
     private void Awake()
     {
         cursorCollider = GetComponent<Collider2D>();
@@ -77,7 +80,6 @@ public class PlayerBlockPlacement : NetworkBehaviour
         kingLayerValue = LayerMask.NameToLayer("King");
         selectedTile = 0;
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
-        roundControl = GameObject.Find("RoundControl").GetComponent<RoundControl>();
 
         Application.focusChanged += OnApplicationFocus;
 
@@ -90,38 +92,45 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     private void OnEnable()
     {
+        Debug.Log("Script has been enabled.");
+
         selectedTile = 0;
-        playerScript = gameObject.transform.parent.GetComponent<Player>();;
+        playerScript = gameObject.transform.parent.GetComponent<Player>();
         
         if(playerScript.isKing){
             autoTrapPlaced = false;
             manualTrapPlaced = false;
             manualTrapPlaced2 = false;
 
-            // do
-            // {
-            //     selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
-            // } while (selectedAutoTrapIndex == previousAutoTrapIndex);
+            do
+            {
+                selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+            } while (selectedAutoTrapIndex == previousAutoTrapIndex);
 
-            // // Randomly select a new tile from the manual trap array
-            // do
-            // {
-            //     selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
-            // } while (selectedManualTrapIndex == previousManualTrapIndex);
+            Debug.Log("After selection: " + selectedAutoTrapIndex + ", " + selectedManualTrapIndex + ", " + selectedManualTrap2Index);
 
-            // // Randomly select a new tile from the manual trap 2 array
-            // do
-            // {
-            //     selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
-            // } while (selectedManualTrap2Index == previousManualTrap2Index);
+            // Randomly select a new tile from the manual trap array
+            do
+            {
+                selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+            } while (selectedManualTrapIndex == previousManualTrapIndex);
+
+            // Randomly select a new tile from the manual trap 2 array
+            do
+            {
+                selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+            } while (selectedManualTrap2Index == previousManualTrap2Index);
 
             previousAutoTrapIndex = selectedAutoTrapIndex;
             previousManualTrapIndex = selectedManualTrapIndex;
             previousManualTrap2Index = selectedManualTrap2Index;
 
             // Use a command to sync the selected indexes with the server
-            CmdSyncKingSelectedIndexes(selectedAutoTrapIndex, selectedManualTrapIndex, selectedManualTrap2Index);
-        }else if(playerScript.isPlayer){
+            if (isOwned)
+            {
+                CmdSyncKingSelectedIndexes(selectedAutoTrapIndex, selectedManualTrapIndex, selectedManualTrap2Index);
+            }
+        }else if(playerScript.isPlayer && !playerScript.isKing){
             blockPlaced = false;
 
             do
@@ -132,8 +141,10 @@ public class PlayerBlockPlacement : NetworkBehaviour
             
             previousBlockIndex = selectedBlockIndex;
             
-            // Use a command to sync the selected indexes with the server
-            CmdSyncSelectedIndexes(selectedBlockIndex);
+            if (isOwned)
+            {
+                CmdSyncSelectedIndexes(selectedBlockIndex);
+            }
         }
     }
 
@@ -148,8 +159,29 @@ public class PlayerBlockPlacement : NetworkBehaviour
         }
     }
 
+    IEnumerator WaitForRoundControl() {
+        while (true) {
+            GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
+
+            if (roundControlObject != null) {
+                roundControl = roundControlObject.GetComponent<RoundControl>();
+                Debug.Log("RoundControl found!");
+                roundControlFound = true;
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
+    }
+
     private void Update()
     {
+
+        if(!roundControlFound){
+            Debug.Log("Looking for RoundControl for placement");
+            StartCoroutine(WaitForRoundControl());
+        }
+
         if (!isGameFocused) return; // Only process input if the game is focused
 
         if (!isLocalPlayer) return;
@@ -292,7 +324,7 @@ public class PlayerBlockPlacement : NetworkBehaviour
                 placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, rotation);
                 roundControl.playersPlacedBlocks +=1;
             }
-            else if (selectedTile == 2 && !manualTrapPlaced2 && manualTrap2TileObjects.Length > 0)
+            else if (selectedTile == 2 && !manualTrapPlaced2)
             {
                 manualTrapPlaced2 = true;
                 placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, rotation);

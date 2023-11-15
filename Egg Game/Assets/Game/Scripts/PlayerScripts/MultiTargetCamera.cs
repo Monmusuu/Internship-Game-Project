@@ -17,12 +17,21 @@ public class MultiTargetCamera : NetworkBehaviour
 
     public Vector3 offset;
 
-    private Camera cam;
+    [SerializeField] private Camera cam;
     private float initialZ;
+
+    // SyncVars for camera zoom level and target position
+    [SyncVar(hook = nameof(OnZoomLevelUpdated))]
+    private float currentZoomLevel;
+
+    [SyncVar(hook = nameof(OnCameraTargetPositionUpdated))]
+    private Vector3 cameraTargetPosition;
 
     private void Start()
     {
-        cam = GetComponent<Camera>();
+        // Set the cam reference for the local player
+        cam = Camera.main;
+        
         initialZ = transform.position.z;
 
         // Assuming each player has a Player script attached
@@ -198,17 +207,14 @@ public class MultiTargetCamera : NetworkBehaviour
         return bounds.center;
     }
 
-    // SyncVars for camera zoom level and target position
-    [SyncVar(hook = nameof(OnZoomLevelUpdated))]
-    private float currentZoomLevel;
-
-    [SyncVar(hook = nameof(OnCameraTargetPositionUpdated))]
-    private Vector3 cameraTargetPosition;
-
     // Hook method for the camera zoom level sync var update.
     private void OnZoomLevelUpdated(float oldZoomLevel, float newZoomLevel)
     {
-        cam.orthographicSize = newZoomLevel;
+        if (cam != null)
+        {
+            //Debug.Log($"Setting camera orthographic size to: {newZoomLevel}");
+            cam.orthographicSize = newZoomLevel;
+        }
     }
 
     // Hook method for the camera target position sync var update.

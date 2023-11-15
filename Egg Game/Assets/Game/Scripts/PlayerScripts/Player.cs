@@ -58,9 +58,6 @@ public class Player : NetworkBehaviour
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
 
-    [SerializeField]
-    private CustomNetworkManager customNetworkManager;
-
     public int PlayerNumber; // This will store the player number extracted from the tag
 
     private bool isRunningLocal = false; // Local variable to handle isRunning
@@ -167,10 +164,10 @@ public class Player : NetworkBehaviour
     
     private void Awake()
     {
-        Transform hatChild = transform.GetChild(5);
+        Transform hatChild = transform.GetChild(4);
         hatSpriteRenderer = hatChild.GetComponent<SpriteRenderer>();
         bodySpriteRenderer = GetComponent<SpriteRenderer>();
-        Transform weaponChild = transform.GetChild(4);
+        Transform weaponChild = transform.GetChild(3);
         weaponSpriteRenderer = weaponChild.GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
     }
@@ -200,8 +197,6 @@ public class Player : NetworkBehaviour
 
         // Now you can use PlayerNumber as the number extracted from the tag
         Debug.Log("PlayerNumber: " + PlayerNumber);
-
-        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
         multiTargetCamera = GameObject.Find("Main Camera").GetComponent<MultiTargetCamera>();
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         isPlayer = true;
@@ -224,7 +219,7 @@ public class Player : NetworkBehaviour
 
             if (gameManager != null) {
                 playerSaveData = gameManager.GetComponent<PlayerSaveData>();
-                Debug.Log("GameManager found!");
+                //Debug.Log("GameManager found!");
                 gameManagerFound = true;
 
                 ApplyPlayerSprites(gameObject, PlayerNumber-1);
@@ -242,7 +237,7 @@ public class Player : NetworkBehaviour
 
             if (roundControlObject != null) {
                 roundControl = roundControlObject.GetComponent<RoundControl>();
-                Debug.Log("RoundControl found!");
+                //Debug.Log("RoundControl found!");
                 roundControlFound = true;
 
                 if (isServer)
@@ -320,8 +315,10 @@ public class Player : NetworkBehaviour
         jumped = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
         attack = Input.GetKeyDown(KeyCode.Mouse0);
         
-        ActivatePlayerPlacement();
-        ActivateTrapInteraction();
+        if(isServer){
+            ActivatePlayerPlacement();
+            ActivateTrapInteraction();
+        }
 
         if(currentHealth <= 0 && !isDead && !isAlreadyDead)
         {
@@ -604,7 +601,7 @@ public class Player : NetworkBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("KingPoint") && isServer)
+        if (other.gameObject.CompareTag("KingPoint") && isServer && !isKing)
         {
             becameKing = true;
         }

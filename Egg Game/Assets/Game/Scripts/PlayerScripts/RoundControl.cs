@@ -28,8 +28,9 @@ public class RoundControl : NetworkBehaviour
     public bool playerRemovingItem = false;
     public Transform playerSpawnLocation;
     public Transform kingSpawnLocation;
+
     [SerializeField]
-    private CustomNetworkManager customNetworkManager;
+    private PlayerCounter playerCounter;
 
 
     // Start is called before the first frame update
@@ -52,10 +53,20 @@ public class RoundControl : NetworkBehaviour
     {
         players.Remove(playerToRemove);
     }
-
+    
+    private IEnumerator WaitForPlayerCounter()
+    {
+        while (playerCounter == null)
+        {
+            playerCounter = FindObjectOfType<PlayerCounter>();
+            yield return null;
+        }
+    }
     private void Start()
     {
-        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+        // Wait for the PlayerCounter to be spawned by the network manager
+        StartCoroutine(WaitForPlayerCounter());
+        
         playerSpawnLocation = GameObject.Find("SpawnPoints").transform;
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
     }
@@ -68,7 +79,7 @@ public class RoundControl : NetworkBehaviour
             Respawn = false;
             timerOn = false;
 
-            if(playersPlacedBlocks >= customNetworkManager.playerCount +2){
+            if(playersPlacedBlocks >= playerCounter.playerCount +2){
                 itemsPlaced = true;
                 placingItems = false;
             }
@@ -98,6 +109,12 @@ public class RoundControl : NetworkBehaviour
 
                     // Set respawn and round variables
                     Respawn = true;
+                    if (Respawn && isServer)
+                    {
+                        RespawnPlayers();
+                    }
+                    playersPlacedBlocks = 0;
+                    itemsPlaced = false;
                     Round += 1;
                     players[i].becameKing = false;
                     placingItems = true;
@@ -114,13 +131,19 @@ public class RoundControl : NetworkBehaviour
                 {
                     RoundTime -= Time.deltaTime;
                 }
+            }
 
-                if (RoundTime <= 0)
+            if (RoundTime <= 0)
                 {
                     Respawn = true;
                     Debug.Log("Round Over");
+                    if (Respawn && isServer)
+                    {
+                        RespawnPlayers();
+                    }
                     playersPlacedBlocks = 0;
                     itemsPlaced = false;
+                    Round += 1;
                     timerOn = false;
                     RoundTime = 360f;
                     placingItems = true;
@@ -134,14 +157,8 @@ public class RoundControl : NetworkBehaviour
                         currentKing.currentScore += 1;
                     }
                 }
-            }
         }
 
-        // Only the server should handle respawning and sync it across clients
-        if (Respawn && isServer)
-        {
-            RespawnPlayers();
-        }
     }
 
     [ClientRpc]

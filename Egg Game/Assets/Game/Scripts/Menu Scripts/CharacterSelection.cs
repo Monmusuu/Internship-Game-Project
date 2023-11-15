@@ -42,7 +42,7 @@ public class CharacterSelection : NetworkBehaviour
     private bool mapCanvasFound = false;
 
     [SerializeField]
-    private CustomNetworkManager customNetworkManager;
+    private PlayerCounter playerCounter;
 
     public override void OnStartClient()
     {
@@ -52,9 +52,19 @@ public class CharacterSelection : NetworkBehaviour
         weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
     }
 
+    private IEnumerator WaitForPlayerCounter()
+    {
+        while (playerCounter == null)
+        {
+            playerCounter = FindObjectOfType<PlayerCounter>();
+            yield return null;
+        }
+    }
+
     private void Start()
     {
-        customNetworkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager>();
+        // Wait for the PlayerCounter to be spawned by the network manager
+        StartCoroutine(WaitForPlayerCounter());
         canvas = GameObject.Find("Canvas").transform;
         this.transform.SetParent(canvas.transform);
         // Check if the mapButton GameObject exists before attempting to find the Button component
@@ -344,7 +354,7 @@ public class CharacterSelection : NetworkBehaviour
     {
         Debug.Log("RpcSaveCustomizationChoices called on client.");
 
-        for (int i = 0; i < customNetworkManager.playerCount; i++)
+        for (int i = 0; i < playerCounter.playerCount; i++)
         {
             GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
             if (selectionObject != null)
