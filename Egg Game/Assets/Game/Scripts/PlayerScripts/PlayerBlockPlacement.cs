@@ -66,8 +66,6 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private bool isGameFocused = true;
     public GameObject boundingObject;
 
-    private bool roundControlFound = false;
-
     private void Awake()
     {
         cursorCollider = GetComponent<Collider2D>();
@@ -76,6 +74,7 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     private void Start()
     {
+        StartCoroutine(WaitForRoundControl());
         boundingObject = GameObject.Find("MapArea");
         kingLayerValue = LayerMask.NameToLayer("King");
         selectedTile = 0;
@@ -160,15 +159,9 @@ public class PlayerBlockPlacement : NetworkBehaviour
     }
 
     IEnumerator WaitForRoundControl() {
-        while (true) {
-            GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
+        while (roundControl == null) {
 
-            if (roundControlObject != null) {
-                roundControl = roundControlObject.GetComponent<RoundControl>();
-                Debug.Log("RoundControl found!");
-                roundControlFound = true;
-                break;
-            }
+            roundControl = GameObject.Find("RoundControl(Clone)").GetComponent<RoundControl>();
 
             yield return null; // Wait for a frame before checking again
         }
@@ -176,12 +169,6 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     private void Update()
     {
-
-        if(!roundControlFound){
-            Debug.Log("Looking for RoundControl for placement");
-            StartCoroutine(WaitForRoundControl());
-        }
-
         if (!isGameFocused) return; // Only process input if the game is focused
 
         if (!isLocalPlayer) return;

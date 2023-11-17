@@ -9311,7 +9311,7 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/Game/Scenes/Menu.unity
   onlineScene: Assets/Game/Scenes/CharacterSelection.unity
-  transport: {fileID: 1764644812}
+  transport: {fileID: 1764644813}
   networkAddress: localhost
   maxConnections: 6
   authenticator: {fileID: 0}
@@ -9320,7 +9320,6 @@ MonoBehaviour:
   playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
-  - {fileID: 6925130588300060367, guid: 1c3f478c22c6bb9419fc3615634b1aaf, type: 3}
   - {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
   - {fileID: 5242640545504936685, guid: 6eca6a95db15f2449b399251ffbf11e3, type: 3}
   - {fileID: 105841409024583306, guid: 28167e5179777194d89201805bd12103, type: 3}
@@ -9359,10 +9358,9 @@ MonoBehaviour:
     playerPrefab: {fileID: 1583603190512241176, guid: bd9225c51aef3f147b390c61cf8e910e, type: 3}
   - sceneName: Nathan
     playerPrefab: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
-  GameManager: {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
   VotingSystem: {fileID: 5242640545504936685, guid: 6eca6a95db15f2449b399251ffbf11e3, type: 3}
   RoundControl: {fileID: 105841409024583306, guid: 28167e5179777194d89201805bd12103, type: 3}
-  playerCounterPrefab: {fileID: 6925130588300060367, guid: 1c3f478c22c6bb9419fc3615634b1aaf, type: 3}
+  playerSaveDataPrefab: {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
   steamLobby: {fileID: 1764644808}
 --- !u!4 &1764644811
 Transform:
@@ -9389,6 +9387,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1764644806}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
+--- !u!114 &1764644813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764644806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c7424c1070fad4ba2a7a96b02fbeb4bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -9404,20 +9416,6 @@ MonoBehaviour:
   clientMaxReceivesPerTick: 1000
   clientSendQueueLimit: 10000
   clientReceiveQueueLimit: 10000
---- !u!114 &1764644813
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1764644806}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0
 --- !u!1 &1768472374
 GameObject:
   m_ObjectHideFlags: 0
@@ -9500,7 +9498,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1768472377}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1242604611}
+        m_TargetAssemblyTypeName: MenuScript, Assembly-CSharp
+        m_MethodName: ExitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1768472377
 MonoBehaviour:
   m_ObjectHideFlags: 0

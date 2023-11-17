@@ -33,16 +33,12 @@ public class CharacterSelection : NetworkBehaviour
     private SpriteRenderer bodyRenderer;
     private SpriteRenderer weaponRenderer;
 
-    [SerializeField] private GameObject MapCanvas;
+    [SerializeField] private Transform MapCanvas;
+
+    [SerializeField] private GameObject MapCanvasHolder;
     [SerializeField] private Transform canvas;
     
     public PlayerSaveData playerSaveData;
-
-    private bool gameManagerFound = false;
-    private bool mapCanvasFound = false;
-
-    [SerializeField]
-    private PlayerCounter playerCounter;
 
     public override void OnStartClient()
     {
@@ -52,19 +48,10 @@ public class CharacterSelection : NetworkBehaviour
         weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
     }
 
-    private IEnumerator WaitForPlayerCounter()
-    {
-        while (playerCounter == null)
-        {
-            playerCounter = FindObjectOfType<PlayerCounter>();
-            yield return null;
-        }
-    }
-
     private void Start()
     {
-        // Wait for the PlayerCounter to be spawned by the network manager
-        StartCoroutine(WaitForPlayerCounter());
+        StartCoroutine(WaitForPlayerSaveData());
+        StartCoroutine(WaitForMapCanvas());
         canvas = GameObject.Find("Canvas").transform;
         this.transform.SetParent(canvas.transform);
         // Check if the mapButton GameObject exists before attempting to find the Button component
@@ -73,55 +60,41 @@ public class CharacterSelection : NetworkBehaviour
         hatRenderer = transform.GetChild(0).GetChild(3).GetComponent<SpriteRenderer>();
         bodyRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
         weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
-
-
-
-        // if (playerSaveData != null)
-        // {
-        //     _hatValue = playerSaveData.playerHatSpriteNumbers[connectionToClient.connectionId];
-        //     _bodyValue = playerSaveData.playerBodySpriteNumbers[connectionToClient.connectionId];
-        //     _weaponValue = playerSaveData.playerWeaponSpriteNumbers[connectionToClient.connectionId];
-        // }
-
-
     }
 
-    private void Update() {
-        if (!gameManagerFound) {
-            StartCoroutine(WaitForGameManager());
-        }
+    private IEnumerator WaitForPlayerSaveData()
+    {
+        while (playerSaveData == null)
+        {
+            playerSaveData = FindObjectOfType<PlayerSaveData>();
 
-        if (!mapCanvasFound) {
-            StartCoroutine(WaitForMapCanvas());
+            // if (playerSaveData != null)
+            // {
+            //     _hatValue = playerSaveData.playerHatSpriteNumbers[connectionToClient.connectionId];
+            //     _bodyValue = playerSaveData.playerBodySpriteNumbers[connectionToClient.connectionId];
+            //     _weaponValue = playerSaveData.playerWeaponSpriteNumbers[connectionToClient.connectionId];
+            //     _animatorValue = playerSaveData.playerAnimatorNumbers[connectionToClient.connectionId];
+            // }
+
+            yield return null;
         }
     }
 
-    IEnumerator WaitForGameManager() {
-        while (true) {
-            GameObject gameManager = GameObject.Find("GameManager(Clone)");
-
-            if (gameManager != null) {
-                playerSaveData = gameManager.GetComponent<PlayerSaveData>();
-                Debug.Log("GameManager found!");
-                gameManagerFound = true;
-                break;
-            }
-
-            yield return null; // Wait for a frame before checking again
-        }
-    }
 
     IEnumerator WaitForMapCanvas() {
-        while (true) {
-            GameObject mapCanvas = GameObject.Find("Map Canvas");
+        while (MapCanvasHolder == null) {
 
-            if (mapCanvas != null) {
-                MapCanvas = mapCanvas;
-                Debug.Log("MapCanvas found!");
-                mapCanvasFound = true;
-                break;
+            MapCanvasHolder = GameObject.Find("MapCanvasHolder");
+
+            if (MapCanvasHolder != null)
+            {
+                // Get the first child of MapCanvasHolder
+                MapCanvas = MapCanvasHolder.transform.GetChild(0);
             }
 
+            if (isLocalPlayer){
+                MapCanvas.gameObject.SetActive(false);
+            }
             yield return null; // Wait for a frame before checking again
         }
 
@@ -341,7 +314,7 @@ public class CharacterSelection : NetworkBehaviour
     private void TargetActivateMapCanvas(NetworkConnection target, bool activate)
     {
         // Enable or disable the MapCanvas based on the 'activate' parameter
-        MapCanvas.SetActive(activate);
+        MapCanvas.gameObject.SetActive(activate);
     }
 
     private void OnReadyStateChanged(bool oldValue, bool newValue)
@@ -354,7 +327,7 @@ public class CharacterSelection : NetworkBehaviour
     {
         Debug.Log("RpcSaveCustomizationChoices called on client.");
 
-        for (int i = 0; i < playerCounter.playerCount; i++)
+        for (int i = 0; i < playerSaveData.playerCount; i++)
         {
             GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
             if (selectionObject != null)

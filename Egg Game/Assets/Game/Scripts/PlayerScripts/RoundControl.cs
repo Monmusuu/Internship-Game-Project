@@ -30,7 +30,7 @@ public class RoundControl : NetworkBehaviour
     public Transform kingSpawnLocation;
 
     [SerializeField]
-    private PlayerCounter playerCounter;
+    private PlayerSaveData playerSaveData;
 
 
     // Start is called before the first frame update
@@ -54,18 +54,18 @@ public class RoundControl : NetworkBehaviour
         players.Remove(playerToRemove);
     }
     
-    private IEnumerator WaitForPlayerCounter()
+    private IEnumerator WaitForPlayerSaveData()
     {
-        while (playerCounter == null)
+        while (playerSaveData == null)
         {
-            playerCounter = FindObjectOfType<PlayerCounter>();
+            playerSaveData = FindObjectOfType<PlayerSaveData>();
             yield return null;
         }
     }
     private void Start()
     {
         // Wait for the PlayerCounter to be spawned by the network manager
-        StartCoroutine(WaitForPlayerCounter());
+        StartCoroutine(WaitForPlayerSaveData());
         
         playerSpawnLocation = GameObject.Find("SpawnPoints").transform;
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
@@ -79,7 +79,7 @@ public class RoundControl : NetworkBehaviour
             Respawn = false;
             timerOn = false;
 
-            if(playersPlacedBlocks >= playerCounter.playerCount +2){
+            if(playersPlacedBlocks >= playerSaveData.playerCount +2){
                 itemsPlaced = true;
                 placingItems = false;
             }

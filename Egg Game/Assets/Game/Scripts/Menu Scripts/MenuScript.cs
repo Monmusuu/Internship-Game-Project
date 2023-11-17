@@ -128,7 +128,6 @@ public class MenuScript : MonoBehaviour
         m_menuScreenIsActive = true;
     }
 
-
     public void SwitchToControls(){
         m_menuScreen.SetActive(false);
         m_menuScreenIsActive = false;
@@ -148,6 +147,10 @@ public class MenuScript : MonoBehaviour
     public void SwitchToMenu(){
         LobbyHostObject.SetActive(false);
         LobbyListObject.SetActive(false);
+    }
+
+    public void ExitGame(){
+        Application.Quit();
     }
 
 }

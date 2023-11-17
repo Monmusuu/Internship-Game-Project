@@ -367,9 +367,10 @@ public class Player : NetworkBehaviour
         {
             rigid.velocity = Vector2.zero;
             isDead = false;
+            animator.SetTrigger("Respawn");
             currentHealth = 6;
             isAlreadyDead = false;
-            animator.SetTrigger("Respawn");
+
             //Debug.Log("Respawned");
 
             if (weaponSpriteRenderer != null)
@@ -469,7 +470,7 @@ public class Player : NetworkBehaviour
                 }
             }
             
-            if (isLocalPlayer && !isDead && !isKing)
+            if (isLocalPlayer && !isDead && !isKing && NetworkClient.ready)
             {
                 // If the player changes direction, update the lastDirRight and isFacingRight variables
                 if (left && !lastDirRight)

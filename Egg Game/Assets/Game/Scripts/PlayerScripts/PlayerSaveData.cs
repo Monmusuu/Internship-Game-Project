@@ -39,20 +39,11 @@ public class PlayerSaveData : NetworkBehaviour
     public GameObject[] playerTexts;
     public GameObject[] playerCursors;
 
-    [SerializeField]
-    private PlayerCounter playerCounter;
+    [SyncVar(hook = nameof(OnPlayerCountChanged))]
+    public int playerCount = 0;
 
     private static PlayerSaveData instance;
     public static PlayerSaveData Instance { get { return instance; } }
-
-    private IEnumerator WaitForPlayerCounter()
-    {
-        while (playerCounter == null)
-        {
-            playerCounter = FindObjectOfType<PlayerCounter>();
-            yield return null;
-        }
-    }
 
     private void Awake()
     {
@@ -64,12 +55,6 @@ public class PlayerSaveData : NetworkBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
-    }
-
-    private void Start()
-    {
-        // Wait for the PlayerCounter to be spawned by the network manager
-        StartCoroutine(WaitForPlayerCounter());
     }
 
     private void OnEnable()
@@ -92,28 +77,26 @@ public class PlayerSaveData : NetworkBehaviour
 
         if (scene.name == "CharacterSelection")
         {
-            if(playerCounter != null){
-                for (int i = 0; i < playerCounter.playerCount; i++)
+            for (int i = 0; i < playerCount; i++)
+            {
+                GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
+                if (selectionObject != null)
                 {
-                    GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
-                    if (selectionObject != null)
+                    CharacterSelection characterSelection = selectionObject.GetComponent<CharacterSelection>();
+                    if (characterSelection != null)
                     {
-                        CharacterSelection characterSelection = selectionObject.GetComponent<CharacterSelection>();
-                        if (characterSelection != null)
-                        {
 
-                        if (characterSelection.isReady)
-                            {
-                                // Check if the arrays need resizing before accessing the indices
-                                if (playerHatSpriteNumbers.Length <= i)
-                                    Array.Resize(ref playerHatSpriteNumbers, i + 1);
-                                if (playerBodySpriteNumbers.Length <= i)
-                                    Array.Resize(ref playerBodySpriteNumbers, i + 1);
-                                if (playerWeaponSpriteNumbers.Length <= i)
-                                    Array.Resize(ref playerWeaponSpriteNumbers, i + 1);
-                                if (playerAnimatorNumbers.Length <= i)
-                                    Array.Resize(ref playerAnimatorNumbers, i + 1);
-                            }
+                    if (characterSelection.isReady)
+                        {
+                            // Check if the arrays need resizing before accessing the indices
+                            if (playerHatSpriteNumbers.Length <= i)
+                                Array.Resize(ref playerHatSpriteNumbers, i + 1);
+                            if (playerBodySpriteNumbers.Length <= i)
+                                Array.Resize(ref playerBodySpriteNumbers, i + 1);
+                            if (playerWeaponSpriteNumbers.Length <= i)
+                                Array.Resize(ref playerWeaponSpriteNumbers, i + 1);
+                            if (playerAnimatorNumbers.Length <= i)
+                                Array.Resize(ref playerAnimatorNumbers, i + 1);
                         }
                     }
                 }
@@ -142,5 +125,13 @@ public class PlayerSaveData : NetworkBehaviour
         {
             playerReadyNumber = 0;
         }
+    }
+
+    void OnPlayerCountChanged(int oldValue, int newValue)
+    {
+        playerCount = newValue;
+
+        // Additional logic to handle player count changes on clients if needed
+        Debug.Log("Player count changed to: " + playerCount);
     }
 }

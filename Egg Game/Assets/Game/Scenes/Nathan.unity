@@ -2797,7 +2797,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 453669318}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1829166433}
+        m_TargetAssemblyTypeName: MenuScript, Assembly-CSharp
+        m_MethodName: ExitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &453669318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5285,6 +5297,7 @@ MonoBehaviour:
   width: 53
   roundControl: {fileID: 0}
   offset: {x: 0, y: 6, z: -20}
+  cam: {fileID: 0}
 --- !u!81 &1088160438
 AudioListener:
   m_ObjectHideFlags: 0
@@ -10253,7 +10266,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1976616724}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1829166433}
+        m_TargetAssemblyTypeName: MenuScript, Assembly-CSharp
+        m_MethodName: ExitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1976616724
 MonoBehaviour:
   m_ObjectHideFlags: 0

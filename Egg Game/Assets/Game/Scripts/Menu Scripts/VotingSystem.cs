@@ -22,15 +22,15 @@ public class VotingSystem : NetworkBehaviour
     [SerializeField] private GameObject mapCanvas;
 
     [SerializeField]
-    private PlayerCounter playerCounter;
+    private PlayerSaveData playerSaveData;
 
     public static VotingSystem Instance { get; private set; }
 
-    private IEnumerator WaitForPlayerCounter()
+    private IEnumerator WaitForPlayerSaveData()
     {
-        while (playerCounter == null)
+        while (playerSaveData == null)
         {
-            playerCounter = FindObjectOfType<PlayerCounter>();
+            playerSaveData = FindObjectOfType<PlayerSaveData>();
             yield return null;
         }
     }
@@ -47,7 +47,7 @@ public class VotingSystem : NetworkBehaviour
         playersVoted = 0;
 
         // Wait for the PlayerCounter to be spawned by the network manager
-        StartCoroutine(WaitForPlayerCounter());
+        StartCoroutine(WaitForPlayerSaveData());
     }
 
     public void Vote(int connectionId, int mapIndex)
@@ -72,7 +72,7 @@ public class VotingSystem : NetworkBehaviour
             }
 
             // Check if all players have voted
-            if (playersVoted == playerCounter.playerCount)
+            if (playersVoted == playerSaveData.playerCount)
             {
                 // Determine the map with the most votes
                 int winningMapIndex = GetWinningMapIndex();

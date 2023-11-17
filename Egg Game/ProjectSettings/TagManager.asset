@@ -25,6 +25,7 @@ TagManager:
   - button5
   - SpecialButton
   - Platform
+  - MapCanvas
   layers:
   - Default
   - TransparentFX

@@ -15,12 +15,10 @@ public class CustomNetworkManager : NetworkManager
     
     public ScenePlayerPrefabs[] scenePlayerPrefabs;
     private int currentPlayerPrefabIndex = 0;
-
-    public GameObject GameManager;
     public GameObject VotingSystem;
     public GameObject RoundControl;
-    private PlayerCounter playerCounter; // Reference to PlayerCounter script
-    public GameObject playerCounterPrefab;
+    private PlayerSaveData playerSaveData;
+    public GameObject playerSaveDataPrefab;
 
     private Dictionary<NetworkConnectionToClient, Transform> playerSpawnPositions = new Dictionary<NetworkConnectionToClient, Transform>();
 
@@ -30,7 +28,7 @@ public class CustomNetworkManager : NetworkManager
     public override void OnStartServer()
     {
         // Instantiate the PlayerCounter script on the server
-        playerCounter = InstantiatePlayerCounter();
+        playerSaveData = InstantiatePlayerSaveData();
 
         base.OnStartServer();
     }
@@ -66,9 +64,9 @@ public class CustomNetworkManager : NetworkManager
                     currentPlayerPrefabIndex = (currentPlayerPrefabIndex + 1) % scenePlayerPrefabs.Length;
 
                     // Increment the player count when a new player joins.
-                    playerCounter.playerCount++;
+                    playerSaveData.playerCount++;
 
-                    Debug.Log("Players: " + playerCounter.playerCount);
+                    Debug.Log("Players: " + playerSaveData.playerCount);
 
                     // Initialize player-specific data here
 
@@ -90,8 +88,8 @@ public class CustomNetworkManager : NetworkManager
 
         currentPlayerPrefabIndex = 0; // Reset the player prefab index when changing scenes
 
-        if(playerCounter !=null){
-            playerCounter.playerCount = 0; // Reset the player count
+        if(playerSaveData !=null){
+            playerSaveData.playerCount = 0; // Reset the player count
         }
 
         Debug.Log("Changing scene to: " + newSceneName);
@@ -114,18 +112,6 @@ public class CustomNetworkManager : NetworkManager
     {
         if (scene.name == "CharacterSelection")
         {
-            Debug.Log("Instantiating GameManager");
-            GameObject GameManagerObject = Instantiate(GameManager);
-            if (GameManagerObject != null)
-            {
-                NetworkServer.Spawn(GameManagerObject);
-                Debug.Log("GameManager spawned on the server.");
-            }
-            else
-            {
-                Debug.LogError("GameManagerObject is null");
-            }
-
             Debug.Log("Instantiating VotingSystem");
             GameObject VotingSystemObject = Instantiate(VotingSystem);
             if (VotingSystemObject != null)
@@ -162,21 +148,13 @@ public class CustomNetworkManager : NetworkManager
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         // Increment the player count when a new player joins.
-        playerCounter.playerCount--;
+        playerSaveData.playerCount--;
+        playerSaveData.ResetPlayerData(conn.connectionId);
 
         // Free up the spawn position of the disconnected player
         if (playerSpawnPositions.ContainsKey(conn))
         {
             playerSpawnPositions.Remove(conn);
-        }
-
-        // Reset player data based on connection ID
-        PlayerSaveData playerSaveData = PlayerSaveData.Instance;
-        if (playerSaveData != null)
-        {
-            playerSaveData.ResetPlayerData(conn.connectionId);
-        }else{
-            Debug.Log("Reference not found");
         }
 
         base.OnServerDisconnect(conn);
@@ -234,19 +212,19 @@ public class CustomNetworkManager : NetworkManager
         return null;
     }
 
-    private PlayerCounter InstantiatePlayerCounter()
+    private PlayerSaveData InstantiatePlayerSaveData()
     {
         // Instantiate the PlayerCounter prefab
-        GameObject playerCounterObj = Instantiate(playerCounterPrefab);
+        GameObject playerSaveDataObj = Instantiate(playerSaveDataPrefab);
 
         // Spawn the object on the network
-        NetworkServer.Spawn(playerCounterObj);
+        NetworkServer.Spawn(playerSaveDataObj);
 
         // Prevent the object from being destroyed on scene change
-        DontDestroyOnLoad(playerCounterObj);
+        DontDestroyOnLoad(playerSaveDataObj);
 
         // Retrieve the PlayerCounter script from the instantiated object
-        var counterScript = playerCounterObj.GetComponent<PlayerCounter>();
+        var counterScript = playerSaveDataObj.GetComponent<PlayerSaveData>();
 
         return counterScript;
     }
