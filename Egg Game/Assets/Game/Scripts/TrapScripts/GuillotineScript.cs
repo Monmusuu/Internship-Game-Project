@@ -19,6 +19,11 @@ public class GuillotineScript : NetworkBehaviour
     [SyncVar]
     private Vector3 syncedPosition; // Synchronized position across the network
 
+    private bool playedAudio = false;
+
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
+
     private void Start()
     {
         if (isServer)
@@ -65,6 +70,11 @@ public class GuillotineScript : NetworkBehaviour
     {
         if (!isServer) return;
 
+        if(playedAudio == false){
+            audioSource.PlayOneShot(audioClip);
+            playedAudio = true;
+        }
+
         transform.position = Vector3.MoveTowards(transform.position, pointB.position, moveSpeedDown * Time.deltaTime);
 
         if (transform.position == pointB.position)
@@ -80,6 +90,7 @@ public class GuillotineScript : NetworkBehaviour
     {
         if (!isServer) return;
 
+        playedAudio = false;
         transform.position = Vector3.MoveTowards(transform.position, pointA.position, moveSpeedUp * Time.deltaTime);
 
         if (transform.position == pointA.position)

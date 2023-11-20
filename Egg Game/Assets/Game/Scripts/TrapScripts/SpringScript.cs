@@ -14,6 +14,8 @@ public class SpringScript : NetworkBehaviour
 
     private NetworkAnimator networkAnimator;
     private Rigidbody2D playerRigidbody;
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
 
     private void Start()
     {
@@ -75,6 +77,12 @@ public class SpringScript : NetworkBehaviour
         if (playerRigidbody != null)
         {
             Debug.Log("Launching player!");
+
+            if (audioSource != null && audioClip != null)
+            {
+                audioSource.PlayOneShot(audioClip);
+            }
+
             Vector2 launchDirection = transform.up;
             playerRigidbody.AddForce(launchDirection * launchForce, ForceMode2D.Impulse);
 

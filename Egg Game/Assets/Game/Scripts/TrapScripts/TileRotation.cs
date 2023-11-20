@@ -20,6 +20,9 @@ public class TileRotation : NetworkBehaviour
     private Transform[] childSpawnTransforms;
     private bool roundControlFound = false;
 
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
+
     IEnumerator WaitForRoundControl() {
         while (true) {
             GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
@@ -54,7 +57,18 @@ public class TileRotation : NetworkBehaviour
 
         if (roundControl.timerOn)
         {
+            // Play audio when timer is on
+            if (!audioSource.isPlaying)
+            {
+                audioSource.clip = audioClip;
+                audioSource.Play();
+            }
+            
             currentRotation += parentRotationSpeed * Time.deltaTime;
+        }else
+        {
+            // Stop audio when timer is off
+            audioSource.Stop();
         }
     }
 

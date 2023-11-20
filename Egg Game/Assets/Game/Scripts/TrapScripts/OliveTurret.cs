@@ -8,10 +8,15 @@ public class OliveTurret : NetworkBehaviour
     public Transform projectileSpawnPoint;
     public GameObject projectilePrefab;
     public Animator animator;
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
 
     [Server]
     public void ActivateFunction()
     {
+        // Play the activation audio clip
+        RpcPlayActivationAudio();
+
         animator.SetTrigger("Activate");
 
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
@@ -35,4 +40,10 @@ public class OliveTurret : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    void RpcPlayActivationAudio()
+    {
+        // Play the activation audio clip on all clients
+        audioSource.PlayOneShot(audioClip);
+    }
 }

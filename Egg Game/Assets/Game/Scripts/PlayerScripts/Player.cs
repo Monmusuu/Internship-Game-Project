@@ -149,6 +149,12 @@ public class Player : NetworkBehaviour
     [SerializeField]
     private Animator animator;
 
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip hitAudioClip; // The audio clip to be played
+    public AudioClip deathAudioClip; // The audio clip to be played
+    public AudioClip swingAudioClip; // The audio clip to be played
+    public AudioClip jumpAudioClip; // The audio clip to be played
+
     public void animatorChange(int newIndex)
     {
         //if (isServer)
@@ -177,8 +183,26 @@ public class Player : NetworkBehaviour
         internalTimer = weaponTimer;
     }
 
+    void AddAudioListener()
+    {
+        // Check if the player already has an AudioListener component
+        AudioListener audioListener = GetComponent<AudioListener>();
+        if (audioListener == null)
+        {
+            // Add the AudioListener component to the player
+            gameObject.AddComponent<AudioListener>();
+        }
+    }
+
     void Start()
     {
+        // Check if the current player is the local player
+        if (isLocalPlayer)
+        {
+            // Add an AudioListener component to the local player
+            AddAudioListener();
+        }
+
         // Get the tag of the GameObject this script is attached to
         string objectTag = gameObject.tag;
 
@@ -326,6 +350,7 @@ public class Player : NetworkBehaviour
             isDead = true;
             animator.SetTrigger("Dead");
             isAlreadyDead = true;
+            audioSource.PlayOneShot(deathAudioClip);
             if (weaponSpriteRenderer != null)
             {
                 Color spriteColor = weaponSpriteRenderer.color;
@@ -447,7 +472,6 @@ public class Player : NetworkBehaviour
 
                         if (isAttacking)
                         {
-
                             internalTimer -= Time.deltaTime;
                             if (internalTimer <= 0)
                             {
@@ -489,12 +513,14 @@ public class Player : NetworkBehaviour
                 // Call the CmdPlayerJump command on the server if the player jumped
                 if (jumped)
                 {
+                    audioSource.PlayOneShot(jumpAudioClip);
                     CmdPlayerJump();
                 }
 
                 // Call the CmdPlayerAttack command on the server if the player attacked
                 if (attack)
                 {
+                    audioSource.PlayOneShot(swingAudioClip);
                     CmdPlayerAttack();
                 }
 
@@ -609,9 +635,14 @@ public class Player : NetworkBehaviour
 
         if (other.gameObject.CompareTag("Trap") && !isflashing)
         {
+            audioSource.PlayOneShot(hitAudioClip);
             isflashing = true;
             currentHealth -= 3;
             StartCoroutine(InvincibleFlash());
+        }
+
+        if (other.gameObject.CompareTag("Weapon")){
+            audioSource.PlayOneShot(hitAudioClip);
         }
     }
 

@@ -21,6 +21,9 @@ public class SawScript : NetworkBehaviour
 
     private bool roundControlFound = false;
 
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
+
     IEnumerator WaitForRoundControl() {
         while (true) {
             GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
@@ -54,18 +57,21 @@ public class SawScript : NetworkBehaviour
             StartCoroutine(WaitForRoundControl());
         }
 
-        if (!isServer)
-        {
-            // Interpolate the position and rotation on clients
-            transform.position = Vector3.Lerp(transform.position, syncPosition, Time.deltaTime * movementSpeed);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, syncRotation, rotationSpeed * Time.deltaTime);
-            return;
-        }
-
         if (roundControl.timerOn)
         {
+            // Play audio when timer is on
+            if (!audioSource.isPlaying)
+            {
+                audioSource.clip = audioClip;
+                audioSource.Play();
+            }
+
             RotateObject();
             MoveObject();
+        }else
+        {
+            // Stop audio when timer is off
+            audioSource.Stop();
         }
     }
 

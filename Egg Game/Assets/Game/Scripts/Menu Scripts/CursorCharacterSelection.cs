@@ -47,6 +47,9 @@ public class CursorCharacterSelection : NetworkBehaviour
     [SerializeField]
     private MenuScript menuScript;
 
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip clickAudioClip; // The audio clip to be played
+
     private void Awake()
     {
         cursorCollider = GetComponent<Collider2D>();
@@ -247,6 +250,7 @@ public class CursorCharacterSelection : NetworkBehaviour
 
                 // Debug message
                 Debug.Log("Selected object: " + selectedObject.name);
+                audioSource.PlayOneShot(clickAudioClip);
 
                 break;
             }
@@ -270,6 +274,7 @@ public class CursorCharacterSelection : NetworkBehaviour
             {
                 Debug.Log("Found Map");
                 // Vote for the selected map
+                audioSource.PlayOneShot(clickAudioClip);
                 CmdVoteForMap(exactMapIndex);
             }
         }

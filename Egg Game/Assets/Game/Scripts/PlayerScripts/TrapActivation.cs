@@ -86,6 +86,7 @@ public class TrapActivation : NetworkBehaviour
         if (guillotineScript != null)
         {
             guillotineScript.ActivateFunction();
+            Debug.Log("Activated Guillotine");
         }
 
         LightBulb lightBulb = clickedObject.GetComponent<LightBulb>();
@@ -96,6 +97,7 @@ public class TrapActivation : NetworkBehaviour
             {
                 Sprite sprite = childSpriteRenderer.sprite;
                 lightBulb.ActivateFunction(sprite);
+                Debug.Log("Activated LightBulb");
             }
         }
 
@@ -103,11 +105,13 @@ public class TrapActivation : NetworkBehaviour
         if (oliveTurret != null)
         {
             oliveTurret.ActivateFunction();
+            Debug.Log("Activated Olive Turret");
         }
 
         TrapMicrophone trapMicrophone = clickedObject.GetComponent<TrapMicrophone>();
         if (trapMicrophone != null)
         {
+            Debug.Log("Activated Microphone");
             trapMicrophone.ActivateFunction();
         }
     }
