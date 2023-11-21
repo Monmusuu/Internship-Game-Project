@@ -325,10 +325,12 @@ MonoBehaviour:
   - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
   - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
   - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
+  - {fileID: 4472608398988364885, guid: 672b4c3206b0da04a986b39a7d2fe025, type: 3}
   manualTrap2TileObjects:
   - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
   - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
   - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
+  - {fileID: 4472608398988364885, guid: 672b4c3206b0da04a986b39a7d2fe025, type: 3}
   tileGridUI: {fileID: 0}
   roundControl: {fileID: 0}
   playerScript: {fileID: 0}
@@ -528,7 +530,7 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 6
-  m_WholeNumbers: 1
+  m_WholeNumbers: 0
   m_Value: 6
   m_OnValueChanged:
     m_PersistentCalls:
@@ -926,6 +928,7 @@ MonoBehaviour:
   deathAudioClip: {fileID: 8300000, guid: f4aaa7c92a37bbd429971e3d6035c834, type: 3}
   swingAudioClip: {fileID: 8300000, guid: ae097e4d7f3d91445b8092c4b0558bce, type: 3}
   jumpAudioClip: {fileID: 8300000, guid: 1ecdcded40507774cbb8ba6343dab0e9, type: 3}
+  oilAudioClip: {fileID: 8300000, guid: 0c3234347062e4044a10e1226497d60a, type: 3}
 --- !u!70 &3219085190463158595
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

@@ -114,5 +114,11 @@ public class TrapActivation : NetworkBehaviour
             Debug.Log("Activated Microphone");
             trapMicrophone.ActivateFunction();
         }
+
+        FlameThrower flameThrower = clickedObject.GetComponent<FlameThrower>();
+        if(flameThrower!= null){
+            Debug.Log("Activated FlameThrower");
+            flameThrower.ActivateFunction();
+        }
     }
 }

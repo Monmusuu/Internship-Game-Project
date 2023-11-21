@@ -19,7 +19,6 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     private Collider2D cursorCollider;
     private int kingLayerValue;
-    private LayerMask borderLayer;
     [SerializeField] private RoundControl roundControl;
     private Vector2 movementInput;
 
@@ -474,27 +473,22 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     private bool IsPlacementValid(Vector3Int position)
     {
-        Vector3 positionWorld = kingTilemap.CellToWorld(position) + kingTilemap.cellSize / 2f;
-        Collider2D overlapCollider = Physics2D.OverlapPoint(positionWorld, borderLayer);
+        // Calculate the world space position of the placement
+        Vector3 positionWorld = kingTilemap.GetCellCenterWorld(position);
 
-        if (overlapCollider != null)
+        // Calculate the bounds of the preview object
+        Bounds previewBounds = previewObject.GetComponent<Collider2D>().bounds;
+
+        // Check for overlaps with the border layer
+        Collider2D[] overlapCollidersBorder = Physics2D.OverlapBoxAll(positionWorld, previewBounds.size, 0f, LayerMask.GetMask("Border"));
+
+        // Check for overlaps with the king layer
+        Collider2D[] overlapCollidersKing = Physics2D.OverlapBoxAll(positionWorld, previewBounds.size, 0f, LayerMask.GetMask("King"));
+
+        // If there are overlaps with either layer, the placement is invalid
+        if (overlapCollidersBorder.Length > 0 || overlapCollidersKing.Length > 0)
         {
-            // Placement is invalid if there is an overlap with the borderLayer
             return false;
-        }
-
-        Collider2D[] overlapColliders = Physics2D.OverlapPointAll(positionWorld);
-
-        foreach (Collider2D collider in overlapColliders)
-        {
-            if (collider.gameObject == gameObject)
-                continue;
-
-            if (collider.gameObject.layer == kingLayerValue)
-            {
-                // Placement is invalid if there is an overlap with the "King" layer
-                return false;
-            }
         }
 
         return true;

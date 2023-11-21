@@ -26,6 +26,11 @@ TagManager:
   - SpecialButton
   - Platform
   - MapCanvas
+  - Oil
+  - SawBlade
+  - Spike
+  - GuillotineBlade
+  - Flame
   layers:
   - Default
   - TransparentFX

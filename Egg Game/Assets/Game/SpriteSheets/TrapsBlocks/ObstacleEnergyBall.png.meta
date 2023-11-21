@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 57e4f63f0bd3e3540bc53ac7543400cf
+guid: f66fb2e8428190f46815b3bf9580aa21
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -105,169 +105,169 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ObstacleFlame_0
-      rect:
-        serializedVersion: 2
-        x: 613
-        y: 0
-        width: 90
-        height: 258
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 2, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4e558235114e5cc48ab70ba1364d7ce3
-      internalID: -754646986
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ObstacleFlame_1
-      rect:
-        serializedVersion: 2
-        x: 515
-        y: 0
-        width: 90
-        height: 258
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 2, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b09746ab196a64a4fa8585048b757178
-      internalID: 684009645
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ObstacleFlame_2
-      rect:
-        serializedVersion: 2
-        x: 402
-        y: 0
-        width: 90
-        height: 258
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 2, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cc034a295608a154eb085db72c83c381
-      internalID: 1611427677
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ObstacleFlame_3
-      rect:
-        serializedVersion: 2
-        x: 300
-        y: 2
-        width: 90
-        height: 255
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 791f9ad1d12bfaa41ab882131926dc02
-      internalID: 1561670018
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ObstacleFlame_4
-      rect:
-        serializedVersion: 2
-        x: 214
-        y: 2
-        width: 68
-        height: 256
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0ffc168540b26c947a60e7bd5cc174b8
-      internalID: -1690588574
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ObstacleFlame_5
-      rect:
-        serializedVersion: 2
-        x: 161
-        y: 2
-        width: 45
-        height: 256
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5a02bdff4afc4544cb5dc94a5b5d48aa
-      internalID: 985607852
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ObstacleFlame_6
-      rect:
-        serializedVersion: 2
-        x: 131
-        y: 2
-        width: 30
-        height: 256
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8e1e56006c5958d4ba467be591e329dc
-      internalID: -143047456
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ObstacleFlame_7
+      name: ObstacleEnergyBall_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 124
-        height: 133
+        y: 2
+        width: 114
+        height: 204
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5536e2b2ea73d614582679626b2815af
-      internalID: -927667384
+      spriteID: 1f6d8ed6e5e32c244abdf2ccecd87a06
+      internalID: 1168149257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleEnergyBall_1
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 185
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ea812cfc83031442bfca4e15d91d4a1
+      internalID: -132364355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleEnergyBall_2
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 182
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 072611bb812bc764a9641a3b64da33ae
+      internalID: 815923116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleEnergyBall_3
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 179
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f72587e69e9f8743ae2b7b8cdb4c138
+      internalID: -75370701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleEnergyBall_4
+      rect:
+        serializedVersion: 2
+        x: 404
+        y: 0
+        width: 252
+        height: 252
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c510d2eb224f8144b8b1e84e9db40c7
+      internalID: -1187110186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleEnergyBall_5
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 110
+        width: 52
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39866904f2b929f4c8f6488697c66e25
+      internalID: -1850721123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleEnergyBall_6
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 5
+        width: 163
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29cec6f648e60cb4db0675509cc5cbf5
+      internalID: 1798687462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleEnergyBall_7
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 7
+        width: 82
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9776b3c3e83ef946b76bb788ad50870
+      internalID: -902879300
       vertices: []
       indices: 
       edges: []
@@ -283,14 +283,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ObstacleFlame_0: -754646986
-      ObstacleFlame_1: 684009645
-      ObstacleFlame_2: 1611427677
-      ObstacleFlame_3: 1561670018
-      ObstacleFlame_4: -1690588574
-      ObstacleFlame_5: 985607852
-      ObstacleFlame_6: -143047456
-      ObstacleFlame_7: -927667384
+      ObstacleEnergyBall_0: 1168149257
+      ObstacleEnergyBall_1: -132364355
+      ObstacleEnergyBall_2: 815923116
+      ObstacleEnergyBall_3: -75370701
+      ObstacleEnergyBall_4: -1187110186
+      ObstacleEnergyBall_5: -1850721123
+      ObstacleEnergyBall_6: 1798687462
+      ObstacleEnergyBall_7: -902879300
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

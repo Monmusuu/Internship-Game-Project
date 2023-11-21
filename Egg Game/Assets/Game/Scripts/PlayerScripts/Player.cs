@@ -43,8 +43,8 @@ public class Player : NetworkBehaviour
     [SyncVar(hook = nameof(OnIsFlashingChanged))]
     private bool isflashing = false;
     private float maxSpeed = 15.0f;
-    private int maxHealth = 6;
-    private int currentHealth = 6;
+    private float maxHealth = 6;
+    private float currentHealth = 6;
     [SyncVar]
     public int currentScore = 0;
     [SerializeField] private Healthbar healthbar;
@@ -64,9 +64,9 @@ public class Player : NetworkBehaviour
     [SyncVar(hook = nameof(OnRunningChanged))]
     private bool isRunning = false; // Synced variable to handle isRunning
 
-    public int GetMaxHealth() { return maxHealth; }
+    public float GetMaxHealth() { return maxHealth; }
     public void SetMaxHealth(int value) { maxHealth = value; }
-    public int GetCurrentHealth() { return currentHealth; }
+    public float GetCurrentHealth() { return currentHealth; }
     public void SetCurrentHealth(int value) { currentHealth = value; }
 
     [SerializeField][SyncVar(hook = nameof(OnHatSpriteChange))]
@@ -154,6 +154,7 @@ public class Player : NetworkBehaviour
     public AudioClip deathAudioClip; // The audio clip to be played
     public AudioClip swingAudioClip; // The audio clip to be played
     public AudioClip jumpAudioClip; // The audio clip to be played
+    public AudioClip oilAudioClip; // The audio clip to be played
 
     public void animatorChange(int newIndex)
     {
@@ -443,6 +444,7 @@ public class Player : NetworkBehaviour
                                 animator.SetBool("Landed", false);
                                 rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
                                 animator.SetTrigger("Jumped");
+                                audioSource.PlayOneShot(jumpAudioClip);
                             }
                             else
                             {
@@ -513,7 +515,6 @@ public class Player : NetworkBehaviour
                 // Call the CmdPlayerJump command on the server if the player jumped
                 if (jumped)
                 {
-                    audioSource.PlayOneShot(jumpAudioClip);
                     CmdPlayerJump();
                 }
 
@@ -643,6 +644,44 @@ public class Player : NetworkBehaviour
 
         if (other.gameObject.CompareTag("Weapon")){
             audioSource.PlayOneShot(hitAudioClip);
+        }
+
+        if (other.gameObject.CompareTag("Oil") && !isflashing){
+            audioSource.PlayOneShot(oilAudioClip);
+            isflashing = true;
+            currentHealth -= 1;
+            StartCoroutine(InvincibleFlash());
+            Destroy(other.gameObject);
+        }
+
+        if (other.gameObject.CompareTag("SawBlade") && !isflashing)
+        {
+            audioSource.PlayOneShot(hitAudioClip);
+            isflashing = true;
+            currentHealth -= 1;
+            StartCoroutine(InvincibleFlash());
+        }
+
+        if (other.gameObject.CompareTag("Spike") && !isflashing)
+        {
+            audioSource.PlayOneShot(hitAudioClip);
+            isflashing = true;
+            currentHealth -= 1;
+            StartCoroutine(InvincibleFlash());
+        }
+
+        if (other.gameObject.CompareTag("GuillotineBlade") && !isflashing)
+        {
+            audioSource.PlayOneShot(hitAudioClip);
+            isflashing = true;
+            currentHealth -= 1;
+            StartCoroutine(InvincibleFlash());
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D other) {
+        if (other.gameObject.CompareTag("Flame")) {
+            currentHealth -= 0.05f;
         }
     }
 

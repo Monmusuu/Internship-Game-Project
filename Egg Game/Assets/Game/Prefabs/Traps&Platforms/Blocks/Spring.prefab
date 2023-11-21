@@ -136,7 +136,7 @@ MonoBehaviour:
   - Player4
   - Player5
   - Player6
-  launchForce: 35
+  launchForce: 25
   childCollider: {fileID: 4709109291616507723}
   audioSource: {fileID: 26121964672278029}
   audioClip: {fileID: 8300000, guid: 5ba64e086cb0a894b86fcd91455a7ff3, type: 3}
