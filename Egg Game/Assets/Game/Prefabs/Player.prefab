@@ -318,9 +318,11 @@ MonoBehaviour:
   - {fileID: 6122145753119281300, guid: 8a3a5451273d1944db1ffa43748e7951, type: 3}
   - {fileID: 5547983234099374204, guid: 7a6ac984283460740bc531413e98594e, type: 3}
   - {fileID: 501223548699330371, guid: 370f38da899bbd84b92c0d2f4947d647, type: 3}
+  - {fileID: 8800451522271132070, guid: 21dfcff53c18f7248870d3ab63fd0fb2, type: 3}
   autoTrapTileObjects:
   - {fileID: 1998069914564895633, guid: 2326edc4d86e9a7469c44185aa17ff3e, type: 3}
   - {fileID: 1897275775830132237, guid: 6322957afb2b5ae49b6634699ad3e7c3, type: 3}
+  - {fileID: 2424184787872028282, guid: 5e18139a20a129448be416d6fece2fd6, type: 3}
   manualTrapTileObjects:
   - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
   - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
@@ -331,6 +333,7 @@ MonoBehaviour:
   - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
   - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
   - {fileID: 4472608398988364885, guid: 672b4c3206b0da04a986b39a7d2fe025, type: 3}
+  teleporterReciever: {fileID: 8981147863118277878, guid: fdbda3ed8ea6ba9418735d36a87b39ac, type: 3}
   tileGridUI: {fileID: 0}
   roundControl: {fileID: 0}
   playerScript: {fileID: 0}

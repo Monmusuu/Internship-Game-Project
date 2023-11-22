@@ -15,6 +15,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
     public GameObject[] manualTrapTileObjects;
     public GameObject[] manualTrap2TileObjects;
 
+    public GameObject teleporterReciever;
+
     public Transform tileGridUI;
 
     private Collider2D cursorCollider;
@@ -64,6 +66,7 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private Vector3 initialPosition;
     private bool isGameFocused = true;
     public GameObject boundingObject;
+    private int teleporterNumber = 0;
 
     private void Awake()
     {
@@ -133,7 +136,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
             do
             {
-                selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+                selectedBlockIndex = 9;
+                // selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
             } while (selectedBlockIndex == previousBlockIndex);
 
             
@@ -226,6 +230,12 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
                 // Manually synchronize the preview opacity on the server and all clients
                 RpcUpdatePreviewOpacity(previewObject, previewOpacity);
+            }else if (selectedBlockIndex == 9 && selectedTile == 1){
+
+                CreateReceiverPreviewObject(teleporterReciever);
+
+                // Manually synchronize the preview opacity on the server and all clients
+                RpcUpdatePreviewOpacity(previewObject, previewOpacity);
             }
             else
             {
@@ -285,16 +295,33 @@ public class PlayerBlockPlacement : NetworkBehaviour
         GameObject placedBlock = null;
 
         if(playerScript.isPlayer){
-            if (selectedTile == 0 && !blockPlaced)
-            {
-                blockPlaced = true;
-                placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
-                roundControl.playersPlacedBlocks += 1;
+
+            if(selectedBlockIndex == 9){
+
+                if (selectedTile == 0 && !blockPlaced)
+                {
+                    blockPlaced = true;
+                    placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
+                    
+                }else if(selectedTile == 1)
+                {
+                    placedBlock = Instantiate(teleporterReciever, tilePosition, rotation);
+                    roundControl.playersPlacedBlocks += 1;
+                }   
+            }else{
+                if (selectedTile == 0 && !blockPlaced)
+                {
+                    blockPlaced = true;
+                    placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
+                    roundControl.playersPlacedBlocks += 1;
+                    selectedTile = 0;
+                }
+                else
+                {
+                    return;
+                }
             }
-            else
-            {
-                return;
-            }
+            
         }
 
         if(playerScript.isKing){
@@ -329,9 +356,10 @@ public class PlayerBlockPlacement : NetworkBehaviour
         {
             networkIdentity = placedBlock.AddComponent<NetworkIdentity>();
         }
-
-        // Spawn the placed block on the server so that it's visible to all clients
+        
+        //Spawn the placed block on the server so that it's visible to all clients
         NetworkServer.Spawn(placedBlock);
+
         placedBlock.layer = kingLayerValue;
 
         // Change the layer of the placed block's children to the "King" layer as well
@@ -341,6 +369,36 @@ public class PlayerBlockPlacement : NetworkBehaviour
         }
 
         RpcChangeBlockLayer(placedBlock, kingLayerValue);
+
+        if(selectedBlockIndex == 9 && selectedTile ==0){
+            Teleporter teleporter = placedBlock.GetComponent<Teleporter>();
+            if(teleporter != null){
+                teleporter.teleporterNumber = Random.Range(1, 100);
+                teleporterNumber = teleporter.teleporterNumber;
+
+                // Debug statement to mark progress
+                Debug.Log("Teleporter placed. Teleporter Number: " + teleporterNumber);
+
+                // Debug statement to print the name of the teleporter object
+                Debug.Log("Teleporter Object Name: " + placedBlock.name);
+
+            }else{
+                Debug.Log("Null Reference");
+            }
+        }else if (selectedBlockIndex == 9 && selectedTile == 1){
+            // Set the teleporter number on the receiver
+            TeleporterReceiver receiver = placedBlock.GetComponent<TeleporterReceiver>();
+            if (receiver != null)
+            {
+                receiver.receiverNumber = teleporterNumber;
+
+                // Debug statement to mark progress
+                Debug.Log("Teleporter Receiver placed. Receiver Number: " + receiver.receiverNumber);
+
+            }else{
+                Debug.Log("Null Reference"); 
+            }
+        }
 
         // Move to the next selected object
         selectedTile = (selectedTile + 1) % 4;
@@ -369,7 +427,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private void CmdInitializeSelectedIndexes()
     {
         // Initialize the selected indexes on the server for this player
-        selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+        // selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+        selectedBlockIndex = 9;
     }
 
     [Command]
@@ -411,6 +470,27 @@ public class PlayerBlockPlacement : NetworkBehaviour
         int selectedObjectIndex = Mathf.Clamp(selectedIndex, 0, tileObjects.Length - 1);
         GameObject tileObject = tileObjects[selectedObjectIndex];
         previewObject = Instantiate(tileObject, transform.position, Quaternion.Euler(0f, 0f, rotationAngle)); // Set rotation
+
+        // Set the initial opacity
+        OnPreviewOpacityChanged(0f, previewOpacity);
+
+        // Add NetworkIdentity component to the preview object
+        var networkIdentity = previewObject.GetComponent<NetworkIdentity>();
+        if (networkIdentity == null)
+        {
+            networkIdentity = previewObject.AddComponent<NetworkIdentity>();
+        }
+
+        // Network-instantiate the preview object
+        NetworkServer.Spawn(previewObject);
+    }
+
+    private void CreateReceiverPreviewObject(GameObject receiverObject)
+    {
+        if (previewObject != null)
+            DestroyPreviewObject();
+
+        previewObject = Instantiate(receiverObject, transform.position, Quaternion.Euler(0f, 0f, rotationAngle));
 
         // Set the initial opacity
         OnPreviewOpacityChanged(0f, previewOpacity);
