@@ -265,6 +265,7 @@ MonoBehaviour:
   teleporterNumber: 0
   receivers: []
   teleporters: []
+  animator: {fileID: 8800451521249604430}
 --- !u!114 &8800451522271132067
 MonoBehaviour:
   m_ObjectHideFlags: 0

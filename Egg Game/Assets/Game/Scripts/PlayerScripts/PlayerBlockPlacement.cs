@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using Mirror;
+using System.Linq;
 
 public class PlayerBlockPlacement : NetworkBehaviour
 {
@@ -16,32 +17,41 @@ public class PlayerBlockPlacement : NetworkBehaviour
     public GameObject[] manualTrap2TileObjects;
 
     public GameObject teleporterReciever;
+    public GameObject boundingObject;
+    private GameObject previewObject;
 
-    public Transform tileGridUI;
+    [SerializeField] private RoundControl roundControl;
+
+    private SpriteRenderer previewSpriteRenderer;
+
+    private Vector2 initialPosition;
+    private Vector2 movementInput;
 
     private Collider2D cursorCollider;
     private int kingLayerValue;
-    [SerializeField] private RoundControl roundControl;
-    private Vector2 movementInput;
 
     [SerializeField] private Player playerScript;
 
     [SerializeField][SyncVar(hook = nameof(OnSelectedTileChanged))]
     private int selectedTile = 0;
-
-
     [SerializeField][SyncVar(hook = nameof(OnSelectedBlockIndexChanged))]
-    private int selectedBlockIndex;
-
-
+    private int selectedBlockIndex = -2;
     [SerializeField][SyncVar(hook = nameof(OnSelectedAutoTrapIndexChanged))]
-    private int selectedAutoTrapIndex;
-    
+    private int selectedAutoTrapIndex = -2;
     [SerializeField][SyncVar(hook = nameof(OnSelectedManualTrapIndexChanged))]
-    private int selectedManualTrapIndex;
-    
+    private int selectedManualTrapIndex = -2;
     [SerializeField][SyncVar(hook = nameof(OnSelectedManualTrap2IndexChanged))]
-    private int selectedManualTrap2Index;
+    private int selectedManualTrap2Index = -2;
+
+    [SerializeField][SyncVar]
+    private int previousBlockIndex = -1;
+    [SerializeField][SyncVar]
+    private int previousAutoTrapIndex = -1;
+    [SerializeField][SyncVar]
+    private int previousManualTrapIndex = -1;
+    [SerializeField][SyncVar]
+    private int previousManualTrap2Index = -1;
+    private int teleporterNumber = 0;
 
 
     [SyncVar(hook = nameof(OnPreviewOpacityChanged))]
@@ -50,28 +60,23 @@ public class PlayerBlockPlacement : NetworkBehaviour
     [SyncVar(hook = nameof(OnRotationAngleChanged))]
     private float rotationAngle = 0f;
 
-    private int previousBlockIndex;
-    private int previousAutoTrapIndex;
-    private int previousManualTrapIndex;
-    private int previousManualTrap2Index;
-
+    [SerializeField][SyncVar]
     private bool blockPlaced = false;
+    [SerializeField][SyncVar]
+    private bool allPlayerBlocksPlaced = false;
+    [SerializeField][SyncVar]
     private bool autoTrapPlaced = false;
+    [SerializeField][SyncVar]
     private bool manualTrapPlaced = false;
+    [SerializeField][SyncVar]
     private bool manualTrapPlaced2 = false;
-
-    private GameObject previewObject;
-
-    private SpriteRenderer previewSpriteRenderer;
-    private Vector3 initialPosition;
+    [SerializeField][SyncVar]
+    private bool allKingBlocksPlaced = false;
     private bool isGameFocused = true;
-    public GameObject boundingObject;
-    private int teleporterNumber = 0;
 
     private void Awake()
     {
         cursorCollider = GetComponent<Collider2D>();
-        initialPosition = transform.position;
     }
 
     private void Start()
@@ -84,139 +89,201 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
         Application.focusChanged += OnApplicationFocus;
 
-        if (isOwned)
-        {
-            CmdInitializeSelectedIndexes();
-            CmdInitializeSelectedKingIndexes();
-        }
+        playerScript = gameObject.transform.parent.GetComponent<Player>();
     }
 
     private void OnEnable()
     {
         Debug.Log("Script has been enabled.");
 
-        selectedTile = 0;
-        playerScript = gameObject.transform.parent.GetComponent<Player>();
-        
-        if(playerScript.isKing){
+        if(isOwned){
+            CmdInitializeSelectedIndexes();
+            CmdInitializeSelectedKingIndexes();
+        }
+
+        if(isServer)
+        {
             autoTrapPlaced = false;
             manualTrapPlaced = false;
             manualTrapPlaced2 = false;
-
-            do
-            {
-                selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
-            } while (selectedAutoTrapIndex == previousAutoTrapIndex);
-
-            Debug.Log("After selection: " + selectedAutoTrapIndex + ", " + selectedManualTrapIndex + ", " + selectedManualTrap2Index);
-
-            // Randomly select a new tile from the manual trap array
-            do
-            {
-                selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
-            } while (selectedManualTrapIndex == previousManualTrapIndex);
-
-            // Randomly select a new tile from the manual trap 2 array
-            do
-            {
-                selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
-            } while (selectedManualTrap2Index == previousManualTrap2Index);
-
-            previousAutoTrapIndex = selectedAutoTrapIndex;
-            previousManualTrapIndex = selectedManualTrapIndex;
-            previousManualTrap2Index = selectedManualTrap2Index;
-
-            // Use a command to sync the selected indexes with the server
-            if (isOwned)
-            {
-                CmdSyncKingSelectedIndexes(selectedAutoTrapIndex, selectedManualTrapIndex, selectedManualTrap2Index);
-            }
-        }else if(playerScript.isPlayer && !playerScript.isKing){
+            allKingBlocksPlaced = false;
             blockPlaced = false;
+            allPlayerBlocksPlaced = false;
 
-            do
-            {
-                selectedBlockIndex = 9;
-                // selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
-            } while (selectedBlockIndex == previousBlockIndex);
-
+            selectedTile = 0;
             
-            previousBlockIndex = selectedBlockIndex;
-            
-            if (isOwned)
-            {
-                CmdSyncSelectedIndexes(selectedBlockIndex);
-            }
+            StartCoroutine(InitializeSelectedIndexes());
         }
     }
 
-    private void OnDisable()
-    {
-        // Unsubscribe from the application focus event
-        Application.focusChanged -= OnApplicationFocus;
-
-        if (previewObject != null)
-        {
-            DestroyPreviewObject();
-        }
-    }
-
-    IEnumerator WaitForRoundControl() {
-        while (roundControl == null) {
-
-            roundControl = GameObject.Find("RoundControl(Clone)").GetComponent<RoundControl>();
-
-            yield return null; // Wait for a frame before checking again
-        }
-    }
-
-    private void Update()
-    {
+    private void Update() {
         if (!isGameFocused) return; // Only process input if the game is focused
 
-        if (!isLocalPlayer) return;
+        if (isLocalPlayer){
+            // Process movement input based on the mouse position
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
 
-        // Process movement input based on the mouse position
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
+            // Limit the cursor's movement within the bounds of the boundingObject
+            Vector3 clampedPosition = LimitPositionWithinBounds(newPosition);
 
-        // Limit the cursor's movement within the bounds of the boundingObject
-        Vector3 clampedPosition = LimitPositionWithinBounds(newPosition);
+            // Update the cursor's position
+            transform.position = clampedPosition;
+            
+            // Check for scroll wheel input to rotate the trap preview
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
-        // Update the cursor's position
-        transform.position = clampedPosition;
-        
-        // Check for scroll wheel input to rotate the trap preview
-        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+            if (scrollInput != 0f)
+            {
+                RotatePreviewObject(scrollInput);
+            }
 
-        if (scrollInput != 0f)
-        {
-            RotatePreviewObject(scrollInput);
+            CmdCreateAllPreviews();
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                if(playerScript.isPlayer && allPlayerBlocksPlaced != true){
+                    Vector3 cursorPosition = transform.position;
+                    Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
+                    Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
+                    CmdPlaceBlock(tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
+                }else if(playerScript.isKing && allKingBlocksPlaced != true){
+                    Vector3 cursorPosition = transform.position;
+                    Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
+                    Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
+                    CmdPlaceBlock(tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
+                }
+            }
         }
-
-        CmdMoveCursor(transform.position);
-
-        CmdCreateAllPreviews();
-
-        // Check for mouse click to place the trap
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector3 cursorPosition = transform.position;
-            Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
-            Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
-            CmdPlaceBlock(tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
-        }
-        
     }
 
-    private void OnApplicationFocus(bool hasFocus)
+    [Command]
+    private void CmdPlaceBlock(Vector3 tilePosition, Quaternion rotation)
     {
-        isGameFocused = hasFocus;
-
-        // If the game lost focus, reset the movement input
-        if (!isGameFocused)
+        // Check if the placement position is valid (e.g., within certain bounds or not occupied)
+        Vector3Int cellPosition = kingTilemap.WorldToCell(tilePosition);
+        if (!IsPlacementValid(cellPosition))
         {
-            ResetMovementInput();
+            Debug.Log("Invalid placement position!");
+            return;
+        }
+
+                // Place the block on the server
+        GameObject placedBlock = null;
+
+        if(playerScript.isPlayer){
+
+            if(selectedBlockIndex == 9){
+
+                if (selectedTile == 0 && !blockPlaced)
+                {
+                    blockPlaced = true;
+                    placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
+                    
+                }else if(selectedTile == 1)
+                {
+                    placedBlock = Instantiate(teleporterReciever, tilePosition, rotation);
+                    roundControl.playersPlacedBlocks += 1;
+                    allPlayerBlocksPlaced = true;
+                }   
+            }else{
+                if (selectedTile == 0 && !blockPlaced)
+                {
+                    blockPlaced = true;
+                    placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
+                    roundControl.playersPlacedBlocks += 1;
+                    allPlayerBlocksPlaced = true;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            
+        }
+
+        if(playerScript.isKing){
+            if (selectedTile == 0 && !autoTrapPlaced)
+            {
+                autoTrapPlaced = true;
+                placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, rotation);
+                roundControl.playersPlacedBlocks +=1;
+            }
+            else if (selectedTile == 1 && !manualTrapPlaced)
+            {
+                manualTrapPlaced = true;
+                placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, rotation);
+                roundControl.playersPlacedBlocks +=1;
+            }
+            else if (selectedTile == 2 && !manualTrapPlaced2)
+            {
+                manualTrapPlaced2 = true;
+                placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, rotation);
+                roundControl.playersPlacedBlocks +=1;
+                allKingBlocksPlaced = true;
+            }
+            else
+            {
+                return;
+            }
+        }
+        
+        //Spawn the placed block on the server so that it's visible to all clients
+        NetworkServer.Spawn(placedBlock);
+
+        placedBlock.layer = kingLayerValue;
+
+        // Change the layer of the placed block's children to the "King" layer as well
+        foreach (Transform child in placedBlock.transform)
+        {
+            child.gameObject.layer = kingLayerValue;
+        }
+
+        RpcChangeBlockLayer(placedBlock, kingLayerValue);
+
+        if(selectedBlockIndex == 9 && selectedTile ==0 && playerScript.isPlayer){
+            Teleporter teleporter = placedBlock.GetComponent<Teleporter>();
+            if(teleporter != null){
+                teleporter.teleporterNumber = GenerateUniqueTeleporterNumber();
+                teleporterNumber = teleporter.teleporterNumber;
+
+                // Debug statement to mark progress
+                Debug.Log("Teleporter placed. Teleporter Number: " + teleporterNumber);
+
+                // Debug statement to print the name of the teleporter object
+                Debug.Log("Teleporter Object Name: " + placedBlock.name);
+
+            }else{
+                Debug.Log("Null Reference");
+            }
+        }else if (selectedBlockIndex == 9 && selectedTile == 1 && playerScript.isPlayer){
+            // Set the teleporter number on the receiver
+            TeleporterReceiver receiver = placedBlock.GetComponent<TeleporterReceiver>();
+            if (receiver != null)
+            {
+                receiver.receiverNumber = teleporterNumber;
+
+                // Debug statement to mark progress
+                Debug.Log("Teleporter Receiver placed. Receiver Number: " + receiver.receiverNumber);
+
+            }else{
+                Debug.Log("Null Reference"); 
+            }
+        }
+
+        // Move to the next selected object
+        selectedTile = (selectedTile + 1) % 4;
+    }
+
+
+    [ClientRpc]
+    private void RpcChangeBlockLayer(GameObject blockObject, int newLayer)
+    {
+        // Change the layer of the placed block and its children on the client side
+        blockObject.layer = newLayer;
+        foreach (Transform child in blockObject.transform)
+        {
+            child.gameObject.layer = newLayer;
         }
     }
 
@@ -273,195 +340,6 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     }
 
-    [Command]
-    private void CmdMoveCursor(Vector3 position)
-    {
-        // Update the cursor position on the server
-        transform.position = position;
-    }
-
-    [Command]
-    private void CmdPlaceBlock(Vector3 tilePosition, Quaternion rotation)
-    {
-        // Check if the placement position is valid (e.g., within certain bounds or not occupied)
-        Vector3Int cellPosition = kingTilemap.WorldToCell(tilePosition);
-        if (!IsPlacementValid(cellPosition))
-        {
-            Debug.Log("Invalid placement position!");
-            return;
-        }
-
-        // Place the block on the server
-        GameObject placedBlock = null;
-
-        if(playerScript.isPlayer){
-
-            if(selectedBlockIndex == 9){
-
-                if (selectedTile == 0 && !blockPlaced)
-                {
-                    blockPlaced = true;
-                    placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
-                    
-                }else if(selectedTile == 1)
-                {
-                    placedBlock = Instantiate(teleporterReciever, tilePosition, rotation);
-                    roundControl.playersPlacedBlocks += 1;
-                }   
-            }else{
-                if (selectedTile == 0 && !blockPlaced)
-                {
-                    blockPlaced = true;
-                    placedBlock = Instantiate(blockTileObjects[selectedBlockIndex], tilePosition, rotation);
-                    roundControl.playersPlacedBlocks += 1;
-                    selectedTile = 0;
-                }
-                else
-                {
-                    return;
-                }
-            }
-            
-        }
-
-        if(playerScript.isKing){
-            if (selectedTile == 0 && !autoTrapPlaced)
-            {
-                autoTrapPlaced = true;
-                placedBlock = Instantiate(autoTrapTileObjects[selectedAutoTrapIndex], tilePosition, rotation);
-                roundControl.playersPlacedBlocks +=1;
-            }
-            else if (selectedTile == 1 && !manualTrapPlaced)
-            {
-                manualTrapPlaced = true;
-                placedBlock = Instantiate(manualTrapTileObjects[selectedManualTrapIndex], tilePosition, rotation);
-                roundControl.playersPlacedBlocks +=1;
-            }
-            else if (selectedTile == 2 && !manualTrapPlaced2)
-            {
-                manualTrapPlaced2 = true;
-                placedBlock = Instantiate(manualTrap2TileObjects[selectedManualTrap2Index], tilePosition, rotation);
-                roundControl.playersPlacedBlocks +=1;
-            }
-            else
-            {
-                return;
-            }
-        }
-
-
-        // Add NetworkIdentity component to the placed block object
-        var networkIdentity = placedBlock.GetComponent<NetworkIdentity>();
-        if (networkIdentity == null)
-        {
-            networkIdentity = placedBlock.AddComponent<NetworkIdentity>();
-        }
-        
-        //Spawn the placed block on the server so that it's visible to all clients
-        NetworkServer.Spawn(placedBlock);
-
-        placedBlock.layer = kingLayerValue;
-
-        // Change the layer of the placed block's children to the "King" layer as well
-        foreach (Transform child in placedBlock.transform)
-        {
-            child.gameObject.layer = kingLayerValue;
-        }
-
-        RpcChangeBlockLayer(placedBlock, kingLayerValue);
-
-        if(selectedBlockIndex == 9 && selectedTile ==0){
-            Teleporter teleporter = placedBlock.GetComponent<Teleporter>();
-            if(teleporter != null){
-                teleporter.teleporterNumber = Random.Range(1, 100);
-                teleporterNumber = teleporter.teleporterNumber;
-
-                // Debug statement to mark progress
-                Debug.Log("Teleporter placed. Teleporter Number: " + teleporterNumber);
-
-                // Debug statement to print the name of the teleporter object
-                Debug.Log("Teleporter Object Name: " + placedBlock.name);
-
-            }else{
-                Debug.Log("Null Reference");
-            }
-        }else if (selectedBlockIndex == 9 && selectedTile == 1){
-            // Set the teleporter number on the receiver
-            TeleporterReceiver receiver = placedBlock.GetComponent<TeleporterReceiver>();
-            if (receiver != null)
-            {
-                receiver.receiverNumber = teleporterNumber;
-
-                // Debug statement to mark progress
-                Debug.Log("Teleporter Receiver placed. Receiver Number: " + receiver.receiverNumber);
-
-            }else{
-                Debug.Log("Null Reference"); 
-            }
-        }
-
-        // Move to the next selected object
-        selectedTile = (selectedTile + 1) % 4;
-        RpcChangeSelectedTile(selectedTile);
-    }
-
-    [ClientRpc]
-    private void RpcChangeSelectedTile(int newTile)
-    {
-        // Update the selectedTile on all clients
-        selectedTile = newTile;
-    }
-
-    [ClientRpc]
-    private void RpcChangeBlockLayer(GameObject blockObject, int newLayer)
-    {
-        // Change the layer of the placed block and its children on the client side
-        blockObject.layer = newLayer;
-        foreach (Transform child in blockObject.transform)
-        {
-            child.gameObject.layer = newLayer;
-        }
-    }
-
-    [Command]
-    private void CmdInitializeSelectedIndexes()
-    {
-        // Initialize the selected indexes on the server for this player
-        // selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
-        selectedBlockIndex = 9;
-    }
-
-    [Command]
-    private void CmdSyncSelectedIndexes(int blockIndex)
-    {
-        // Sync the selected indexes with the server
-        selectedBlockIndex = blockIndex;
-    }
-
-    [Command]
-    private void CmdInitializeSelectedKingIndexes()
-    {
-        // Initialize the selected indexes on the server for this player
-        selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
-        selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
-        selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
-    }
-
-    [Command]
-    private void CmdSyncKingSelectedIndexes(int autoTrapIndex, int manualTrapIndex, int manualTrap2Index)
-    {
-        // Sync the selected indexes with the server
-        selectedAutoTrapIndex = autoTrapIndex;
-        selectedManualTrapIndex = manualTrapIndex;
-        selectedManualTrap2Index = manualTrap2Index;
-    }
-
-    private void ResetMovementInput()
-    {
-        // Reset the movement input
-        movementInput = Vector2.zero;
-    }
-
     private void CreatePreviewObject(GameObject[] tileObjects, int selectedIndex)
     {
         if (previewObject != null)
@@ -474,15 +352,25 @@ public class PlayerBlockPlacement : NetworkBehaviour
         // Set the initial opacity
         OnPreviewOpacityChanged(0f, previewOpacity);
 
-        // Add NetworkIdentity component to the preview object
-        var networkIdentity = previewObject.GetComponent<NetworkIdentity>();
-        if (networkIdentity == null)
-        {
-            networkIdentity = previewObject.AddComponent<NetworkIdentity>();
-        }
-
         // Network-instantiate the preview object
         NetworkServer.Spawn(previewObject);
+    }
+
+    
+    [ClientRpc]
+    private void RpcUpdatePreviewOpacity(GameObject previewObject, float newOpacity)
+    {
+        if (previewObject != null)
+        {
+            // Update the opacity of all children's SpriteRenderers in the preview object on the client-side
+            SpriteRenderer[] childSpriteRenderers = previewObject.GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer spriteRenderer in childSpriteRenderers)
+            {
+                Color newColor = spriteRenderer.color;
+                newColor.a = newOpacity;
+                spriteRenderer.color = newColor;
+            }
+        }
     }
 
     private void CreateReceiverPreviewObject(GameObject receiverObject)
@@ -495,29 +383,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
         // Set the initial opacity
         OnPreviewOpacityChanged(0f, previewOpacity);
 
-        // Add NetworkIdentity component to the preview object
-        var networkIdentity = previewObject.GetComponent<NetworkIdentity>();
-        if (networkIdentity == null)
-        {
-            networkIdentity = previewObject.AddComponent<NetworkIdentity>();
-        }
-
         // Network-instantiate the preview object
         NetworkServer.Spawn(previewObject);
-    }
-
-    private void DestroyPreviewObject()
-    {
-        if (previewObject != null)
-        {
-            Destroy(previewObject);
-
-            // Unspawn the preview object on the server
-            NetworkServer.UnSpawn(previewObject);
-
-            // Set previewObject to null
-            previewObject = null;
-        }
     }
 
     private Vector3 LimitPositionWithinBounds(Vector3 position)
@@ -574,6 +441,91 @@ public class PlayerBlockPlacement : NetworkBehaviour
         return true;
     }
 
+    private void DestroyPreviewObject()
+    {
+        if (previewObject != null)
+        {
+            Destroy(previewObject);
+
+            // Unspawn the preview object on the server
+            NetworkServer.UnSpawn(previewObject);
+
+            // Set previewObject to null
+            previewObject = null;
+        }
+    }
+
+    // Add this method to your script
+    private int GenerateUniqueTeleporterNumber()
+    {
+        // Get all existing teleporters in the scene
+        Teleporter[] teleporters = GameObject.FindObjectsOfType<Teleporter>();
+
+        // Generate a new teleporter number until a unique one is found
+        int newTeleporterNumber;
+        do
+        {
+            newTeleporterNumber = Random.Range(1, 1000); // Adjust the range as needed
+            // Debug statement to check if the generated number is not unique
+            if (teleporters.Any(teleporter => teleporter.teleporterNumber == newTeleporterNumber))
+            {
+                Debug.Log("Generated teleporter number is not unique: " + newTeleporterNumber);
+            }
+
+        } while (teleporters.Any(teleporter => teleporter.teleporterNumber == newTeleporterNumber));
+
+        return newTeleporterNumber;
+    }
+
+    private IEnumerator InitializeSelectedIndexes()
+    {
+        // Wait for synchronization to occur
+        yield return new WaitForSeconds(1f); // Adjust the delay as needed
+
+        do
+        {
+            selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+        } while (selectedAutoTrapIndex == previousAutoTrapIndex);
+
+        Debug.Log("After selection: " + selectedAutoTrapIndex + ", " + selectedManualTrapIndex + ", " + selectedManualTrap2Index);
+
+        do
+        {
+            selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+        } while (selectedManualTrapIndex == previousManualTrapIndex);
+
+        do
+        {
+            selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+        } while (selectedManualTrap2Index == previousManualTrap2Index);
+
+        previousAutoTrapIndex = selectedAutoTrapIndex;
+        previousManualTrapIndex = selectedManualTrapIndex;
+        previousManualTrap2Index = selectedManualTrap2Index;
+
+        do
+        {
+            selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+        } while (selectedBlockIndex == previousBlockIndex);
+
+        previousBlockIndex = selectedBlockIndex;
+    }
+
+    [Command]
+    private void CmdInitializeSelectedIndexes()
+    {
+        selectedBlockIndex = -2;
+    }
+
+    [Command]
+    private void CmdInitializeSelectedKingIndexes()
+    {
+        // Initialize the selected indexes on the server for this player
+        selectedAutoTrapIndex = -2;
+        selectedManualTrapIndex = -2;
+        selectedManualTrap2Index = -2;
+    }
+
     private void OnSelectedTileChanged(int oldValue, int newValue)
     {
         // When the selectedTile changes on the server, update it on the clients
@@ -618,27 +570,48 @@ public class PlayerBlockPlacement : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    private void RpcUpdatePreviewOpacity(GameObject previewObject, float newOpacity)
-    {
-        if (previewObject != null)
-        {
-            // Update the opacity of all children's SpriteRenderers in the preview object on the client-side
-            SpriteRenderer[] childSpriteRenderers = previewObject.GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer spriteRenderer in childSpriteRenderers)
-            {
-                Color newColor = spriteRenderer.color;
-                newColor.a = newOpacity;
-                spriteRenderer.color = newColor;
-            }
-        }
-    }
-
     private void OnRotationAngleChanged(float oldValue, float newValue)
     {
         // Apply the synchronized rotation angle to the preview object on the client
         rotationAngle = newValue;
         if (previewObject != null)
             previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
+    }
+
+    IEnumerator WaitForRoundControl() {
+        while (roundControl == null) {
+
+            roundControl = GameObject.Find("RoundControl(Clone)").GetComponent<RoundControl>();
+
+            yield return null; // Wait for a frame before checking again
+        }
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from the application focus event
+        Application.focusChanged -= OnApplicationFocus;
+
+        if (previewObject != null)
+        {
+            DestroyPreviewObject();
+        }
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        isGameFocused = hasFocus;
+
+        // If the game lost focus, reset the movement input
+        if (!isGameFocused)
+        {
+            ResetMovementInput();
+        }
+    }
+
+    private void ResetMovementInput()
+    {
+        // Reset the movement input
+        movementInput = Vector2.zero;
     }
 }

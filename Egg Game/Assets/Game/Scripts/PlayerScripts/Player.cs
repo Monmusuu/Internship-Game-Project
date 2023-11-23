@@ -393,7 +393,7 @@ public class Player : NetworkBehaviour
         {
             rigid.velocity = Vector2.zero;
             isDead = false;
-            animator.SetTrigger("Respawn");
+            //animator.SetTrigger("Respawn");
             currentHealth = 6;
             isAlreadyDead = false;
 

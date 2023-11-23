@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad3ca064a449c3448b1aa1c96c6e2a80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 1
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0
   kingTilemap: {fileID: 0}
@@ -334,7 +334,7 @@ MonoBehaviour:
   - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
   - {fileID: 4472608398988364885, guid: 672b4c3206b0da04a986b39a7d2fe025, type: 3}
   teleporterReciever: {fileID: 8981147863118277878, guid: fdbda3ed8ea6ba9418735d36a87b39ac, type: 3}
-  tileGridUI: {fileID: 0}
+  boundingObject: {fileID: 0}
   roundControl: {fileID: 0}
   playerScript: {fileID: 0}
   selectedTile: 0
@@ -342,7 +342,16 @@ MonoBehaviour:
   selectedAutoTrapIndex: 0
   selectedManualTrapIndex: 0
   selectedManualTrap2Index: 0
-  boundingObject: {fileID: 0}
+  previousBlockIndex: -1
+  previousAutoTrapIndex: -1
+  previousManualTrapIndex: -1
+  previousManualTrap2Index: -1
+  blockPlaced: 0
+  allPlayerBlocksPlaced: 0
+  autoTrapPlaced: 0
+  manualTrapPlaced: 0
+  manualTrapPlaced2: 0
+  allKingBlocksPlaced: 0
 --- !u!66 &91612470949867767
 CompositeCollider2D:
   m_ObjectHideFlags: 0
