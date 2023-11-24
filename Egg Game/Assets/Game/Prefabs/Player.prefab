@@ -335,6 +335,8 @@ MonoBehaviour:
   - {fileID: 4472608398988364885, guid: 672b4c3206b0da04a986b39a7d2fe025, type: 3}
   teleporterReciever: {fileID: 8981147863118277878, guid: fdbda3ed8ea6ba9418735d36a87b39ac, type: 3}
   boundingObject: {fileID: 0}
+  trapHolder: {fileID: 0}
+  blockHolder: {fileID: 0}
   roundControl: {fileID: 0}
   playerScript: {fileID: 0}
   selectedTile: 0
@@ -352,6 +354,7 @@ MonoBehaviour:
   manualTrapPlaced: 0
   manualTrapPlaced2: 0
   allKingBlocksPlaced: 0
+  initializeSelectedIndexes: 0
 --- !u!66 &91612470949867767
 CompositeCollider2D:
   m_ObjectHideFlags: 0

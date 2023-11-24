@@ -20,9 +20,6 @@ public class PlayerSaveData : NetworkBehaviour
     public Sprite[] allWeapons;
     public RuntimeAnimatorController[] allAnimators; 
 
-    [SyncVar]
-    public int playerNumber;
-
     [SyncVar(hook = nameof(OnPlayerReadyNumberChanged))]
     public int playerReadyNumber = 0;
 

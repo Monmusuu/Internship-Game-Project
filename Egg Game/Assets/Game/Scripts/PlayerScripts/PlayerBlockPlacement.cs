@@ -19,6 +19,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
     public GameObject teleporterReciever;
     public GameObject boundingObject;
     private GameObject previewObject;
+    public GameObject trapHolder;
+    public GameObject blockHolder;
 
     [SerializeField] private RoundControl roundControl;
 
@@ -74,6 +76,12 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private bool allKingBlocksPlaced = false;
     private bool isGameFocused = true;
 
+    [SerializeField][SyncVar]
+    private bool initializeSelectedIndexes = false;
+
+    // Place the block on the server
+    GameObject placedBlock = null;
+
     private void Awake()
     {
         cursorCollider = GetComponent<Collider2D>();
@@ -90,12 +98,16 @@ public class PlayerBlockPlacement : NetworkBehaviour
         Application.focusChanged += OnApplicationFocus;
 
         playerScript = gameObject.transform.parent.GetComponent<Player>();
+        trapHolder = GameObject.Find("TrapHolder");
+        blockHolder = GameObject.Find("BlockHolder");
     }
 
     private void OnEnable()
     {
         Debug.Log("Script has been enabled.");
 
+        placedBlock = null;
+        
         if(isOwned){
             CmdInitializeSelectedIndexes();
             CmdInitializeSelectedKingIndexes();
@@ -119,7 +131,16 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private void Update() {
         if (!isGameFocused) return; // Only process input if the game is focused
 
+        if(!initializeSelectedIndexes) return;
+        
+        if(selectedTile == 3 && allKingBlocksPlaced) return;
+
+        if(selectedBlockIndex != 9 && selectedTile == 1 && allPlayerBlocksPlaced) return;
+
+        if(selectedBlockIndex == 9 && selectedTile == 2 && allPlayerBlocksPlaced) return;
+
         if (isLocalPlayer){
+
             // Process movement input based on the mouse position
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
@@ -130,24 +151,27 @@ public class PlayerBlockPlacement : NetworkBehaviour
             // Update the cursor's position
             transform.position = clampedPosition;
             
+            CmdCreateAllPreviews();
+     
             // Check for scroll wheel input to rotate the trap preview
             float scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
             if (scrollInput != 0f)
             {
-                RotatePreviewObject(scrollInput);
+                CheckRotationInput();
             }
-
-            CmdCreateAllPreviews();
 
             if (Input.GetMouseButtonDown(0))
             {
-                if(playerScript.isPlayer && allPlayerBlocksPlaced != true){
+
+                if(playerScript.isPlayer){
+                    Debug.Log("Placing Block");
                     Vector3 cursorPosition = transform.position;
                     Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
                     Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
                     CmdPlaceBlock(tilePosition, Quaternion.Euler(0f, 0f, rotationAngle));
-                }else if(playerScript.isKing && allKingBlocksPlaced != true){
+                }else if(playerScript.isKing){
+                    Debug.Log("Placing Trap");
                     Vector3 cursorPosition = transform.position;
                     Vector3Int cellPosition = kingTilemap.WorldToCell(cursorPosition);
                     Vector3 tilePosition = kingTilemap.CellToWorld(cellPosition) + kingTilemap.cellSize / 2f;
@@ -167,9 +191,6 @@ public class PlayerBlockPlacement : NetworkBehaviour
             Debug.Log("Invalid placement position!");
             return;
         }
-
-                // Place the block on the server
-        GameObject placedBlock = null;
 
         if(playerScript.isPlayer){
 
@@ -241,6 +262,9 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
         RpcChangeBlockLayer(placedBlock, kingLayerValue);
 
+        // Set the parent based on the selected tile on all clients
+        RpcSetParent(placedBlock, playerScript.isPlayer);
+
         if(selectedBlockIndex == 9 && selectedTile ==0 && playerScript.isPlayer){
             Teleporter teleporter = placedBlock.GetComponent<Teleporter>();
             if(teleporter != null){
@@ -274,7 +298,20 @@ public class PlayerBlockPlacement : NetworkBehaviour
         // Move to the next selected object
         selectedTile = (selectedTile + 1) % 4;
     }
+    
 
+    [ClientRpc]
+    void RpcSetParent(GameObject block, bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            block.transform.SetParent(blockHolder.transform);
+        }
+        else
+        {
+            block.transform.SetParent(trapHolder.transform);
+        }
+    }
 
     [ClientRpc]
     private void RpcChangeBlockLayer(GameObject blockObject, int newLayer)
@@ -406,15 +443,38 @@ public class PlayerBlockPlacement : NetworkBehaviour
         return new Vector3(clampedX, clampedY, clampedZ);
     }
 
-    private void RotatePreviewObject(float scrollInput)
+    private void CheckRotationInput()
     {
-        if (selectedTile != 3)
+        float rotationInput = Input.GetAxis("Mouse ScrollWheel");
+
+        if (rotationInput != 0f)
         {
-            rotationAngle += scrollInput * 90f;
+            // Call a method to handle rotation on the client side
+            CmdRotatePreviewObject(rotationInput);
+        }
+    }
+
+    [Command]
+    private void CmdRotatePreviewObject(float rotationInput)
+    {
+        // Call a method to handle rotation on the server side
+        RpcRotatePreviewObject(rotationInput);
+    }
+
+    [ClientRpc]
+    private void RpcRotatePreviewObject(float rotationInput)
+    {
+        // Handle rotation on all clients
+        if (previewObject != null)
+        {
+            // Update the rotation angle based on input
+            rotationAngle += rotationInput * 90f;
             rotationAngle %= 360f;
 
-            if (previewObject != null)
-                previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
+            // Set the rotation of the preview object
+            previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
+
+            Debug.Log("Preview Object Rotated to: " + rotationAngle);
         }
     }
 
@@ -480,7 +540,7 @@ public class PlayerBlockPlacement : NetworkBehaviour
     private IEnumerator InitializeSelectedIndexes()
     {
         // Wait for synchronization to occur
-        yield return new WaitForSeconds(1f); // Adjust the delay as needed
+        yield return new WaitForSeconds(0.5f); // Adjust the delay as needed
 
         do
         {
@@ -509,6 +569,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
         } while (selectedBlockIndex == previousBlockIndex);
 
         previousBlockIndex = selectedBlockIndex;
+
+        initializeSelectedIndexes = true;
     }
 
     [Command]
@@ -578,6 +640,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
             previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
     }
 
+    
+
     IEnumerator WaitForRoundControl() {
         while (roundControl == null) {
 
@@ -596,6 +660,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
         {
             DestroyPreviewObject();
         }
+
+        initializeSelectedIndexes = false;
     }
 
     private void OnApplicationFocus(bool hasFocus)
