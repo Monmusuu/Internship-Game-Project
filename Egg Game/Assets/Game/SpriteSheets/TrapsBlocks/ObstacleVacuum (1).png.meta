@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6597291e98fe04642ac6593a67cbfa1a
+guid: df0f791597a65884288f58d1fd58e8aa
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -42,7 +42,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -103,7 +103,112 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: ObstacleVacuum (1)_1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 148
+        width: 273
+        height: 264
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6c0d7cdd43b06742a4f512568a51d4b
+      internalID: -1848767275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleVacuum (1)_2
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 44
+        width: 35
+        height: 91
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ecc91dd3b9ec4142b8b3f4110748218
+      internalID: 30361780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleVacuum (1)_3
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 17
+        width: 247
+        height: 115
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0a704eb84056ed4283dcf3f2af1d408
+      internalID: 536294754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleVacuum (1)_4
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 24
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 359db23c0db827d4cabbcb352083e6f4
+      internalID: -1953332823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ObstacleVacuum (1)_5
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 47
+        width: 94
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fe8c39431643284983f52b914e74135
+      internalID: 253158849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -114,7 +219,13 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ObstacleVacuum (1)_0: 1534789416
+      ObstacleVacuum (1)_1: -1848767275
+      ObstacleVacuum (1)_2: 30361780
+      ObstacleVacuum (1)_3: 536294754
+      ObstacleVacuum (1)_4: -1953332823
+      ObstacleVacuum (1)_5: 253158849
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

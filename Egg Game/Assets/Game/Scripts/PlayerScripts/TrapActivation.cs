@@ -9,16 +9,20 @@ public class TrapActivation : NetworkBehaviour
     public GameObject customCursor; // Assign your custom cursor GameObject in the inspector
     public Tilemap kingTilemap;
     public GameObject boundingObject;
+    private bool isGameFocused = true;
 
     private void Start()
     {
         boundingObject = GameObject.Find("MapArea");
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
+        Application.focusChanged += OnApplicationFocus;
     }
 
     void Update()
     {
         if (!isOwned) return;
+        if (!isGameFocused) return; // Only process input if the game is focused
+        if (!isLocalPlayer) return;
         
         // Process movement input based on the mouse position
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -30,19 +34,10 @@ public class TrapActivation : NetworkBehaviour
         // Update the cursor's position
         transform.position = clampedPosition;
 
-        CmdMoveCursor(transform.position);
-
         if (Input.GetMouseButtonDown(0))
         {
             CmdHandleClick(newPosition);
         }
-    }
-
-    [Command]
-    private void CmdMoveCursor(Vector3 position)
-    {
-        // Update the cursor position on the server
-        transform.position = position;
     }
 
     private Vector3 LimitPositionWithinBounds(Vector3 position)
@@ -75,11 +70,33 @@ public class TrapActivation : NetworkBehaviour
 
         if (hit.collider != null)
         {
-            HandleClickOnObject(hit.collider.gameObject);
+            // Check if the clicked object has a Vacuum component
+            Vacuum vacuum = hit.collider.GetComponent<Vacuum>();
+            if (vacuum != null)
+            {
+                NetworkIdentity vacuumNetId = vacuum.GetComponentInParent<NetworkIdentity>();
+
+                if (vacuumNetId != null)
+                {
+                    vacuumNetId.AssignClientAuthority(connectionToClient);
+                }
+                else
+                {
+                    Debug.LogError("NetworkIdentity not found on the parent of the Vacuum component.");
+                }
+
+                // Call the ActivateVacuum method on the client that owns the Vacuum
+                vacuum.TargetActivateVacuum(connectionToClient);
+            }
+            else
+            {
+                // Handle other objects as before
+                HandleClickOnObject(hit.collider.gameObject);
+            }
         }
     }
 
-     [Client]
+    [Client]
     private void HandleClickOnObject(GameObject clickedObject)
     {
         GuillotineScript guillotineScript = clickedObject.GetComponent<GuillotineScript>();
@@ -120,5 +137,16 @@ public class TrapActivation : NetworkBehaviour
             Debug.Log("Activated FlameThrower");
             flameThrower.ActivateFunction();
         }
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from the application focus event
+        Application.focusChanged -= OnApplicationFocus;
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        isGameFocused = hasFocus;
     }
 }
