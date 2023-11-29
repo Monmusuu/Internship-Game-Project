@@ -824,7 +824,7 @@ GameObject:
   - component: {fileID: 6399230776268387800}
   m_Layer: 8
   m_Name: Player
-  m_TagString: Player1
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -973,6 +973,7 @@ MonoBehaviour:
   kingSpawnLocation: {fileID: 0}
   groundCheckCollider: {fileID: 3219085189834981985}
   groundCheckCollider2: {fileID: 3219085189834981985}
+  playerID: 0
   PlayerNumber: 0
   hatSpriteIndex: 0
   hatSpriteVariations:

@@ -28,10 +28,6 @@ public class PlayerSaveData : NetworkBehaviour
     public int[] playerWeaponSpriteNumbers;
     public int[] playerAnimatorNumbers;
 
-    public Sprite[] playerSpriteHats;
-    public Sprite[] playerSpriteBodies;
-    public Sprite[] playerSpriteWeapons;
-
     public GameObject[] players;
     public GameObject[] playerTexts;
     public GameObject[] playerCursors;
@@ -83,7 +79,7 @@ public class PlayerSaveData : NetworkBehaviour
                     if (characterSelection != null)
                     {
 
-                    if (characterSelection.isReady)
+                        if (characterSelection.isReady)
                         {
                             // Check if the arrays need resizing before accessing the indices
                             if (playerHatSpriteNumbers.Length <= i)

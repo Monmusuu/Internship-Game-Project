@@ -40,6 +40,8 @@ public class CharacterSelection : NetworkBehaviour
     
     public PlayerSaveData playerSaveData;
 
+    private const int MaxPlayers = 6;
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -50,6 +52,7 @@ public class CharacterSelection : NetworkBehaviour
 
     private void Start()
     {
+        AssignPlayerTag();
         StartCoroutine(WaitForPlayerSaveData());
         StartCoroutine(WaitForMapCanvas());
         canvas = GameObject.Find("Canvas").transform;
@@ -60,6 +63,25 @@ public class CharacterSelection : NetworkBehaviour
         hatRenderer = transform.GetChild(0).GetChild(3).GetComponent<SpriteRenderer>();
         bodyRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
         weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
+    }
+
+        void AssignPlayerTag()
+    {
+        for (int i = 1; i <= MaxPlayers; i++)
+        {
+            string playerTag = "Player" + i;
+
+            // Check if an object with this tag already exists
+            GameObject existingPlayer = GameObject.FindGameObjectWithTag(playerTag);
+
+            if (existingPlayer == null)
+            {
+                // No existing player with this tag, it's available
+                gameObject.tag = playerTag;
+                Debug.Log("Assigned tag: " + playerTag);
+                break;
+            }
+        }
     }
 
     private IEnumerator WaitForPlayerSaveData()

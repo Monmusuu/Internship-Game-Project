@@ -17,9 +17,9 @@ public class CustomNetworkManager : NetworkManager
     private int currentPlayerPrefabIndex = 0;
     public GameObject VotingSystem;
     public GameObject RoundControl;
+    public GameObject PlayerPoint;
     private PlayerSaveData playerSaveData;
     public GameObject playerSaveDataPrefab;
-
     private Dictionary<NetworkConnectionToClient, Transform> playerSpawnPositions = new Dictionary<NetworkConnectionToClient, Transform>();
 
     [SerializeField]
@@ -33,7 +33,6 @@ public class CustomNetworkManager : NetworkManager
         base.OnStartServer();
     }
     
-
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         string sceneName = SceneManager.GetActiveScene().name;
@@ -55,8 +54,8 @@ public class CustomNetworkManager : NetworkManager
                     // Instantiate the player at the chosen spawn position
                     GameObject player = Instantiate(playerPrefab, startPosition.position, startPosition.rotation);
 
-                    int playerId = conn.connectionId + 1;
-                    player.tag = "Player" + playerId;
+                    // int playerId = conn.connectionId + 1;
+                    // player.tag = "Player" + playerId;
 
                     NetworkServer.AddPlayerForConnection(conn, player);
 
@@ -67,6 +66,9 @@ public class CustomNetworkManager : NetworkManager
                     playerSaveData.playerCount++;
 
                     Debug.Log("Players: " + playerSaveData.playerCount);
+
+                    // Spawn a PlayerPoint for the newly added player
+                    SpawnPlayerPointForPlayer(conn);
 
                     // Initialize player-specific data here
 
@@ -141,6 +143,8 @@ public class CustomNetworkManager : NetworkManager
                 Debug.LogError("RoundControlObject is null");
             }
 
+            //SpawnPlayerPointsForAllPlayers();
+
             SceneManager.sceneLoaded -= OnSceneLoaded; // Unsubscribe from the event
         }
     }
@@ -196,6 +200,7 @@ public class CustomNetworkManager : NetworkManager
         {
             Debug.LogWarning("ClientChangeScene: Client is not connected.");
         }
+        
     }
 
     // Helper method to find an available spawn position
@@ -227,5 +232,34 @@ public class CustomNetworkManager : NetworkManager
         var counterScript = playerSaveDataObj.GetComponent<PlayerSaveData>();
 
         return counterScript;
+    }
+
+    private void SpawnPlayerPointsForAllPlayers()
+    {
+        // Get all active network connections
+        ICollection<NetworkConnectionToClient> connections = NetworkServer.connections.Values;
+
+        // Iterate over each connection and spawn player point
+        foreach (NetworkConnectionToClient connection in connections)
+        {
+            SpawnPlayerPointForPlayer(connection);
+        }
+    }
+
+
+    private void SpawnPlayerPointForPlayer(NetworkConnectionToClient conn)
+    {
+        Debug.Log("Instantiating PlayerPoint for Player: " + conn.connectionId);
+        GameObject playerPointObject = Instantiate(PlayerPoint);
+        
+        if (playerPointObject != null)
+        {
+            NetworkServer.Spawn(playerPointObject);
+            Debug.Log("PlayerPoint spawned for Player: " + conn.connectionId);
+        }
+        else
+        {
+            Debug.LogError("PlayerPointObject is null");
+        }
     }
 }

@@ -58,6 +58,8 @@ public class Player : NetworkBehaviour
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
 
+    private const int MaxPlayers = 6;
+
     public int PlayerNumber; // This will store the player number extracted from the tag
 
     private bool isRunningLocal = false; // Local variable to handle isRunning
@@ -92,18 +94,13 @@ public class Player : NetworkBehaviour
     }
 
     [SerializeField][SyncVar(hook = nameof(OnBodySpriteChange))]
-    private int bodySpriteIndex = 0;
+    public int bodySpriteIndex = 0;
 
     [SerializeField]
     private Sprite[] bodySpriteVariations;
 
     [SerializeField]
     private SpriteRenderer bodySpriteRenderer;
-
-    private bool gameManagerFound = false;
-
-    private bool roundControlFound = false;
-
     public void bodyChangeSprite(int newIndex)
     {
         //if (isServer)
@@ -195,6 +192,25 @@ public class Player : NetworkBehaviour
         }
     }
 
+    void AssignPlayerTag()
+    {
+        for (int i = 1; i <= MaxPlayers; i++)
+        {
+            string playerTag = "Player" + i;
+
+            // Check if an object with this tag already exists
+            GameObject existingPlayer = GameObject.FindGameObjectWithTag(playerTag);
+
+            if (existingPlayer == null)
+            {
+                // No existing player with this tag, it's available
+                gameObject.tag = playerTag;
+                Debug.Log("Assigned tag: " + playerTag);
+                break;
+            }
+        }
+    }
+
     void Start()
     {
         // Check if the current player is the local player
@@ -203,6 +219,7 @@ public class Player : NetworkBehaviour
             // Add an AudioListener component to the local player
             AddAudioListener();
         }
+        AssignPlayerTag();
 
         // Get the tag of the GameObject this script is attached to
         string objectTag = gameObject.tag;
@@ -219,6 +236,9 @@ public class Player : NetworkBehaviour
             // If the tag doesn't match the expected format, set PlayerNumber to a default value (e.g., -1)
             PlayerNumber = -1;
         }
+
+        StartCoroutine(WaitForGameManager());
+        StartCoroutine(WaitForRoundControl());
 
         // Now you can use PlayerNumber as the number extracted from the tag
         Debug.Log("PlayerNumber: " + PlayerNumber);
@@ -239,13 +259,11 @@ public class Player : NetworkBehaviour
     }
 
     IEnumerator WaitForGameManager() {
-        while (true) {
+        while (playerSaveData == null) {
             GameObject gameManager = GameObject.Find("GameManager(Clone)");
 
             if (gameManager != null) {
                 playerSaveData = gameManager.GetComponent<PlayerSaveData>();
-                //Debug.Log("GameManager found!");
-                gameManagerFound = true;
 
                 ApplyPlayerSprites(gameObject, PlayerNumber-1);
 
@@ -257,13 +275,11 @@ public class Player : NetworkBehaviour
     }
 
     IEnumerator WaitForRoundControl() {
-        while (true) {
+        while (roundControl == null) {
             GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
 
             if (roundControlObject != null) {
                 roundControl = roundControlObject.GetComponent<RoundControl>();
-                //Debug.Log("RoundControl found!");
-                roundControlFound = true;
 
                 if (isServer)
                 {
@@ -325,16 +341,6 @@ public class Player : NetworkBehaviour
 
     void Update()
     {
-        if (!gameManagerFound) {
-            Debug.Log("Looking for GameManager");
-            StartCoroutine(WaitForGameManager());
-        }
-
-        if(!roundControlFound){
-            Debug.Log("Looking for RoundControl");
-            StartCoroutine(WaitForRoundControl());
-        }
-        
         left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
         right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
         jumped = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);

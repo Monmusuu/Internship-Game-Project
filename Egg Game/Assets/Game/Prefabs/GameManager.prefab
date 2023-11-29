@@ -73,7 +73,6 @@ MonoBehaviour:
   allAnimators:
   - {fileID: 9100000, guid: 783ea1d234901e84caf67c76f6f0e7c7, type: 2}
   - {fileID: 9100000, guid: c8e087b595453984698fe11b9a3ce378, type: 2}
-  playerNumber: 0
   playerReadyNumber: 0
   playerHatSpriteNumbers: 000000000000000000000000000000000000000000000000
   playerBodySpriteNumbers: 000000000000000000000000000000000000000000000000

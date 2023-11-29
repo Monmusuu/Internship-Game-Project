@@ -9437,6 +9437,8 @@ GameObject:
   - component: {fileID: 1764644807}
   - component: {fileID: 1764644815}
   - component: {fileID: 1764644814}
+  - component: {fileID: 1764644817}
+  - component: {fileID: 1764644816}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -9491,7 +9493,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1764644806}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6e55fca1f4e4844593a3dd65a3ecb39, type: 3}
   m_Name: 
@@ -9519,7 +9521,7 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/Game/Scenes/Menu.unity
   onlineScene: Assets/Game/Scenes/CharacterSelection.unity
-  transport: {fileID: 1764644809}
+  transport: {fileID: 1764644816}
   networkAddress: localhost
   maxConnections: 6
   authenticator: {fileID: 0}
@@ -9556,6 +9558,7 @@ MonoBehaviour:
   - {fileID: 8800451522271132070, guid: 21dfcff53c18f7248870d3ab63fd0fb2, type: 3}
   - {fileID: 8981147863118277878, guid: fdbda3ed8ea6ba9418735d36a87b39ac, type: 3}
   - {fileID: 4177139402556719701, guid: 1be9c3394e793144b90cb8e370a2c182, type: 3}
+  - {fileID: 6255504983882727400, guid: 8b4cbc26dfacfbb428ec0541a06494ce, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     catchupNegativeThreshold: -1
@@ -9574,7 +9577,10 @@ MonoBehaviour:
     playerPrefab: {fileID: 3219085190463158601, guid: a74612384d5a02b4a81cbb5e633c7c31, type: 3}
   VotingSystem: {fileID: 5242640545504936685, guid: 6eca6a95db15f2449b399251ffbf11e3, type: 3}
   RoundControl: {fileID: 105841409024583306, guid: 28167e5179777194d89201805bd12103, type: 3}
+  PlayerPoint: {fileID: 6255504983882727400, guid: 8b4cbc26dfacfbb428ec0541a06494ce, type: 3}
   playerSaveDataPrefab: {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
+  UIHolderObject: {fileID: 0}
+  mainCamera: {fileID: 0}
   steamLobby: {fileID: 1764644808}
 --- !u!4 &1764644811
 Transform:
@@ -9702,6 +9708,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1764644814}
   audioClip: {fileID: 8300000, guid: 658abf08bd04e394189c4c5bbbbf45f8, type: 3}
+--- !u!114 &1764644816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764644806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7424c1070fad4ba2a7a96b02fbeb4bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  port: 7777
+  NoDelay: 1
+  SendTimeout: 5000
+  ReceiveTimeout: 30000
+  serverMaxMessageSize: 16384
+  serverMaxReceivesPerTick: 10000
+  serverSendQueueLimitPerConnection: 10000
+  serverReceiveQueueLimitPerConnection: 10000
+  clientMaxMessageSize: 16384
+  clientMaxReceivesPerTick: 1000
+  clientSendQueueLimit: 10000
+  clientReceiveQueueLimit: 10000
+--- !u!114 &1764644817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764644806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
 --- !u!1 &1768472374
 GameObject:
   m_ObjectHideFlags: 0
