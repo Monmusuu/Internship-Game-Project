@@ -38,6 +38,7 @@ TagManager:
   - Point4
   - Point5
   - Point6
+  - UIHolder
   layers:
   - Default
   - TransparentFX

@@ -68,7 +68,9 @@ public class CustomNetworkManager : NetworkManager
                     Debug.Log("Players: " + playerSaveData.playerCount);
 
                     // Spawn a PlayerPoint for the newly added player
-                    SpawnPlayerPointForPlayer(conn);
+                    if(sceneName == "Nathan"){
+                        SpawnPlayerPointForPlayer(conn);
+                    }
 
                     // Initialize player-specific data here
 

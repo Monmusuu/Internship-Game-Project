@@ -9579,8 +9579,6 @@ MonoBehaviour:
   RoundControl: {fileID: 105841409024583306, guid: 28167e5179777194d89201805bd12103, type: 3}
   PlayerPoint: {fileID: 6255504983882727400, guid: 8b4cbc26dfacfbb428ec0541a06494ce, type: 3}
   playerSaveDataPrefab: {fileID: 5839884480101296003, guid: df3570e6e7c4906468308abd3ae3488e, type: 3}
-  UIHolderObject: {fileID: 0}
-  mainCamera: {fileID: 0}
   steamLobby: {fileID: 1764644808}
 --- !u!4 &1764644811
 Transform:

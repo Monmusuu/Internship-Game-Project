@@ -158,7 +158,13 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
             if (scrollInput != 0f)
             {
-                CheckRotationInput();
+                if(!playerScript.isKing && (selectedBlockIndex != 2 || selectedBlockIndex != 5)){
+                    CheckRotationInput();
+                }
+
+                if(playerScript.isKing){
+                    CheckRotationInput();
+                }
             }
 
             if (Input.GetMouseButtonDown(0))
@@ -186,7 +192,7 @@ public class PlayerBlockPlacement : NetworkBehaviour
     {
         // Check if the placement position is valid (e.g., within certain bounds or not occupied)
         Vector3Int cellPosition = kingTilemap.WorldToCell(tilePosition);
-        if (!IsPlacementValid(cellPosition))
+        if (!IsPlacementValid(cellPosition) && selectedBlockIndex != 2)
         {
             Debug.Log("Invalid placement position!");
             return;
@@ -297,6 +303,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
         // Move to the next selected object
         selectedTile = (selectedTile + 1) % 4;
+
+        rotationAngle = 0;
     }
     
 
@@ -565,7 +573,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
         do
         {
-            selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+            selectedBlockIndex = 2;
+            //selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
         } while (selectedBlockIndex == previousBlockIndex);
 
         previousBlockIndex = selectedBlockIndex;

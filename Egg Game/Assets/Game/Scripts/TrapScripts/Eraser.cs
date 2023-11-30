@@ -4,7 +4,8 @@ using System.Collections;
 public class Eraser : MonoBehaviour
 {
     public LayerMask eraseLayer;
-    public float eraseRadius = 5f; // Customize the erase radius if needed
+    public float eraseRadius = 1f; // Customize the erase radius if needed
+    public Animator animator;
 
     private void OnTriggerEnter2D(Collider2D other)
     {

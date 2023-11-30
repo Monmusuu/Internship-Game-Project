@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Steamworks;
+using TMPro;
 
 public class PlayerPointUI : MonoBehaviour
 {
     private const int MaxPlayers = 6;
+    public TMP_Text PlayerName;
     public Image Avatar;
     public Image Point1;
     public Image Point2;
@@ -25,12 +28,6 @@ public class PlayerPointUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // // Find UIHolder by name in the "Nathan" scene
-        UIHolderObject = GameObject.Find("UIHolder");
-
-        // Make PlayerPointUI a child of UIHolder
-        transform.SetParent(UIHolderObject.transform, false);
-
         // Ensure that the scale is set to (1, 1, 1)
         transform.localScale = Vector3.one;
 
@@ -88,6 +85,24 @@ public class PlayerPointUI : MonoBehaviour
                         player = playerObject.GetComponent<Player>();
 
                         Avatar.sprite = playerBodySprite[player.bodySpriteIndex].sprite;
+
+                        // Find UIHolder by name in the "Nathan" scene
+                        UIHolderObject = GameObject.Find("PlayerPoint" + i);
+
+                        // Make PlayerPointUI a child of UIHolder
+                        transform.SetParent(UIHolderObject.transform, false);
+
+                        // Set the position to (0, 0, 0)
+                        transform.localPosition = Vector3.zero;
+
+                        if (string.IsNullOrEmpty(PlayerName.text))
+                        {
+                            PlayerName.text = "Player" + i;
+                        }
+                        else
+                        {
+                            PlayerName.text = PlayerName.text.Length > 14 ? PlayerName.text.Substring(0, 14) : PlayerName.text;
+                        }
 
                         if (player == null)
                         {
