@@ -549,35 +549,38 @@ public class PlayerBlockPlacement : NetworkBehaviour
     {
         // Wait for synchronization to occur
         yield return new WaitForSeconds(0.5f); // Adjust the delay as needed
+        
+        if(playerScript.isKing){
+            do
+            {
+                selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
+            } while (selectedAutoTrapIndex == previousAutoTrapIndex);
 
-        do
-        {
-            selectedAutoTrapIndex = Random.Range(0, autoTrapTileObjects.Length);
-        } while (selectedAutoTrapIndex == previousAutoTrapIndex);
+            Debug.Log("After selection: " + selectedAutoTrapIndex + ", " + selectedManualTrapIndex + ", " + selectedManualTrap2Index);
 
-        Debug.Log("After selection: " + selectedAutoTrapIndex + ", " + selectedManualTrapIndex + ", " + selectedManualTrap2Index);
+            do
+            {
+                selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
+            } while (selectedManualTrapIndex == previousManualTrapIndex);
 
-        do
-        {
-            selectedManualTrapIndex = Random.Range(0, manualTrapTileObjects.Length);
-        } while (selectedManualTrapIndex == previousManualTrapIndex);
+            do
+            {
+                selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
+            } while (selectedManualTrap2Index == previousManualTrap2Index);
 
-        do
-        {
-            selectedManualTrap2Index = Random.Range(0, manualTrap2TileObjects.Length);
-        } while (selectedManualTrap2Index == previousManualTrap2Index);
+            previousAutoTrapIndex = selectedAutoTrapIndex;
+            previousManualTrapIndex = selectedManualTrapIndex;
+            previousManualTrap2Index = selectedManualTrap2Index;
+        }else{
+            do
+            {
+                selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
+            } while (selectedBlockIndex == previousBlockIndex);
 
-        previousAutoTrapIndex = selectedAutoTrapIndex;
-        previousManualTrapIndex = selectedManualTrapIndex;
-        previousManualTrap2Index = selectedManualTrap2Index;
+            previousBlockIndex = selectedBlockIndex;
+        }
 
-        do
-        {
-            selectedBlockIndex = 2;
-            //selectedBlockIndex = Random.Range(0, blockTileObjects.Length);
-        } while (selectedBlockIndex == previousBlockIndex);
 
-        previousBlockIndex = selectedBlockIndex;
 
         initializeSelectedIndexes = true;
     }

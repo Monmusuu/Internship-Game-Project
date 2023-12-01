@@ -253,7 +253,7 @@ MonoBehaviour:
   syncDirection: 1
   syncMode: 0
   syncInterval: 0
-  clientAuthority: 0
+  clientAuthority: 1
   animator: {fileID: 6122145753119281385}
 --- !u!82 &26121964672278029
 AudioSource:

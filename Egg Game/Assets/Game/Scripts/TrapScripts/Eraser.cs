@@ -4,38 +4,21 @@ using System.Collections;
 public class Eraser : MonoBehaviour
 {
     public LayerMask eraseLayer;
-    public float eraseRadius = 1f; // Customize the erase radius if needed
+    public float eraseRadius = 4f;
     public Animator animator;
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (ShouldDestroyObject(other.gameObject))
-        {
-            Debug.Log("Trigger: Destroying " + other.gameObject.name);
-            StartCoroutine(DestroyHierarchy(other.gameObject, 1f));
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (ShouldDestroyObject(collision.gameObject))
-        {
-            Debug.Log("Collision: Destroying " + collision.gameObject.name);
-            StartCoroutine(DestroyHierarchy(collision.gameObject, 1f));
-        }
-    }
+    public Collider2D eraserCollider;
 
     private void Update()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.parent.position, eraseRadius, eraseLayer);
-        bool isEraserOnEraserLayer = eraseLayer == (eraseLayer | (1 << transform.parent.gameObject.layer));
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(eraserCollider.transform.position, eraseRadius, eraseLayer);
+        bool isEraserOnEraserLayer = eraseLayer == (eraseLayer | (1 << eraserCollider.gameObject.layer));
 
         foreach (Collider2D collider in colliders)
         {
             if (ShouldDestroyObject(collider.gameObject))
             {
-                Debug.Log("Overlap: Destroying " + collider.gameObject.name);
-                StartCoroutine(DestroyHierarchy(collider.gameObject, 1f));
+                //Debug.Log("Overlap: Destroying " + collider.gameObject.name);
+                StartCoroutine(DestroyObject(collider.gameObject, 1f));
             }
         }
 
@@ -43,42 +26,42 @@ public class Eraser : MonoBehaviour
         {
             StartCoroutine(DelayedSelfDestruct(2f));
         }
+
+        // Check if there is any overlap and trigger animation
+        if (colliders.Length > 0)
+        {
+            animator.SetTrigger("Activate");
+        }
     }
 
     private bool ShouldDestroyObject(GameObject obj)
     {
-        return obj.layer == transform.parent.gameObject.layer && obj != transform.parent.gameObject;
+        return obj.layer == eraserCollider.gameObject.layer && obj != eraserCollider.gameObject;
     }
 
-    private IEnumerator DestroyHierarchy(GameObject obj, float delay)
+    private IEnumerator DestroyObject(GameObject obj, float delay)
     {
         yield return new WaitForSeconds(delay);
 
         if (obj != null)
         {
-            Transform topParent = obj.transform;
-            while (topParent.parent != null)
-            {
-                topParent = topParent.parent;
-            }
-
-            Destroy(topParent.gameObject);
+            Destroy(obj);
         }
     }
 
     private IEnumerator DelayedSelfDestruct(float delay)
     {
         yield return new WaitForSeconds(delay);
-        Debug.Log("Self-Destruct: Destroying " + transform.parent.gameObject.name);
-        Destroy(transform.parent.gameObject);
+        Debug.Log("Self-Destruct: Destroying " + eraserCollider.gameObject.name);
+        Destroy(eraserCollider.gameObject);
     }
 
     private void OnDrawGizmosSelected()
     {
-        if (transform.parent == null)
+        if (eraserCollider == null)
             return;
 
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.parent.position, eraseRadius);
+        Gizmos.DrawWireSphere(eraserCollider.transform.position, eraseRadius);
     }
 }
