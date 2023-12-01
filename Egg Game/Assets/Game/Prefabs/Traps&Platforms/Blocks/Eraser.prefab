@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6653591027672778764}
   - component: {fileID: 6653591027672778767}
   - component: {fileID: 6653591027672778766}
-  - component: {fileID: 6614332775673137043}
   m_Layer: 10
   m_Name: Eraser
   m_TagString: Untagged
@@ -126,23 +125,6 @@ MonoBehaviour:
   eraseRadius: 4
   animator: {fileID: 6653591027672778767}
   eraserCollider: {fileID: 5148060530220565936}
---- !u!114 &6614332775673137043
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6653591027672778763}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  clientAuthority: 0
-  animator: {fileID: 6653591027672778767}
 --- !u!1 &6653591027728031132
 GameObject:
   m_ObjectHideFlags: 0

@@ -103,7 +103,7 @@ MonoBehaviour:
   syncDirection: 1
   syncMode: 0
   syncInterval: 0
-  speed: 15
+  speed: 30
 --- !u!60 &6601797149735987108
 PolygonCollider2D:
   m_ObjectHideFlags: 0

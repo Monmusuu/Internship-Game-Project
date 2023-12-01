@@ -12,27 +12,28 @@ public class SpringScript : NetworkBehaviour
     [SyncVar]
     private bool isAnimating;
 
-    private NetworkAnimator networkAnimator;
+    private Animator animator;
     private Rigidbody2D playerRigidbody;
     public AudioSource audioSource; // Reference to the AudioSource component
     public AudioClip audioClip; // The audio clip to be played
 
     private void Start()
     {
-        networkAnimator = GetComponent<NetworkAnimator>();
+        animator = GetComponent<Animator>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isServer && !isAnimating)
+        if (!isAnimating)
         {
             foreach (string tag in playerTags)
             {
                 if (collision.CompareTag(tag))
                 {
                     isAnimating = true;
-                    networkAnimator.SetTrigger("Stepped On");
+                    animator.SetTrigger("Stepped On");
                     playerRigidbody = collision.GetComponent<Rigidbody2D>();
+                    audioSource.PlayOneShot(audioClip);
                     LaunchPlayer();
                     break;
                 }
@@ -71,22 +72,14 @@ public class SpringScript : NetworkBehaviour
         return Vector2.zero;
     }
 
-    [Server]
     public void LaunchPlayer()
     {
         if (playerRigidbody != null)
         {
             Debug.Log("Launching player!");
 
-            if (audioSource != null && audioClip != null)
-            {
-                audioSource.PlayOneShot(audioClip);
-            }
-
             Vector2 launchDirection = transform.up;
             playerRigidbody.AddForce(launchDirection * launchForce, ForceMode2D.Impulse);
-
-            RpcLaunchPlayer(); // Call the Rpc to perform the same action on clients
         }
         else
         {
@@ -95,29 +88,8 @@ public class SpringScript : NetworkBehaviour
 
         isAnimating = false;
     }
-
-    [ClientRpc]
-    private void RpcLaunchPlayer()
-    {
-        if (!isServer)
-        {
-            LaunchPlayer();
-        }
-    }
-
-    [Server]
     public void ResetObject()
     {
-        networkAnimator.SetTrigger("Sprung");
-        RpcResetObject();
-    }
-
-    [ClientRpc]
-    private void RpcResetObject()
-    {
-        if (!isServer)
-        {
-            networkAnimator.SetTrigger("Sprung");
-        }
+        animator.SetTrigger("Sprung");
     }
 }

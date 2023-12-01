@@ -28,7 +28,7 @@ public class LightBulb : NetworkBehaviour
     {
         syncedColor = new Color(originalColor.r, originalColor.g, originalColor.b, 0.90f);
         animator.SetTrigger("Darkness");
-        StartCoroutine(ResetOpacityAfterDelay(20f));
+        StartCoroutine(ResetOpacityAfterDelay(15f));
     }
 
     [Server]
