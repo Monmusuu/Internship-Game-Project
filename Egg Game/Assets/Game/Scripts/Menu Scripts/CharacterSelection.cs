@@ -42,6 +42,8 @@ public class CharacterSelection : NetworkBehaviour
 
     private const int MaxPlayers = 6;
 
+    public string playerTag;
+    
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -65,11 +67,11 @@ public class CharacterSelection : NetworkBehaviour
         weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
     }
 
-        void AssignPlayerTag()
+    void AssignPlayerTag()
     {
         for (int i = 1; i <= MaxPlayers; i++)
         {
-            string playerTag = "Player" + i;
+            playerTag = "Player" + i;
 
             // Check if an object with this tag already exists
             GameObject existingPlayer = GameObject.FindGameObjectWithTag(playerTag);
@@ -349,17 +351,16 @@ public class CharacterSelection : NetworkBehaviour
     {
         Debug.Log("RpcSaveCustomizationChoices called on client.");
 
+        // Extract the last digit from the playerTag
+        char lastDigitChar = playerTag[playerTag.Length - 1];
+        int lastDigit = int.Parse(lastDigitChar.ToString());
+
         for (int i = 0; i < playerSaveData.playerCount; i++)
         {
-            GameObject selectionObject = GameObject.FindGameObjectWithTag("Player" + (i + 1));
-            if (selectionObject != null)
-            {
-                // Update the customization choices for all clients
-                playerSaveData.playerHatSpriteNumbers[connectionToClient.connectionId] = hatValue;
-                playerSaveData.playerBodySpriteNumbers[connectionToClient.connectionId] = bodyValue;
-                playerSaveData.playerWeaponSpriteNumbers[connectionToClient.connectionId] = weaponValue;
-                playerSaveData.playerAnimatorNumbers[connectionToClient.connectionId] = animatorValue;
-            }
+            playerSaveData.playerHatSpriteNumbers[lastDigit-1] = hatValue;
+            playerSaveData.playerBodySpriteNumbers[lastDigit-1] = bodyValue;
+            playerSaveData.playerWeaponSpriteNumbers[lastDigit-1] = weaponValue;
+            playerSaveData.playerAnimatorNumbers[lastDigit-1] = animatorValue;
         }
     }
 }

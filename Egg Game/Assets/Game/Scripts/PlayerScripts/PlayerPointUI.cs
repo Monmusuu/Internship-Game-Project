@@ -101,7 +101,7 @@ public class PlayerPointUI : MonoBehaviour
                         }
                         else
                         {
-                            PlayerName.text = PlayerName.text.Length > 14 ? PlayerName.text.Substring(0, 14) : PlayerName.text;
+                            PlayerName.text = SteamFriends.GetPersonaName();
                         }
 
                         if (player == null)
