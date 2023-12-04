@@ -47,6 +47,9 @@ public class CursorCharacterSelection : NetworkBehaviour
     [SerializeField]
     private MenuScript menuScript;
 
+    [SerializeField]
+    private VotingSystem votingSystem;
+
     public AudioSource audioSource; // Reference to the AudioSource component
     public AudioClip clickAudioClip; // The audio clip to be played
 
@@ -72,6 +75,7 @@ public class CursorCharacterSelection : NetworkBehaviour
     private void Start()
     {
         StartCoroutine(WaitForMapCanvas());
+        StartCoroutine(WaitForVotingSystem());
         
         menuScript = FindObjectOfType<MenuScript>();
         
@@ -179,6 +183,15 @@ public class CursorCharacterSelection : NetworkBehaviour
         if (mapButton != null)
         {
             mapButton.onClick.AddListener(OnClickBackButton);
+        }
+    }
+
+    private IEnumerator WaitForVotingSystem()
+    {
+        while (votingSystem == null)
+        {
+            votingSystem = FindObjectOfType<VotingSystem>();
+            yield return null;
         }
     }
 
@@ -335,21 +348,42 @@ public class CursorCharacterSelection : NetworkBehaviour
         return mapIndex;
     }
 
+    [Command]
+    private void CmdUndoVote()
+    {
+        // Find the parent object with NetworkIdentity
+        NetworkIdentity networkIdentity = GetComponentInParent<NetworkIdentity>();
+
+        if (networkIdentity != null)
+        {
+            // Call the voting system's Undo-Vote method on the server
+            VotingSystem.Instance.UndoVote(networkIdentity.connectionToClient.connectionId);
+        }
+        else
+        {
+            Debug.LogError("NetworkIdentity not found on parent object.");
+        }
+    }
+
+    [ClientRpc]
+    private void RpcUndoVote()
+    {
+        // Update UI or perform other client-side actions after undoing the vote
+    }
+
     public void OnClickBackButton()
     {
         Debug.Log("Local player clicked Back Button 2.");
 
-        // Find the parent object with NetworkIdentity
-        NetworkIdentity networkIdentity = GetComponentInParent<NetworkIdentity>();
-
-        // Call the voting system's Undo-Vote method on the server
-        if (networkIdentity != null)
+        // Check if this is the local player
+        if (!isLocalPlayer)
         {
-            VotingSystem.Instance.UndoVote(networkIdentity.connectionToClient.connectionId);
-        }else
-        {
-            Debug.LogError("NetworkIdentity not found on parent object.");
+            //Debug.LogWarning("Only the local player can undo the vote.");
+            return;
         }
+
+        // Call the command to undo the vote on the server
+        CmdUndoVote();
     }
 
     private void DeselectObject()

@@ -15,7 +15,7 @@ public class VotingSystem : NetworkBehaviour
     private Dictionary<int, int> selectedMapIndex; // Dictionary to store the selected map index for each player
     private int[] voteCounts; // Array to store the vote counts for each map
 
-    [SerializeField]
+    [SerializeField][SyncVar]
     private int playersVoted = 0; // Variable to track the number of players who have voted
 
     [SerializeField] private Button backButton;
@@ -109,6 +109,8 @@ public class VotingSystem : NetworkBehaviour
 
             // Update the vote count display
             UpdateVoteCountDisplay();
+        }else{
+            Debug.Log("No Connection ID or hasn't voted");
         }
     }
 
