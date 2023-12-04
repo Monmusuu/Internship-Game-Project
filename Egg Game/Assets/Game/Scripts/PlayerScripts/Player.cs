@@ -80,6 +80,12 @@ public class Player : NetworkBehaviour
     [SerializeField]
     private SpriteRenderer hatSpriteRenderer;
 
+    [SerializeField]
+    private SpriteRenderer placeCursor;
+
+    [SerializeField]
+    private SpriteRenderer interactionCursor;
+
     public void hatChangeSprite(int newIndex)
     {
         //if (isServer)
@@ -194,6 +200,8 @@ public class Player : NetworkBehaviour
 
     void AssignPlayerTag()
     {
+        string[] playerColors = { "Red", "Blue", "Yellow", "Green", "Purple", "Brown" };
+
         for (int i = 1; i <= MaxPlayers; i++)
         {
             string playerTag = "Player" + i;
@@ -205,9 +213,28 @@ public class Player : NetworkBehaviour
             {
                 // No existing player with this tag, it's available
                 gameObject.tag = playerTag;
+                // Assign color based on the index in playerColors array
+                Color playerColor = GetPlayerColor(i - 1); // Subtract 1 from the index
                 Debug.Log("Assigned tag: " + playerTag);
+                interactionCursor.color = playerColor;
+                placeCursor.color = playerColor;
                 break;
             }
+        }
+    }
+
+    Color GetPlayerColor(int index)
+    {
+        Color[] colors = { Color.red, Color.blue, Color.yellow, Color.green, new Color(0.5f, 0, 0.5f), new Color(0.6f, 0.4f, 0.2f) };
+        
+        if (index < colors.Length)
+        {
+            return colors[index];
+        }
+        else
+        {
+            // Return a default color if the index is out of bounds
+            return Color.white;
         }
     }
 

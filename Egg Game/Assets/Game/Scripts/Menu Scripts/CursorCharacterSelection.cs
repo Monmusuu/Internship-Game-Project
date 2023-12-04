@@ -154,8 +154,6 @@ public class CursorCharacterSelection : NetworkBehaviour
         // Find and assign the button object
         mapButton = MapCanvasHolder.transform.GetChild(0).GetChild(1).gameObject.GetComponent<Button>();
 
-        clickableImages = GameObject.FindObjectsOfType<ClickableImage>();
-
         // If the mapObjectContainer is not assigned, find map objects by name
         if (mapObjectContainer.mapObjects == null || mapObjectContainer.mapObjects.Length == 0)
         {
@@ -163,7 +161,7 @@ public class CursorCharacterSelection : NetworkBehaviour
             List<GameObject> maps = new List<GameObject>();
 
             // Assuming MapCanvasHolderTransform is a reference to a Transform of the MapCanvasHolder
-            Transform child2 = MapCanvasHolder.transform.GetChild(0).GetChild(2);
+            Transform child2 = MapCanvasHolder.transform.GetChild(0).GetChild(3);
 
             // Accessing children in the range 1-6 under child2
             for (int i = 1; i <= 6; i++)
@@ -399,5 +397,4 @@ public class CursorCharacterSelection : NetworkBehaviour
         // Debug message
         Debug.Log("Deselected object.");
     }
-
 }

@@ -973,7 +973,6 @@ MonoBehaviour:
   kingSpawnLocation: {fileID: 0}
   groundCheckCollider: {fileID: 3219085189834981985}
   groundCheckCollider2: {fileID: 3219085189834981985}
-  playerID: 0
   PlayerNumber: 0
   hatSpriteIndex: 0
   hatSpriteVariations:
@@ -984,6 +983,8 @@ MonoBehaviour:
   - {fileID: 1585972040, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   - {fileID: 1734291148, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   hatSpriteRenderer: {fileID: 0}
+  placeCursor: {fileID: 1641257363}
+  interactionCursor: {fileID: 91069300}
   bodySpriteIndex: 0
   bodySpriteVariations:
   - {fileID: 488394471, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}

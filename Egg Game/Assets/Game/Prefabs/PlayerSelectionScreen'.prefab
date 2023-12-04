@@ -659,6 +659,8 @@ MonoBehaviour:
   MapCanvasHolder: {fileID: 0}
   canvas: {fileID: 0}
   playerSaveData: {fileID: 0}
+  playerTag: 
+  cursor: {fileID: 5609575308530042713}
 --- !u!114 &4768039933823198302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2511,13 +2513,21 @@ MonoBehaviour:
   syncInterval: 0
   speed: 200
   selectedColor: {r: 0, g: 1, b: 0, a: 1}
-  clickableImages: []
+  clickableImages:
+  - {fileID: 1092499340949775964}
+  - {fileID: 4360491136683543358}
+  - {fileID: 5426364220392101781}
+  - {fileID: 172103716564995810}
+  - {fileID: 2529350003700925796}
+  - {fileID: 8807675687532732772}
+  - {fileID: 2243254309129262157}
   mapObjectContainer:
     mapObjects: []
   mapButton: {fileID: 0}
   MapCanvas: {fileID: 0}
   MapCanvasHolder: {fileID: 0}
   menuScript: {fileID: 0}
+  votingSystem: {fileID: 0}
   audioSource: {fileID: 7070107233555532430}
   clickAudioClip: {fileID: 8300000, guid: 658abf08bd04e394189c4c5bbbbf45f8, type: 3}
 --- !u!58 &5109344706085067003

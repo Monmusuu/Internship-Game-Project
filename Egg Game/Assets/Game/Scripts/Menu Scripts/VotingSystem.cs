@@ -24,6 +24,17 @@ public class VotingSystem : NetworkBehaviour
     [SerializeField]
     private PlayerSaveData playerSaveData;
 
+    [SerializeField]
+    private Image timerImage;
+
+    [SerializeField, SyncVar(hook = nameof(OnTimerProgressChanged))]
+    private float syncTimerProgress = 1.0f;
+
+    [SyncVar]
+    private float elapsedTime = 0f;
+
+    [SyncVar]
+    private bool timerActive = true; // Add this boolean flag
     public static VotingSystem Instance { get; private set; }
 
     private IEnumerator WaitForPlayerSaveData()
@@ -48,6 +59,8 @@ public class VotingSystem : NetworkBehaviour
 
         // Wait for the PlayerCounter to be spawned by the network manager
         StartCoroutine(WaitForPlayerSaveData());
+
+        timerImage = GameObject.Find("Timer").GetComponent<Image>();
     }
 
     public void Vote(int connectionId, int mapIndex)
@@ -74,11 +87,11 @@ public class VotingSystem : NetworkBehaviour
             // Check if all players have voted
             if (playersVoted == playerSaveData.playerCount)
             {
-                // Determine the map with the most votes
-                int winningMapIndex = GetWinningMapIndex();
-
-                // Switch to the corresponding scene
-                SwitchToMapScene(winningMapIndex);
+                float timerDuration = 5f; // Adjust the duration in seconds
+                timerActive = true;
+                StartCoroutine(TimerCoroutine(timerDuration));
+            }else{
+                StopAndResetTimer();
             }
 
             // Update the vote count display
@@ -94,7 +107,7 @@ public class VotingSystem : NetworkBehaviour
 
     public void UndoVote(int connectionId)
     {
-        if (hasVoted[connectionId])
+        if (hasVoted.ContainsKey(connectionId) && hasVoted[connectionId])
         {
             int selectedMap = selectedMapIndex[connectionId];
 
@@ -109,6 +122,12 @@ public class VotingSystem : NetworkBehaviour
 
             // Update the vote count display
             UpdateVoteCountDisplay();
+
+            // Check if the timer needs to be stopped and reset
+            if (timerActive && playersVoted < playerSaveData.playerCount)
+            {
+                StopAndResetTimer();
+            }
         }else{
             Debug.Log("No Connection ID or hasn't voted");
         }
@@ -197,6 +216,46 @@ public class VotingSystem : NetworkBehaviour
             return winningMapIndex;
         }
     }
+
+    private IEnumerator TimerCoroutine(float duration)
+    {
+        elapsedTime = 0f;
+
+        while (elapsedTime < duration && playersVoted == playerSaveData.playerCount && timerActive)
+        {
+            syncTimerProgress = 1 - (elapsedTime / duration);
+            yield return null;
+            elapsedTime += Time.deltaTime;
+        }
+
+        // Check if all players have voted before switching to the map scene
+        if (playersVoted == playerSaveData.playerCount)
+        {
+            int winningMapIndex = GetWinningMapIndex();
+            Debug.Log("Timer Coroutine finished. Starting SwitchToMapScene with winningMapIndex: " + winningMapIndex);
+            SwitchToMapScene(winningMapIndex);
+        }
+        else
+        {
+            // Stop and reset the timer (optional: perform any additional actions)
+            Debug.Log("Timer stopped and reset because not all players have voted.");
+        }
+    }
+
+    // Add this method to stop and reset the timer externally
+    public void StopAndResetTimer()
+    {
+        syncTimerProgress = 1.0f;
+        elapsedTime = 0f;
+        float timerDuration = 5f; // Adjust the duration in seconds
+        timerActive = false;
+    }
+
+    private void OnTimerProgressChanged(float oldProgress, float newProgress)
+    {
+        timerImage.fillAmount = newProgress;
+    }
+
 
     private void SwitchToMapScene(int mapIndex)
     {
