@@ -104,8 +104,6 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     private void OnEnable()
     {
-        Debug.Log("Script has been enabled.");
-
         placedBlock = null;
         
         if(isOwned){

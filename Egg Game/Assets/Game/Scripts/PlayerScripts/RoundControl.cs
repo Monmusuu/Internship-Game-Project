@@ -6,74 +6,36 @@ using UnityEngine.UI;
 
 public class RoundControl : NetworkBehaviour
 {
+    // SyncVars for network synchronization
+    [SyncVar] public int Round = 0;
+    [SyncVar] public bool timerOn = false;
+    [SyncVar] public bool Respawn = false;
+    [SyncVar] public bool itemsPlaced = false;
+    [SyncVar] public bool placingItems = false;
+    [SyncVar] public int playersPlacedBlocks = 0;
+    [SyncVar] public float timerElapsed;
+    [SyncVar] public float RoundTime = 360f;
+
+    [SyncVar(hook = nameof(OnTimerImageFillAmountChanged))]
+    public float timerImageFillAmount = 1.0f;
+
+    [SyncVar(hook = nameof(OnRoundTimerImageFillAmountChanged))]
+    public float roundTimerImageFillAmount = 1.0f;
+
+    // Public variables
     public List<Player> players = new List<Player>();
-    public float RoundTime = 360f;
-    [SyncVar]
-    public int Round = 0;
-
-    [SyncVar]
-    public bool timerOn = false;
-
-    [SyncVar]
-    public bool Respawn = false;
-
-    [SyncVar]
-    public bool itemsPlaced = false;
-
-    [SyncVar]
-    public bool placingItems = false;
-
-    [SerializeField][SyncVar]
-    public int playersPlacedBlocks = 0;
-
-    public bool playerRemovingItem = false;
     public Transform playerSpawnLocation;
     public Transform kingSpawnLocation;
-
-    [SerializeField]
-    private PlayerSaveData playerSaveData;
-
     public Image timerImage;
-
-    [SyncVar]
-    public float timerElapsed;
-
     public Image roundTimerImage;
 
-
-    // Start is called before the first frame update
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-    }
-
-    // Method to add a player to the players list
-    public void AddPlayer(Player newPlayer)
-    {
-        players.Add(newPlayer);
-    }
-
-    // Method to remove a player from the players list
-    public void RemovePlayer(Player playerToRemove)
-    {
-        players.Remove(playerToRemove);
-    }
-    
-    private IEnumerator WaitForPlayerSaveData()
-    {
-        while (playerSaveData == null)
-        {
-            playerSaveData = FindObjectOfType<PlayerSaveData>();
-            yield return null;
-        }
-    }
+    // Private variables
+    private PlayerSaveData playerSaveData;
 
     private void Start()
     {
-        // Wait for the PlayerCounter to be spawned by the network manager
+
         StartCoroutine(WaitForPlayerSaveData());
-        
         playerSpawnLocation = GameObject.Find("SpawnPoints").transform;
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
         timerImage = GameObject.Find("Timer").GetComponent<Image>();
@@ -82,82 +44,89 @@ public class RoundControl : NetworkBehaviour
 
     void Update()
     {
-
-        if (placingItems)
-        {
-            Respawn = false;
-            timerOn = false;
-
-            if(playersPlacedBlocks >= playerSaveData.playerCount +2){
-                itemsPlaced = true;
-                placingItems = false;
-
-            }
-            
-        }
-
-        if(Round == 0 && timerOn == false){
-            placingItems = true;
-            // Start the coroutine to gradually decrease the fill amount
-            StartCoroutine(DecreaseTimerFillOverTime(3f));
-        }
-
-        if (!placingItems)
-        {
-            for (int i = 0; i < players.Count; i++)
+        if(isServer){
+            if (placingItems)
             {
-                if (players[i] != null && players[i].becameKing)
-                {
-                    // Update player flags for the current king
-                    for (int j = 0; j < players.Count; j++)
-                    {
-                        if (players[j] != null)
-                        {
-                            players[j].isKing = (j == i);
-                            players[j].isPlayer = (j != i);
-                        }
+                timerElapsed = 0f;
+                Respawn = false;
+                timerOn = false;
 
-                        if (j == i)
-                        {
-                            players[j].currentScore += 1;
-                        }
+                if(NoKingAmongPlayers()){
+                    if(playersPlacedBlocks >= playerSaveData.playerCount){
+                        itemsPlaced = true;
+                        placingItems = false;
                     }
-
-                    // Set respawn and round variables
-                    Respawn = true;
-                    if (Respawn && isServer)
-                    {
-                        RespawnPlayers();
+                }else{
+                    if(playersPlacedBlocks >= playerSaveData.playerCount +2){
+                        itemsPlaced = true;
+                        placingItems = false;
                     }
-                    playersPlacedBlocks = 0;
-                    itemsPlaced = false;
-                    Round += 1;
-                    players[i].becameKing = false;
-                    placingItems = true;
-                    // Exit the loop since the king is found
-                    break;
                 }
-            }
-
-            if (itemsPlaced && Round >= 1)
+                
+            }else
             {
-                // Start the coroutine to gradually decrease the fill amount
-                StartCoroutine(DecreaseTimerFillOverTime(3f));
+                for (int i = 0; i < players.Count; i++)
+                {
+                    if (players[i] != null && players[i].becameKing)
+                    {
+                        // Update player flags for the current king
+                        for (int j = 0; j < players.Count; j++)
+                        {
+                            if (players[j] != null)
+                            {
+                                players[j].isKing = (j == i);
+                                players[j].isPlayer = (j != i);
+                            }
 
-                if (timerOn)
+                            if (j == i)
+                            {
+                                players[j].currentScore += 1;
+                            }
+                        }
+
+                        // Set respawn and round variables
+                        Respawn = true;
+                        if (Respawn && isServer)
+                        {
+                            RespawnPlayers();
+                        }
+                        playersPlacedBlocks = 0;
+                        itemsPlaced = false;
+                        Round += 1;
+                        players[i].becameKing = false;
+                        placingItems = true;
+                        // Exit the loop since the king is found
+                        break;
+                    }
+                }
+
+                if(Round == 0 && timerOn == false)
+                {
+                    Debug.Log("Round 0");
+                    placingItems = true;
+                    // Start the coroutine to gradually decrease the fill amount
+                    StartCoroutine(DecreaseTimerFillOverTime(3f));
+                }
+
+                if (itemsPlaced && Round >= 1 && timerOn == false)
+                {
+                    // Start the coroutine to gradually decrease the fill amount
+                    StartCoroutine(DecreaseTimerFillOverTime(3f));
+                    //Debug.Log("Inbetween Iimer");
+
+                }else if(itemsPlaced && Round >= 1 && timerOn == true)
                 {
                     RoundTime -= Time.deltaTime;
+
+                    // Update the round timer image fill amount based on RoundTime
+                    float fillAmountRound = RoundTime / 360f; // Assuming 360 is the max RoundTime
+                    if (roundTimerImage != null)
+                    {
+                        roundTimerImageFillAmount = RoundTime / 360f; // Assuming 360 is the max RoundTime
+                    }
                 }
 
-                // Update the round timer image fill amount based on RoundTime
-                float fillAmount = RoundTime / 360f; // Assuming 360 is the max RoundTime
-                if (roundTimerImage != null)
-                {
-                    roundTimerImage.fillAmount = fillAmount;
-                }
-            }
-
-            if (RoundTime <= 0)
+                if (RoundTime <= 0)
                 {
                     Respawn = true;
                     Debug.Log("Round Over");
@@ -181,8 +150,10 @@ public class RoundControl : NetworkBehaviour
                         currentKing.currentScore += 1;
                     }
                 }
+            }
         }
 
+        
     }
 
     [ClientRpc]
@@ -229,7 +200,24 @@ public class RoundControl : NetworkBehaviour
         Respawn = false;
     }
 
-    // Coroutine to decrease the fill amount over a specified duration
+    private void OnTimerImageFillAmountChanged(float oldFillAmount, float newFillAmount)
+    {
+        // Update the fill amount of the timerImage on all clients
+        if (timerImage != null)
+        {
+            timerImage.fillAmount = newFillAmount;
+        }
+    }
+
+    private void OnRoundTimerImageFillAmountChanged(float oldFillAmount, float newFillAmount)
+    {
+        // Update the fill amount of the roundTimerImage on all clients
+        if (roundTimerImage != null)
+        {
+            roundTimerImage.fillAmount = newFillAmount;
+        }
+    }
+
     private IEnumerator DecreaseTimerFillOverTime(float duration)
     {
         float startTime = Time.time;
@@ -238,25 +226,50 @@ public class RoundControl : NetworkBehaviour
         while (Time.time < endTime)
         {
             timerElapsed = Time.time - startTime;
-            float fillAmount = Mathf.Lerp(1f, 0f, timerElapsed / duration);
-
-            // Set the fill amount of the timerFillImage
-            if (timerImage != null)
-            {
-                timerImage.fillAmount = fillAmount;
-            }
+            timerImageFillAmount = Mathf.Lerp(1f, 0f, timerElapsed / duration);
 
             yield return null;
         }
 
-        // Ensure the fill amount is exactly 0 at the end
-        if (timerImage != null)
-        {
-            timerImage.fillAmount = 0f;
-            timerElapsed = 0f;
+        timerImageFillAmount = 0f;
+        placingItems = false;
+        timerOn = true;
 
-            placingItems = false;
-            timerOn = true;
+        yield break;
+    }
+
+
+    // Method to add a player to the players list
+    public void AddPlayer(Player newPlayer)
+    {
+        players.Add(newPlayer);
+    }
+
+    // Method to remove a player from the players list
+    public void RemovePlayer(Player playerToRemove)
+    {
+        players.Remove(playerToRemove);
+    }
+    
+    private IEnumerator WaitForPlayerSaveData()
+    {
+        while (playerSaveData == null)
+        {
+            playerSaveData = FindObjectOfType<PlayerSaveData>();
+            yield return null;
         }
+    }
+
+    // Check if there is no king among players
+    private bool NoKingAmongPlayers()
+    {
+        foreach (Player player in players)
+        {
+            if (player != null && player.isKing)
+            {
+                return false; // There is a king among players
+            }
+        }
+        return true; // No king among players
     }
 }
