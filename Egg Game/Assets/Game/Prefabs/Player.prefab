@@ -922,7 +922,7 @@ Rigidbody2D:
   m_Mass: 1.5
   m_LinearDrag: 0.1
   m_AngularDrag: 4
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 0
@@ -944,7 +944,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   rigid: {fileID: 3219085190463158599}
-  jumpSpeed: 11
+  jumpSpeed: 25
   groundLayer:
     serializedVersion: 2
     m_Bits: 64

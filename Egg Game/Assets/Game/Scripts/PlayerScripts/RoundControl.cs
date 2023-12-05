@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.UI;
 
 public class RoundControl : NetworkBehaviour
 {
@@ -32,14 +33,19 @@ public class RoundControl : NetworkBehaviour
     [SerializeField]
     private PlayerSaveData playerSaveData;
 
+    public Image timerImage;
+
+    [SyncVar]
+    public float timerElapsed;
+
+    public Image roundTimerImage;
+
 
     // Start is called before the first frame update
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-        // Start the round timer
-        timerOn = true;
     }
 
     // Method to add a player to the players list
@@ -62,6 +68,7 @@ public class RoundControl : NetworkBehaviour
             yield return null;
         }
     }
+
     private void Start()
     {
         // Wait for the PlayerCounter to be spawned by the network manager
@@ -69,6 +76,8 @@ public class RoundControl : NetworkBehaviour
         
         playerSpawnLocation = GameObject.Find("SpawnPoints").transform;
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
+        timerImage = GameObject.Find("Timer").GetComponent<Image>();
+        roundTimerImage = GameObject.Find("RoundTimer").GetComponent<Image>();
     }
 
     void Update()
@@ -82,8 +91,15 @@ public class RoundControl : NetworkBehaviour
             if(playersPlacedBlocks >= playerSaveData.playerCount +2){
                 itemsPlaced = true;
                 placingItems = false;
+
             }
             
+        }
+
+        if(Round == 0 && timerOn == false){
+            placingItems = true;
+            // Start the coroutine to gradually decrease the fill amount
+            StartCoroutine(DecreaseTimerFillOverTime(3f));
         }
 
         if (!placingItems)
@@ -125,11 +141,19 @@ public class RoundControl : NetworkBehaviour
 
             if (itemsPlaced && Round >= 1)
             {
-                timerOn = true;
+                // Start the coroutine to gradually decrease the fill amount
+                StartCoroutine(DecreaseTimerFillOverTime(3f));
 
                 if (timerOn)
                 {
                     RoundTime -= Time.deltaTime;
+                }
+
+                // Update the round timer image fill amount based on RoundTime
+                float fillAmount = RoundTime / 360f; // Assuming 360 is the max RoundTime
+                if (roundTimerImage != null)
+                {
+                    roundTimerImage.fillAmount = fillAmount;
                 }
             }
 
@@ -203,5 +227,36 @@ public class RoundControl : NetworkBehaviour
         }
 
         Respawn = false;
+    }
+
+    // Coroutine to decrease the fill amount over a specified duration
+    private IEnumerator DecreaseTimerFillOverTime(float duration)
+    {
+        float startTime = Time.time;
+        float endTime = startTime + duration;
+
+        while (Time.time < endTime)
+        {
+            timerElapsed = Time.time - startTime;
+            float fillAmount = Mathf.Lerp(1f, 0f, timerElapsed / duration);
+
+            // Set the fill amount of the timerFillImage
+            if (timerImage != null)
+            {
+                timerImage.fillAmount = fillAmount;
+            }
+
+            yield return null;
+        }
+
+        // Ensure the fill amount is exactly 0 at the end
+        if (timerImage != null)
+        {
+            timerImage.fillAmount = 0f;
+            timerElapsed = 0f;
+
+            placingItems = false;
+            timerOn = true;
+        }
     }
 }

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aed602e3b2d32748a407e86dbd54013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 1
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0
   players: []
@@ -60,6 +60,7 @@ MonoBehaviour:
   playerSpawnLocation: {fileID: 0}
   kingSpawnLocation: {fileID: 0}
   playerSaveData: {fileID: 0}
+  timerImage: {fileID: 0}
 --- !u!114 &105841409024583311
 MonoBehaviour:
   m_ObjectHideFlags: 0
