@@ -82,6 +82,8 @@ public class PlayerBlockPlacement : NetworkBehaviour
     // Place the block on the server
     GameObject placedBlock = null;
 
+    public MenuScript menuScript;
+
     private void Awake()
     {
         cursorCollider = GetComponent<Collider2D>();
@@ -100,6 +102,7 @@ public class PlayerBlockPlacement : NetworkBehaviour
         playerScript = gameObject.transform.parent.GetComponent<Player>();
         trapHolder = GameObject.Find("TrapHolder");
         blockHolder = GameObject.Find("BlockHolder");
+        menuScript = FindObjectOfType<MenuScript>();
     }
 
     private void OnEnable()
@@ -137,7 +140,7 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
         if(selectedBlockIndex == 9 && selectedTile == 2 && allPlayerBlocksPlaced) return;
 
-        if (isLocalPlayer){
+        if (isLocalPlayer && !menuScript.isPause){
 
             // Process movement input based on the mouse position
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);

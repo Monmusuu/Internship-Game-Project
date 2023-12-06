@@ -19,25 +19,20 @@ public class MenuScript : MonoBehaviour
     public GameObject LobbyHostObject;
     public GameObject LobbyListObject;
 
-    // Variables
-    [HideInInspector]
     public bool m_menuScreenIsActive = true;
 
-    [HideInInspector]
     public bool m_hostMenuScreenIsActive = false;
 
-    [HideInInspector]
     public bool m_settingsScreenIsActive = false;
 
-    [HideInInspector]
     public bool m_controlsScreenIsActive = false;
     public bool isPause = false;
 
     private void Start() {
         if(SceneManager.GetActiveScene().name == "CharacterSelection"){
             m_menuScreen.SetActive(false);
+            UnityEngine.Cursor.visible = false;
         }
-        UnityEngine.Cursor.visible = true;
     }
 
     private void Update() {
@@ -48,18 +43,22 @@ public class MenuScript : MonoBehaviour
             if (isPause)
             {
                 MenuON();
+                UnityEngine.Cursor.visible = true;
             }
             else
             {
                 MenuOFF();
+                UnityEngine.Cursor.visible = false;
             }
         }else if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name != "CharacterSelection" && SceneManager.GetActiveScene().name != "Menu"){
             if (NetworkServer.active){
                 isPause = !isPause;
                 if(isPause){
                     MenuONHost();
+                    UnityEngine.Cursor.visible = true;
                 }else{
                     MenuOFFHost();
+                    UnityEngine.Cursor.visible = false;
                 }
 
             }else{
@@ -67,10 +66,12 @@ public class MenuScript : MonoBehaviour
                 if (isPause)
                 {
                     MenuON();
+                    UnityEngine.Cursor.visible = true;
                 }
                 else
                 {
                     MenuOFF();
+                    UnityEngine.Cursor.visible = false;
                 }
             }
         }
@@ -152,5 +153,4 @@ public class MenuScript : MonoBehaviour
     public void ExitGame(){
         Application.Quit();
     }
-
 }

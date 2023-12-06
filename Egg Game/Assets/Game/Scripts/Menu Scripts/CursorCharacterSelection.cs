@@ -78,48 +78,45 @@ public class CursorCharacterSelection : NetworkBehaviour
         StartCoroutine(WaitForVotingSystem());
         
         menuScript = FindObjectOfType<MenuScript>();
-        
-        UnityEngine.Cursor.visible = false;
     }
 
     private void Update()
     {
 
         if (!isGameFocused) return; // Only process input if the game is focused
-        if (!isLocalPlayer) return;
 
         // Process movement input based on the mouse position
 
-        if (isLocalPlayer){
+        if (isLocalPlayer && !menuScript.isPause){
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
 
             // Check if the mapCanvas is active
             ClampPosition(newPosition);
-        }
 
-        if (isLocalPlayer && NetworkClient.ready)
-        {
-            CmdMoveCursor(transform.position);
-        }
+            if (NetworkClient.ready)
+            {
+                CmdMoveCursor(transform.position);
+            }
 
-        // Check if MapCanvas is null before using it
-        if (MapCanvas == null)
-        {
-            return;
-        }
-        
-        bool isMapSelectionActive = MapCanvas.gameObject.activeSelf;
+            // Check if MapCanvas is null before using it
+            if (MapCanvas == null)
+            {
+                return;
+            }
+            
+            bool isMapSelectionActive = MapCanvas.gameObject.activeSelf;
 
-        // Process mouse click
-        if (Input.GetMouseButtonDown(0) && !menuScript.isPause)
-        {
-            if(isMapSelectionActive){
-                Debug.Log("Clicking Map");
-                HandleMapMouseClick();
-            }else{
-                Debug.Log("Clicking Customs");
-                HandleMouseClick();
+            // Process mouse click
+            if (Input.GetMouseButtonDown(0))
+            {
+                if(isMapSelectionActive){
+                    Debug.Log("Clicking Map");
+                    HandleMapMouseClick();
+                }else{
+                    Debug.Log("Clicking Customs");
+                    HandleMouseClick();
+                }
             }
         }
     }

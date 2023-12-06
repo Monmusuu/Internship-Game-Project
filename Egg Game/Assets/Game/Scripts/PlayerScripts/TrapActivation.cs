@@ -10,34 +10,38 @@ public class TrapActivation : NetworkBehaviour
     public Tilemap kingTilemap;
     public GameObject boundingObject;
     private bool isGameFocused = true;
-
+    public MenuScript menuScript;
+    
     private void Start()
     {
         boundingObject = GameObject.Find("MapArea");
         kingTilemap = GameObject.Find("KingTilemap").GetComponent<Tilemap>();
         Application.focusChanged += OnApplicationFocus;
+        menuScript = FindObjectOfType<MenuScript>();
     }
 
     void Update()
     {
         if (!isOwned) return;
         if (!isGameFocused) return; // Only process input if the game is focused
-        if (!isLocalPlayer) return;
         
-        // Process movement input based on the mouse position
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
+        if(isLocalPlayer && !menuScript.isPause){
+            // Process movement input based on the mouse position
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 newPosition = new Vector3(mousePosition.x, mousePosition.y, 0);
 
-        // Limit the cursor's movement within the bounds of the boundingObject
-        Vector3 clampedPosition = LimitPositionWithinBounds(newPosition);
+            // Limit the cursor's movement within the bounds of the boundingObject
+            Vector3 clampedPosition = LimitPositionWithinBounds(newPosition);
 
-        // Update the cursor's position
-        transform.position = clampedPosition;
+            // Update the cursor's position
+            transform.position = clampedPosition;
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            CmdHandleClick(newPosition);
+            if (Input.GetMouseButtonDown(0))
+            {
+                CmdHandleClick(newPosition);
+            }
         }
+
     }
 
     private Vector3 LimitPositionWithinBounds(Vector3 position)
