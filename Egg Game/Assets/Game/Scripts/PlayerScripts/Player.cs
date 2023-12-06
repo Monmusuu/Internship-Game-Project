@@ -40,7 +40,7 @@ public class Player : NetworkBehaviour
 
     // Player status and synchronization
     [SyncVar] public bool isKing = false;
-    [SyncVar] public bool isDead = false;
+    [SyncVar(hook = nameof(OnIsDeadChanged))] public bool isDead = false;
     public bool isAlreadyDead = false;
     public bool becameKing = false;
     public bool isPlayer = false;
@@ -49,7 +49,7 @@ public class Player : NetworkBehaviour
     // Health and scoring
     private float maxSpeed = 15.0f;
     private float maxHealth = 6;
-    private float currentHealth = 6;
+    [SerializeField] [SyncVar(hook = nameof(OnCurrentHealthChanged))] private float currentHealth = 6;
     [SyncVar] public int currentScore = 0;
     [SerializeField] private Healthbar healthbar;
     public float GetMaxHealth() { return maxHealth; }
@@ -113,7 +113,6 @@ public class Player : NetworkBehaviour
         bodySpriteRenderer = GetComponent<SpriteRenderer>();
         Transform weaponChild = transform.GetChild(3);
         weaponSpriteRenderer = weaponChild.GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();
     }
 
     void OnEnable()
@@ -196,17 +195,13 @@ public class Player : NetworkBehaviour
         }else if(!isKing && !roundControl.placingItems && roundControl.timerOn && isLocalPlayer && !menuScript.isPause)
         {
             gameInPlay();
+            CmdSetRunning(isRunningLocal);
+            CmdGroundCheck(left || right);
         }
     }
 
     public void gameIntermission()
     {
-        rigid.velocity = Vector2.zero;
-        isDead = false;
-        //animator.SetTrigger("Respawn");
-        currentHealth = 6;
-        isAlreadyDead = false;
-
         if (weaponSpriteRenderer != null)
         {
             Color spriteColor = weaponSpriteRenderer.color;
@@ -237,22 +232,6 @@ public class Player : NetworkBehaviour
     public void gameInPlay()
     {
         if(!isDead && !isAlreadyDead){
-            GroundCheck();
-
-            if (isGrounded)
-            {
-                animator.SetBool("Landed", true);
-                // Set the local isRunning variable based on the rigidbody velocity
-                isRunningLocal = Mathf.Abs(rigid.velocity.x) >= 0.1f;
-                if(rigid.velocity.x >= 0.1f || rigid.velocity.x <= -0.1f){
-                    animator.SetBool("Running", true);
-                }
-
-                // Call CmdSetRunning method directly on the server (host)
-                CmdSetRunning(isRunningLocal);
-            }else{
-                animator.SetBool("Landed", false);
-            }
 
             wasGrounded = isGrounded;
 
@@ -321,7 +300,7 @@ public class Player : NetworkBehaviour
     }
 
     public void isDeadPlayer(){
-        if(currentHealth <= 0 && !isDead && !isAlreadyDead)
+        if(currentHealth <= 0 && !isDead && !isAlreadyDead && !roundControl.placingItems)
         {
             rigid.velocity = Vector2.zero;
             isDead = true;
@@ -355,6 +334,12 @@ public class Player : NetworkBehaviour
             }else{
                 Debug.Log("Is null");
             }
+        }else if(roundControl.placingItems){
+            currentHealth = 6;
+            isDead = false;
+            animator.ResetTrigger("Dead");
+            isAlreadyDead = false;
+            //animator.SetTrigger("Respawn");
         }
     }
 
@@ -490,7 +475,13 @@ public class Player : NetworkBehaviour
         }
     }
 
-    void GroundCheck()
+    [Command]
+    void CmdGroundCheck(bool isRunning){
+        RpcGroundCheck(isRunning);
+    }
+
+    [ClientRpc]
+    void RpcGroundCheck(bool isRunning)
     {
         isGrounded = false;
 
@@ -499,6 +490,19 @@ public class Player : NetworkBehaviour
         if (colliders.Length > 0 || colliders2.Length > 0)
         {
             isGrounded = true;
+        }
+
+        if (isGrounded)
+        {
+            animator.SetBool("Landed", true);
+            // Set the local isRunning variable based on the rigidbody velocity
+            isRunningLocal = isRunning; // Update the local isRunning variable
+            if (isRunning)
+            {
+                animator.SetBool("Running", true);
+            }
+        }else{
+            animator.SetBool("Landed", false);
         }
     }
 
@@ -579,6 +583,23 @@ public class Player : NetworkBehaviour
             audioSource.PlayOneShot(swingAudioClip);
             m_WeaponAnimator.SetTrigger("Swing"); // Assuming you have a common trigger "Swing" for both host and client
         }
+    }
+
+    private void OnIsDeadChanged(bool oldValue, bool newValue)
+    {
+        if (newValue)
+        {
+            // Trigger death animation on the server
+            RpcPlayDeathAnimation();
+        }
+    }
+
+    [ClientRpc]
+    private void RpcPlayDeathAnimation()
+    {
+        // Play death animation on all clients
+        animator.SetTrigger("Dead");
+        // Additional logic related to death animation on clients
     }
 
     public void ApplyPlayerSprites(GameObject player, int i)
@@ -675,6 +696,12 @@ public class Player : NetworkBehaviour
     private void OnHatSpriteChange(int oldIndex, int newIndex)
     {
         hatSpriteRenderer.sprite = hatSpriteVariations[newIndex];
+    }
+
+    private void OnCurrentHealthChanged(float oldValue, float newValue)
+    {
+        // Update UI or perform actions based on the new health value
+        healthbar.SetHealth(newValue);
     }
 
     public void bodyChangeSprite(int newIndex)

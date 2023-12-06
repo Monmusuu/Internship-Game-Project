@@ -124,6 +124,31 @@ public class RoundControl : NetworkBehaviour
                     {
                         roundTimerImageFillAmount = RoundTime / 360f; // Assuming 360 is the max RoundTime
                     }
+
+                    if (AllPlayersExceptKingAreDead())
+                    {
+                        Respawn = true;
+                        Debug.Log("Round Over");
+                        if (Respawn && isServer)
+                        {
+                            RespawnPlayers();
+                        }
+                        playersPlacedBlocks = 0;
+                        itemsPlaced = false;
+                        Round += 1;
+                        timerOn = false;
+                        RoundTime = 360f;
+                        placingItems = true;
+
+                        // Check if there's a current king
+                        Player currentKing = players.Find(player => player != null && player.isKing);
+
+                        if (currentKing != null)
+                        {
+                            // Increase the currentScore of the current king
+                            currentKing.currentScore += 1;
+                        }
+                    }
                 }
 
                 if (RoundTime <= 0)
@@ -271,5 +296,28 @@ public class RoundControl : NetworkBehaviour
             }
         }
         return true; // No king among players
+    }
+
+    private bool AllPlayersExceptKingAreDead()
+    {
+        // Find the current king
+        Player king = players.Find(player => player != null && player.isKing);
+
+        // If there is no king or the king is null, return false
+        if (king == null)
+        {
+            return false;
+        }
+
+        // Check if all players except the king are dead
+        foreach (Player player in players)
+        {
+            if (player != null && player != king && !player.isDead)
+            {
+                return false; // At least one player (not the king) is still alive
+            }
+        }
+
+        return true; // All players except the king are dead
     }
 }
