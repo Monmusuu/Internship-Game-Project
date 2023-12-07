@@ -64,7 +64,6 @@ public class Player : NetworkBehaviour
     public MultiTargetCamera multiTargetCamera;
     [SerializeField] public GameObject playerBlockPlacement;
     [SerializeField] public GameObject trapInteraction;
-    public Transform kingSpawnLocation;
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
 
@@ -152,7 +151,6 @@ public class Player : NetworkBehaviour
         // Now you can use PlayerNumber as the number extracted from the tag
         Debug.Log("PlayerNumber: " + PlayerNumber);
         multiTargetCamera = GameObject.Find("Main Camera").GetComponent<MultiTargetCamera>();
-        kingSpawnLocation = GameObject.Find("KingPoint").transform;
         isPlayer = true;
         healthbar.SetMaxHealth(maxHealth);
         playerBlockPlacement.SetActive(false);
@@ -182,21 +180,20 @@ public class Player : NetworkBehaviour
             ActivateTrapInteraction();
         }
 
-        if (isKing)
+        if(isLocalPlayer){
+            CmdGroundCheck(left || right);
+        }
+
+        if (isKing && isLocalPlayer)
         {
             rigid.velocity = Vector2.zero;
-            if(roundControl.placingItems){
-                transform.position = kingSpawnLocation.position;
-            }
         }else if(roundControl.placingItems && !menuScript.isPause)
         {
             gameIntermission();
-
         }else if(!isKing && !roundControl.placingItems && roundControl.timerOn && isLocalPlayer && !menuScript.isPause)
         {
             gameInPlay();
             CmdSetRunning(isRunningLocal);
-            CmdGroundCheck(left || right);
         }
     }
 
@@ -337,9 +334,8 @@ public class Player : NetworkBehaviour
         }else if(roundControl.placingItems){
             currentHealth = 6;
             isDead = false;
-            animator.ResetTrigger("Dead");
+            animator.SetTrigger("Alive");
             isAlreadyDead = false;
-            //animator.SetTrigger("Respawn");
         }
     }
 
@@ -495,11 +491,22 @@ public class Player : NetworkBehaviour
         if (isGrounded)
         {
             animator.SetBool("Landed", true);
-            // Set the local isRunning variable based on the rigidbody velocity
-            isRunningLocal = isRunning; // Update the local isRunning variable
-            if (isRunning)
-            {
-                animator.SetBool("Running", true);
+
+            if(!isKing){
+
+                if(roundControl.timerOn){
+                    // Set the local isRunning variable based on the rigidbody velocity
+                    isRunningLocal = isRunning; // Update the local isRunning variable
+                    if (isRunning)
+                    {
+                        animator.SetBool("Running", true);
+                    }
+                }else{
+                    animator.SetBool("Running", false);
+                }
+
+            }else{
+                animator.SetBool("Running", false);
             }
         }else{
             animator.SetBool("Landed", false);
