@@ -111,10 +111,10 @@ public class CursorCharacterSelection : NetworkBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 if(isMapSelectionActive){
-                    Debug.Log("Clicking Map");
+                    //Debug.Log("Clicking Map");
                     HandleMapMouseClick();
                 }else{
-                    Debug.Log("Clicking Customs");
+                    //Debug.Log("Clicking Customs");
                     HandleMouseClick();
                 }
             }

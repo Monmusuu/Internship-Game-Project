@@ -943,11 +943,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c24240ac570a1499d9229432e10b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0
   rigid: {fileID: 3219085190463158599}
-  jumpSpeed: 25
+  jumpSpeed: 22
   m_RunSpeed: 15
   groundLayer:
     serializedVersion: 2
@@ -967,6 +967,7 @@ MonoBehaviour:
   isAlreadyDead: 0
   becameKing: 0
   isPlayer: 0
+  currentHealth: 6
   currentScore: 0
   healthbar: {fileID: 1526557127058223658}
   playerSaveData: {fileID: 0}
@@ -975,7 +976,6 @@ MonoBehaviour:
   multiTargetCamera: {fileID: 0}
   playerBlockPlacement: {fileID: 1641257361}
   trapInteraction: {fileID: 91069298}
-  kingSpawnLocation: {fileID: 0}
   groundCheckCollider: {fileID: 3219085189834981985}
   groundCheckCollider2: {fileID: 3219085189834981985}
   PlayerNumber: 0

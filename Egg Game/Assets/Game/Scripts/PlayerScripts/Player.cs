@@ -494,7 +494,7 @@ public class Player : NetworkBehaviour
 
             if(!isKing){
 
-                if(roundControl.timerOn){
+                if(roundControl != null && roundControl.timerOn && !menuScript.isPause){
                     // Set the local isRunning variable based on the rigidbody velocity
                     isRunningLocal = isRunning; // Update the local isRunning variable
                     if (isRunning)

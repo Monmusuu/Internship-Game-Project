@@ -177,8 +177,6 @@ public class RoundControl : NetworkBehaviour
                 }
             }
         }
-
-        
     }
 
     [ClientRpc]
