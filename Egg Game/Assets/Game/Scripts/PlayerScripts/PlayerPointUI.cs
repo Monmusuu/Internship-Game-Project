@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using Steamworks;
 using TMPro;
+using Mirror;
 
-public class PlayerPointUI : MonoBehaviour
+public class PlayerPointUI : NetworkBehaviour
 {
     private const int MaxPlayers = 6;
     public TMP_Text PlayerName;

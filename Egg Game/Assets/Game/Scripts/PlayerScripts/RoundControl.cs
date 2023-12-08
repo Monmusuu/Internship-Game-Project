@@ -44,7 +44,7 @@ public class RoundControl : NetworkBehaviour
 
     void Update()
     {
-        if(isServer){
+        //if(isServer){
             if (placingItems)
             {
                 timerElapsed = 0f;
@@ -176,7 +176,7 @@ public class RoundControl : NetworkBehaviour
                     }
                 }
             }
-        }
+        //}
     }
 
     [ClientRpc]

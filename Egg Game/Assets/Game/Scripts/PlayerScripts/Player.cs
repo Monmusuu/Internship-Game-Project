@@ -50,7 +50,7 @@ public class Player : NetworkBehaviour
     private float maxSpeed = 15.0f;
     private float maxHealth = 6;
     [SerializeField] [SyncVar(hook = nameof(OnCurrentHealthChanged))] private float currentHealth = 6;
-    [SyncVar] public int currentScore = 0;
+    [SyncVar(hook = nameof(OnCurrentScoreChanged))] public int currentScore = 0;
     [SerializeField] private Healthbar healthbar;
     public float GetMaxHealth() { return maxHealth; }
     public void SetMaxHealth(int value) { maxHealth = value; }
@@ -739,5 +739,10 @@ public class Player : NetworkBehaviour
     private void OnWeaponSpriteChange(int oldIndex, int newIndex)
     {
         weaponSpriteRenderer.sprite = weaponSpriteVariations[newIndex];
+    }
+
+    private void OnCurrentScoreChanged(int oldScore, int newScore)
+    {
+        // Handle the change in currentScore here if needed
     }
 }
