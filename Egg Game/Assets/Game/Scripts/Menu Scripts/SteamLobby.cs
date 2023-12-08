@@ -5,6 +5,7 @@ using Steamworks;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using UnityEngine.Events;
 
 public class SteamLobby : MonoBehaviour
 {
@@ -16,11 +17,16 @@ public class SteamLobby : MonoBehaviour
     public Toggle passwordProtectedToggle;
     public Toggle friendsOnlyToggle;
     public Toggle privateOnlyToggle;
+
+
     public TMP_InputField lobbyNameSearchInputField;
     public GameObject lobbiesMenu;
     public GameObject lobbiesDataItemPrefab;
     public GameObject lobbiesListContent;
     public List<GameObject> lisOfLobbies = new List<GameObject>();
+    public Toggle publicLobbies;
+    public Toggle friendLobbies;
+    public Toggle sortByPlayerNumbers;
 
     private CustomNetworkManager customNetworkManager;
 
@@ -28,7 +34,7 @@ public class SteamLobby : MonoBehaviour
     protected Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequested;
     protected Callback<LobbyEnter_t> lobbyEntered;
     private Callback<LobbyMatchList_t> lobbyMatchList; // Callback for lobby list
-
+    private List<CSteamID> lobbyIDs = new List<CSteamID>();
     public CSteamID createdLobbyID;
 
     private const string HostAddressKey = "HostAddress";
@@ -48,6 +54,10 @@ public class SteamLobby : MonoBehaviour
         gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
         lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
         lobbyMatchList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchListReceived); // Add this line
+        lobbyNameSearchInputField.onValueChanged.AddListener(new UnityAction<string>(OnSearchInputChanged));
+        sortByPlayerNumbers.onValueChanged.AddListener((value) => OnPlayerNumberToggleChanged());
+        publicLobbies.onValueChanged.AddListener((value) => OnPublicLobbiesToggleChanged());
+        friendLobbies.onValueChanged.AddListener((value) => OnFriendLobbiesToggleChanged());
         // Request the lobby list
         SteamMatchmaking.RequestLobbyList();
     }
@@ -215,8 +225,7 @@ public class SteamLobby : MonoBehaviour
 
     private void OnLobbyMatchListReceived(LobbyMatchList_t callback)
     {
-        // Extract the lobby IDs from the callback
-        List<CSteamID> lobbyIDs = new List<CSteamID>();
+        lobbyIDs.Clear();
         for (int i = 0; i < callback.m_nLobbiesMatching; i++)
         {
             lobbyIDs.Add(SteamMatchmaking.GetLobbyByIndex(i));
@@ -233,8 +242,44 @@ public class SteamLobby : MonoBehaviour
         // Clear existing lobby items
         DestroyLobbies();
 
+        // Sort lobbies based on toggles
+        lobbyIDs.Sort((id1, id2) =>
+        {
+            int result = 0;
+
+            if (sortByPlayerNumbers.isOn)
+            {
+                // Compare by the number of players in the lobby
+                int playerCount1 = SteamMatchmaking.GetNumLobbyMembers(id1);
+                int playerCount2 = SteamMatchmaking.GetNumLobbyMembers(id2);
+                result = playerCount2.CompareTo(playerCount1); // Sort in descending order
+            }
+            else
+            {
+                // Default sorting by lobby name
+                string lobbyName1 = SteamMatchmaking.GetLobbyData(id1, "LobbyName");
+                string lobbyName2 = SteamMatchmaking.GetLobbyData(id2, "LobbyName");
+                result = lobbyName1.CompareTo(lobbyName2);
+            }
+
+            // Reverse the result if sorting in ascending order
+            return sortByPlayerNumbers.isOn ? result : -result;
+        });
+
         foreach (CSteamID lobbyID in lobbyIDs)
         {
+            // Check if the publicLobbies toggle is on, the lobby is public, and it is not password-protected
+            if (publicLobbies.isOn && SteamMatchmaking.GetLobbyData(lobbyID, "LobbyType") == "Public" && string.IsNullOrEmpty(SteamMatchmaking.GetLobbyData(lobbyID, "Password")))
+            {
+                continue; // Skip this lobby if not public or password-protected
+            }
+
+            // Check if the friendLobbies toggle is on and if the lobby is friends-only
+            if (friendLobbies.isOn && SteamMatchmaking.GetLobbyData(lobbyID, "LobbyType") != "FriendsOnly")
+            {
+                continue; // Skip this lobby if not friends-only
+            }
+
             GameObject createdItem = Instantiate(lobbiesDataItemPrefab);
             createdItem.GetComponent<LobbyData>().lobbyID = lobbyID;
             createdItem.GetComponent<LobbyData>().lobbyName = SteamMatchmaking.GetLobbyData(lobbyID, "LobbyName");
@@ -245,5 +290,58 @@ public class SteamLobby : MonoBehaviour
 
             lisOfLobbies.Add(createdItem);
         }
+    }
+
+
+    public void FilterLobbiesByName(string searchInput)
+    {
+        // Get a list of lobby IDs that match the search input
+        List<CSteamID> filteredLobbyIDs = new List<CSteamID>();
+        
+        foreach (CSteamID lobbyID in lobbyIDs)
+        {
+            string lobbyName = SteamMatchmaking.GetLobbyData(lobbyID, "LobbyName");
+            if (lobbyName.ToLower().Contains(searchInput.ToLower()))
+            {
+                filteredLobbyIDs.Add(lobbyID);
+            }
+        }
+
+        // Display the filtered list
+        DisplayLobbies(filteredLobbyIDs);
+    }
+
+    public void OnSearchInputChanged(string searchInput)
+    {
+        if (string.IsNullOrEmpty(searchInput))
+        {
+            // If the search input is empty, show all lobbies
+            DisplayLobbies(lobbyIDs);
+        }
+        else
+        {
+            // If there is a search input, filter the lobbies by name
+            FilterLobbiesByName(searchInput);
+        }
+    }
+
+    public void OnToggleChanged()
+    {
+        RefreshLobbyList();
+    }
+
+    public void OnPlayerNumberToggleChanged()
+    {
+        OnToggleChanged();
+    }
+
+    public void OnPublicLobbiesToggleChanged()
+    {
+        OnToggleChanged();
+    }
+
+    public void OnFriendLobbiesToggleChanged()
+    {
+        OnToggleChanged();
     }
 }
