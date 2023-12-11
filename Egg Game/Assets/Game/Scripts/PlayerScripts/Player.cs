@@ -619,7 +619,7 @@ public class Player : NetworkBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("KingPoint") && isServer && !isKing)
+        if (other.gameObject.CompareTag("KingPoint") && isServer && !isKing && !becameKing)
         {
             becameKing = true;
         }

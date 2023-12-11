@@ -29,6 +29,7 @@ public class MultiTargetCamera : NetworkBehaviour
 
     private void Start()
     {
+        mapObject = GameObject.Find("MapArea");
         // Set the cam reference for the local player
         cam = Camera.main;
         
@@ -73,6 +74,9 @@ public class MultiTargetCamera : NetworkBehaviour
             {
                 Move();
                 Zoom();
+                if(roundControl.victoryScreen){
+                    mapObject = GameObject.Find("VictoryBackground");
+                }
             }
         }
         else // If the camera is attached to the local player (client-side), follow the local player

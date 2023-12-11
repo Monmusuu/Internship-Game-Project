@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
+using System.Linq;
 
 public class RoundControl : NetworkBehaviour
 {
@@ -12,6 +13,7 @@ public class RoundControl : NetworkBehaviour
     [SyncVar] public bool Respawn = false;
     [SyncVar] public bool itemsPlaced = false;
     [SyncVar] public bool placingItems = false;
+    [SyncVar] public bool victoryScreen = false;
     [SyncVar] public int playersPlacedBlocks = 0;
     [SyncVar] public float timerElapsed;
     [SyncVar] public float RoundTime = 360f;
@@ -26,6 +28,9 @@ public class RoundControl : NetworkBehaviour
     public List<Player> players = new List<Player>();
     public Transform playerSpawnLocation;
     public Transform kingSpawnLocation;
+    public Transform FirstPlaceLocation;
+    public Transform SecondPlaceSpawnLocation;
+    public Transform ThirdPlaceSpawnLocation;
     public Image timerImage;
     public Image roundTimerImage;
 
@@ -34,98 +39,139 @@ public class RoundControl : NetworkBehaviour
 
     private void Start()
     {
-
         StartCoroutine(WaitForPlayerSaveData());
         playerSpawnLocation = GameObject.Find("SpawnPoints").transform;
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
+        FirstPlaceLocation = GameObject.Find("Spawn 1").transform;
+        SecondPlaceSpawnLocation = GameObject.Find("Spawn 2").transform;
+        ThirdPlaceSpawnLocation = GameObject.Find("Spawn 3").transform;
         timerImage = GameObject.Find("Timer").GetComponent<Image>();
         roundTimerImage = GameObject.Find("RoundTimer").GetComponent<Image>();
     }
 
     void Update()
     {
-        //if(isServer){
-            if (placingItems)
-            {
-                timerElapsed = 0f;
-                Respawn = false;
-                timerOn = false;
-
-                if(NoKingAmongPlayers()){
-                    if(playersPlacedBlocks >= playerSaveData.playerCount){
-                        itemsPlaced = true;
-                        placingItems = false;
-                    }
-                }else{
-                    if(playersPlacedBlocks >= playerSaveData.playerCount +2){
-                        itemsPlaced = true;
-                        placingItems = false;
-                    }
-                }
-                
-            }else
-            {
-                for (int i = 0; i < players.Count; i++)
+        if(isServer){
+            if(victoryScreen != true){
+                if (placingItems)
                 {
-                    if (players[i] != null && players[i].becameKing)
+                    timerElapsed = 0f;
+                    Respawn = false;
+                    timerOn = false;
+
+                    if(NoKingAmongPlayers()){
+                        if(playersPlacedBlocks >= playerSaveData.playerCount){
+                            itemsPlaced = true;
+                            placingItems = false;
+                        }
+                    }else{
+                        if(playersPlacedBlocks >= playerSaveData.playerCount +2){
+                            itemsPlaced = true;
+                            placingItems = false;
+                        }
+                    }
+                    
+                }else
+                {
+                    for (int i = 0; i < players.Count; i++)
                     {
-                        // Update player flags for the current king
-                        for (int j = 0; j < players.Count; j++)
+                        if (players[i] != null && players[i].becameKing)
                         {
-                            if (players[j] != null)
+                            // Update player flags for the current king
+                            for (int j = 0; j < players.Count; j++)
                             {
-                                players[j].isKing = (j == i);
-                                players[j].isPlayer = (j != i);
+                                if (players[j] != null)
+                                {
+                                    players[j].isKing = (j == i);
+                                    players[j].isPlayer = (j != i);
+
+                                }
+                            }
+                            players[i].becameKing = false;
+                            
+                            // Check if there's a current king
+                            Player currentKing = players.Find(player => player != null && player.isKing);
+                            currentKing.currentScore += 1;
+                            Debug.Log("Player's score: " + currentKing.currentScore);
+
+                            if(currentKing.currentScore == 1){
+                                HandleVictorySpawn();
+                            }else{
+                                
+                                // Set respawn and round variables
+                                Respawn = true;
+                                if (Respawn && isServer)
+                                {
+                                    RespawnPlayers();
+                                }
+                                playersPlacedBlocks = 0;
+                                itemsPlaced = false;
+                                Round += 1;
+                                placingItems = true;
+                                Debug.Log("Round Reset");
                             }
 
-                            if (j == i)
-                            {
-                                players[j].currentScore += 1;
-                            }
+                            // Exit the loop since the king is found
+                            break;
                         }
+                    }
 
-                        // Set respawn and round variables
-                        Respawn = true;
-                        if (Respawn && isServer)
-                        {
-                            RespawnPlayers();
-                        }
-                        playersPlacedBlocks = 0;
-                        itemsPlaced = false;
-                        Round += 1;
-                        players[i].becameKing = false;
+                    if(Round == 0 && timerOn == false)
+                    {
+                        Debug.Log("Round 0");
                         placingItems = true;
-                        // Exit the loop since the king is found
-                        break;
+                        // Start the coroutine to gradually decrease the fill amount
+                        StartCoroutine(DecreaseTimerFillOverTime(3f));
                     }
-                }
 
-                if(Round == 0 && timerOn == false)
-                {
-                    Debug.Log("Round 0");
-                    placingItems = true;
-                    // Start the coroutine to gradually decrease the fill amount
-                    StartCoroutine(DecreaseTimerFillOverTime(3f));
-                }
-
-                if (itemsPlaced && Round >= 1 && timerOn == false)
-                {
-                    // Start the coroutine to gradually decrease the fill amount
-                    StartCoroutine(DecreaseTimerFillOverTime(3f));
-                    //Debug.Log("Inbetween Iimer");
-
-                }else if(itemsPlaced && Round >= 1 && timerOn == true)
-                {
-                    RoundTime -= Time.deltaTime;
-
-                    // Update the round timer image fill amount based on RoundTime
-                    float fillAmountRound = RoundTime / 360f; // Assuming 360 is the max RoundTime
-                    if (roundTimerImage != null)
+                    if (itemsPlaced && Round >= 1 && timerOn == false)
                     {
-                        roundTimerImageFillAmount = RoundTime / 360f; // Assuming 360 is the max RoundTime
+                        // Start the coroutine to gradually decrease the fill amount
+                        StartCoroutine(DecreaseTimerFillOverTime(3f));
+                        //Debug.Log("Inbetween Iimer");
+
+                    }else if(itemsPlaced && Round >= 1 && timerOn == true)
+                    {
+                        RoundTime -= Time.deltaTime;
+
+                        // Update the round timer image fill amount based on RoundTime
+                        float fillAmountRound = RoundTime / 360f; // Assuming 360 is the max RoundTime
+                        if (roundTimerImage != null)
+                        {
+                            roundTimerImageFillAmount = RoundTime / 360f; // Assuming 360 is the max RoundTime
+                        }
+
+                        if (AllPlayersExceptKingAreDead())
+                        {
+                            Respawn = true;
+                            Debug.Log("Round Over");
+                            if (Respawn && isServer)
+                            {
+                                RespawnPlayers();
+                            }
+                            playersPlacedBlocks = 0;
+                            itemsPlaced = false;
+                            Round += 1;
+                            timerOn = false;
+                            RoundTime = 360f;
+                            placingItems = true;
+
+                            // Check if there's a current king
+                            Player currentKing = players.Find(player => player != null && player.isKing);
+
+                            if (currentKing != null)
+                            {
+                                // Increase the currentScore of the current king
+                                currentKing.currentScore += 1;
+
+                                if(currentKing.currentScore == 1){
+                                    HandleVictorySpawn();
+                                }
+                            }
+                        }
                     }
 
-                    if (AllPlayersExceptKingAreDead())
+                    if (RoundTime <= 0)
                     {
                         Respawn = true;
                         Debug.Log("Round Over");
@@ -147,36 +193,14 @@ public class RoundControl : NetworkBehaviour
                         {
                             // Increase the currentScore of the current king
                             currentKing.currentScore += 1;
+                            if(currentKing.currentScore == 1){
+                                HandleVictorySpawn();
+                            }
                         }
                     }
                 }
-
-                if (RoundTime <= 0)
-                {
-                    Respawn = true;
-                    Debug.Log("Round Over");
-                    if (Respawn && isServer)
-                    {
-                        RespawnPlayers();
-                    }
-                    playersPlacedBlocks = 0;
-                    itemsPlaced = false;
-                    Round += 1;
-                    timerOn = false;
-                    RoundTime = 360f;
-                    placingItems = true;
-
-                    // Check if there's a current king
-                    Player currentKing = players.Find(player => player != null && player.isKing);
-
-                    if (currentKing != null)
-                    {
-                        // Increase the currentScore of the current king
-                        currentKing.currentScore += 1;
-                    }
-                }
             }
-        //}
+        }
     }
 
     [ClientRpc]
@@ -317,5 +341,41 @@ public class RoundControl : NetworkBehaviour
         }
 
         return true; // All players except the king are dead
+    }
+
+    private void HandleVictorySpawn()
+    {
+        victoryScreen = true;
+        // Sort players by score in descending order
+        List<Player> sortedPlayers = players.OrderByDescending(player => player.currentScore).ToList();
+
+        for (int i = 0; i < sortedPlayers.Count; i++)
+        {
+            Player player = sortedPlayers[i];
+
+            if (player != null)
+            {
+                if (i == 0)
+                {
+                    // Player with the highest score spawns at Spawn 1
+                    player.transform.position = FirstPlaceLocation.position;
+                }
+                else if (i == 1)
+                {
+                    // Player with the second-highest score spawns at Spawn 2
+                    player.transform.position = SecondPlaceSpawnLocation.position;
+                }
+                else if (i == 2)
+                {
+                    // Player with the third-highest score spawns at Spawn 3
+                    player.transform.position = ThirdPlaceSpawnLocation.position;
+                }
+                else
+                {
+                    // Other players spawn at the default location (playerSpawnLocation)
+                    player.transform.position = playerSpawnLocation.position;
+                }
+            }
+        }
     }
 }
