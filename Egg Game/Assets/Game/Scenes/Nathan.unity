@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 120634488}
   - component: {fileID: 120634487}
   m_Layer: 5
-  m_Name: Timer
+  m_Name: MapTimer
   m_TagString: button
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

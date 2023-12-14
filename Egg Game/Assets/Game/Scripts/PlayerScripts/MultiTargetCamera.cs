@@ -20,13 +20,6 @@ public class MultiTargetCamera : NetworkBehaviour
     [SerializeField] private Camera cam;
     private float initialZ;
 
-    // SyncVars for camera zoom level and target position
-    [SyncVar(hook = nameof(OnZoomLevelUpdated))]
-    private float currentZoomLevel;
-
-    [SyncVar(hook = nameof(OnCameraTargetPositionUpdated))]
-    private Vector3 cameraTargetPosition;
-
     private void Start()
     {
         mapObject = GameObject.Find("MapArea");
@@ -72,10 +65,12 @@ public class MultiTargetCamera : NetworkBehaviour
             }
             else
             {
-                Move();
-                Zoom();
                 if(roundControl.victoryScreen && !roundControl.victoryTimer){
                     mapObject = GameObject.Find("VictoryBackground");
+                    ZoomOutToSeeMap();
+                }else{
+                    Move();
+                    Zoom();
                 }
             }
         }
@@ -127,9 +122,6 @@ public class MultiTargetCamera : NetworkBehaviour
         // Set the new orthographic size while maintaining the current aspect ratio
         cam.orthographicSize = targetSize;
 
-        // Synchronize camera orthographic size for clients
-        currentZoomLevel = targetSize;
-
         // Calculate the center position of the map
         Vector3 mapCenter = customBounds.center;
 
@@ -138,9 +130,6 @@ public class MultiTargetCamera : NetworkBehaviour
         
         // Apply the new camera position
         transform.position = newPosition;
-
-        // Synchronize camera target position for clients
-        cameraTargetPosition = transform.position;
     }
 
     void Zoom()
@@ -163,9 +152,6 @@ public class MultiTargetCamera : NetworkBehaviour
         newZoom = Mathf.Clamp(newZoom, minOrthographicSize, maxOrthographicSize);
 
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
-
-        // Synchronize camera zoom level for clients
-        currentZoomLevel = cam.orthographicSize;
     }
 
 
@@ -181,9 +167,6 @@ public class MultiTargetCamera : NetworkBehaviour
         float newY = Mathf.Clamp(centerPoint.y, minPositionY, maxPositionY);
         Vector3 newPosition = new Vector3(newX, newY, initialZ) + offset;
         transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
-
-        // Synchronize camera target position for clients
-        cameraTargetPosition = transform.position;
     }
 
     float GetGreatestDistance()
@@ -209,21 +192,5 @@ public class MultiTargetCamera : NetworkBehaviour
             bounds.Encapsulate(players[i].transform.position);
         }
         return bounds.center;
-    }
-
-    // Hook method for the camera zoom level sync var update.
-    private void OnZoomLevelUpdated(float oldZoomLevel, float newZoomLevel)
-    {
-        if (cam != null)
-        {
-            //Debug.Log($"Setting camera orthographic size to: {newZoomLevel}");
-            cam.orthographicSize = newZoomLevel;
-        }
-    }
-
-    // Hook method for the camera target position sync var update.
-    private void OnCameraTargetPositionUpdated(Vector3 oldPosition, Vector3 newPosition)
-    {
-        transform.position = newPosition;
     }
 }

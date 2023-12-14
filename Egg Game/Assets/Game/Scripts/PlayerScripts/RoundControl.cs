@@ -100,14 +100,14 @@ public class RoundControl : NetworkBehaviour
                             currentKing.currentScore += 1;
                             Debug.Log("Player's score: " + currentKing.currentScore);
 
-                            if(currentKing.currentScore == 1){
+                            if(currentKing.currentScore == 2){
                                 victoryTimer = true;
                                 victoryScreen = true;
                             }else{
                                 
                                 // Set respawn and round variables
                                 Respawn = true;
-                                if (Respawn && isServer)
+                                if (Respawn)
                                 {
                                     RespawnPlayers();
                                 }
@@ -152,7 +152,7 @@ public class RoundControl : NetworkBehaviour
                         {
                             Respawn = true;
                             Debug.Log("Round Over");
-                            if (Respawn && isServer)
+                            if (Respawn)
                             {
                                 RespawnPlayers();
                             }
@@ -171,7 +171,7 @@ public class RoundControl : NetworkBehaviour
                                 // Increase the currentScore of the current king
                                 currentKing.currentScore += 1;
 
-                                if(currentKing.currentScore == 1){
+                                if(currentKing.currentScore == 2){
                                     victoryTimer = true;
                                     victoryScreen = true;
                                 }
@@ -183,7 +183,7 @@ public class RoundControl : NetworkBehaviour
                     {
                         Respawn = true;
                         Debug.Log("Round Over");
-                        if (Respawn && isServer)
+                        if (Respawn)
                         {
                             RespawnPlayers();
                         }
@@ -201,7 +201,7 @@ public class RoundControl : NetworkBehaviour
                         {
                             // Increase the currentScore of the current king
                             currentKing.currentScore += 1;
-                            if(currentKing.currentScore == 1){
+                            if(currentKing.currentScore == 2){
                                 victoryTimer = true;
                                 victoryScreen = true;
                             }
@@ -267,6 +267,56 @@ public class RoundControl : NetworkBehaviour
         }
 
         Respawn = false;
+    }
+
+    private void HandleVictorySpawn()
+    {
+        // Sort players by score in descending order
+        List<Player> sortedPlayers = players.OrderByDescending(player => player.currentScore).ToList();
+
+        for (int i = 0; i < sortedPlayers.Count; i++)
+        {
+            Player player = sortedPlayers[i];
+            Debug.Log("Sorted Player by Score");
+
+            if (player != null)
+            {
+                Vector3 spawnPosition = playerSpawnLocation.position; // Default spawn position
+
+                if (i == 0)
+                {
+                    spawnPosition = FirstPlaceLocation.position;
+                    Debug.Log("First Place Spawned");
+                }
+                else if (i == 1)
+                {
+                    spawnPosition = SecondPlaceSpawnLocation.position;
+                    Debug.Log("Second Place Spawned");
+                }
+                else if (i == 2)
+                {
+                    spawnPosition = ThirdPlaceSpawnLocation.position;
+                }
+
+                // Move the player to the designated spawn position
+                player.transform.position = spawnPosition;
+
+                // Use a Command to synchronize the spawn position to all clients
+                RpcSetPlayerVictoryPosition(player.GetComponent<NetworkIdentity>(), spawnPosition);
+            }
+        }
+    }
+
+    [ClientRpc]
+    private void RpcSetPlayerVictoryPosition(NetworkIdentity playerNetIdentity, Vector3 spawnPosition)
+    {
+        // Reset player's velocity and position on all clients
+        Player player = playerNetIdentity.GetComponent<Player>();
+        if (player != null)
+        {
+            player.rigid.velocity = Vector2.zero;
+            player.transform.position = spawnPosition;
+        }
     }
 
     private void OnTimerImageFillAmountChanged(float oldFillAmount, float newFillAmount)
@@ -372,42 +422,5 @@ public class RoundControl : NetworkBehaviour
         }
 
         return true; // All players except the king are dead
-    }
-
-    private void HandleVictorySpawn()
-    {
-        // Sort players by score in descending order
-        List<Player> sortedPlayers = players.OrderByDescending(player => player.currentScore).ToList();
-
-        for (int i = 0; i < sortedPlayers.Count; i++)
-        {
-            Player player = sortedPlayers[i];
-            Debug.Log("Sorted Player by Score");
-            
-            if (player != null)
-            {
-                if (i == 0)
-                {
-                    // Player with the highest score spawns at Spawn 1
-                    player.transform.position = FirstPlaceLocation.position;
-                    Debug.Log("First Place Spawned");
-                }
-                else if (i == 1)
-                {
-                    // Player with the second-highest score spawns at Spawn 2
-                    player.transform.position = SecondPlaceSpawnLocation.position;
-                }
-                else if (i == 2)
-                {
-                    // Player with the third-highest score spawns at Spawn 3
-                    player.transform.position = ThirdPlaceSpawnLocation.position;
-                }
-                else
-                {
-                    // Other players spawn at the default location (playerSpawnLocation)
-                    player.transform.position = playerSpawnLocation.position;
-                }
-            }
-        }
     }
 }
