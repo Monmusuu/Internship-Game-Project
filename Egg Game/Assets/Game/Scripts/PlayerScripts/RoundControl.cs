@@ -14,6 +14,7 @@ public class RoundControl : NetworkBehaviour
     [SyncVar] public bool itemsPlaced = false;
     [SyncVar] public bool placingItems = false;
     [SyncVar] public bool victoryScreen = false;
+    [SyncVar] public bool victoryTimer = false;
     [SyncVar] public int playersPlacedBlocks = 0;
     [SyncVar] public float timerElapsed;
     [SyncVar] public float RoundTime = 360f;
@@ -24,6 +25,9 @@ public class RoundControl : NetworkBehaviour
     [SyncVar(hook = nameof(OnRoundTimerImageFillAmountChanged))]
     public float roundTimerImageFillAmount = 1.0f;
 
+    [SyncVar(hook = nameof(OnVictoryCurtainFillAmountChanged))]
+    public float victoryCurtainFillAmount = 0.0f;
+
     // Public variables
     public List<Player> players = new List<Player>();
     public Transform playerSpawnLocation;
@@ -33,6 +37,7 @@ public class RoundControl : NetworkBehaviour
     public Transform ThirdPlaceSpawnLocation;
     public Image timerImage;
     public Image roundTimerImage;
+    public Image victoryCurtainImage;
 
     // Private variables
     private PlayerSaveData playerSaveData;
@@ -42,11 +47,12 @@ public class RoundControl : NetworkBehaviour
         StartCoroutine(WaitForPlayerSaveData());
         playerSpawnLocation = GameObject.Find("SpawnPoints").transform;
         kingSpawnLocation = GameObject.Find("KingPoint").transform;
+        timerImage = GameObject.Find("Timer").GetComponent<Image>();
+        roundTimerImage = GameObject.Find("RoundTimer").GetComponent<Image>();
+        victoryCurtainImage = GameObject.Find("CurtainImage").GetComponent<Image>();
         FirstPlaceLocation = GameObject.Find("Spawn 1").transform;
         SecondPlaceSpawnLocation = GameObject.Find("Spawn 2").transform;
         ThirdPlaceSpawnLocation = GameObject.Find("Spawn 3").transform;
-        timerImage = GameObject.Find("Timer").GetComponent<Image>();
-        roundTimerImage = GameObject.Find("RoundTimer").GetComponent<Image>();
     }
 
     void Update()
@@ -95,7 +101,8 @@ public class RoundControl : NetworkBehaviour
                             Debug.Log("Player's score: " + currentKing.currentScore);
 
                             if(currentKing.currentScore == 1){
-                                HandleVictorySpawn();
+                                victoryTimer = true;
+                                victoryScreen = true;
                             }else{
                                 
                                 // Set respawn and round variables
@@ -165,7 +172,8 @@ public class RoundControl : NetworkBehaviour
                                 currentKing.currentScore += 1;
 
                                 if(currentKing.currentScore == 1){
-                                    HandleVictorySpawn();
+                                    victoryTimer = true;
+                                    victoryScreen = true;
                                 }
                             }
                         }
@@ -194,10 +202,24 @@ public class RoundControl : NetworkBehaviour
                             // Increase the currentScore of the current king
                             currentKing.currentScore += 1;
                             if(currentKing.currentScore == 1){
-                                HandleVictorySpawn();
+                                victoryTimer = true;
+                                victoryScreen = true;
                             }
                         }
                     }
+                }
+            }else{
+                //Increase the fill amount of the victory curtain image
+                if (victoryCurtainFillAmount < 1.0f && victoryTimer)
+                {
+                    victoryCurtainFillAmount += Time.deltaTime * 0.5f; // Adjust fillSpeed as needed
+
+                    if(victoryCurtainFillAmount > 0.9f){
+                        HandleVictorySpawn();
+                    }
+                }else{
+                    victoryCurtainFillAmount -= Time.deltaTime * 0.5f;
+                    victoryTimer = false;
                 }
             }
         }
@@ -262,6 +284,15 @@ public class RoundControl : NetworkBehaviour
         if (roundTimerImage != null)
         {
             roundTimerImage.fillAmount = newFillAmount;
+        }
+    }
+
+    private void OnVictoryCurtainFillAmountChanged(float oldFillAmount, float newFillAmount)
+    {
+        // Update the fill amount of the victory curtain image on all clients
+        if (victoryCurtainImage != null)
+        {
+            victoryCurtainImage.fillAmount = newFillAmount;
         }
     }
 
@@ -345,20 +376,21 @@ public class RoundControl : NetworkBehaviour
 
     private void HandleVictorySpawn()
     {
-        victoryScreen = true;
         // Sort players by score in descending order
         List<Player> sortedPlayers = players.OrderByDescending(player => player.currentScore).ToList();
 
         for (int i = 0; i < sortedPlayers.Count; i++)
         {
             Player player = sortedPlayers[i];
-
+            Debug.Log("Sorted Player by Score");
+            
             if (player != null)
             {
                 if (i == 0)
                 {
                     // Player with the highest score spawns at Spawn 1
                     player.transform.position = FirstPlaceLocation.position;
+                    Debug.Log("First Place Spawned");
                 }
                 else if (i == 1)
                 {

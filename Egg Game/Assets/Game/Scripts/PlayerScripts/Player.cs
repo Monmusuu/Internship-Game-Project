@@ -64,6 +64,7 @@ public class Player : NetworkBehaviour
     public MultiTargetCamera multiTargetCamera;
     [SerializeField] public GameObject playerBlockPlacement;
     [SerializeField] public GameObject trapInteraction;
+    [SerializeField] public GameObject victoryInteraction;
     [SerializeField] private Transform groundCheckCollider;
     [SerializeField] private Transform groundCheckCollider2;
 
@@ -96,6 +97,8 @@ public class Player : NetworkBehaviour
     [SerializeField] private SpriteRenderer placeCursor;
 
     [SerializeField] private SpriteRenderer interactionCursor;
+
+    [SerializeField] private SpriteRenderer victoryCursor;
 
     // Audio components
     public AudioSource audioSource; // Reference to the AudioSource component
@@ -155,6 +158,7 @@ public class Player : NetworkBehaviour
         healthbar.SetMaxHealth(maxHealth);
         playerBlockPlacement.SetActive(false);
         trapInteraction.SetActive(false);
+        victoryInteraction.SetActive(false);
         weaponCollider.enabled = false;
         rigid = gameObject.GetComponent<Rigidbody2D>();
         menuScript = FindObjectOfType<MenuScript>();
@@ -178,6 +182,7 @@ public class Player : NetworkBehaviour
         if(isServer){
             ActivatePlayerPlacement();
             ActivateTrapInteraction();
+            ActivateVictoryInteraction();
         }
 
         if(isLocalPlayer){
@@ -405,6 +410,7 @@ public class Player : NetworkBehaviour
                 Debug.Log("Assigned tag: " + playerTag);
                 interactionCursor.color = playerColor;
                 placeCursor.color = playerColor;
+                victoryCursor.color = playerColor;
                 break;
             }
         }
@@ -443,6 +449,15 @@ public class Player : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    private void RpcActivateVictoryInteraction(bool activate)
+    {
+        if (victoryInteraction != null)
+        {
+            victoryInteraction.SetActive(activate);
+        }
+    }
+
     [Client]
     private void ActivatePlayerPlacement()
     {
@@ -455,6 +470,13 @@ public class Player : NetworkBehaviour
     {
         bool activate = roundControl.timerOn && isKing && roundControl.Round >= 1;
         RpcActivateTrapInteraction(activate);
+    }
+
+    [Client]
+    private void ActivateVictoryInteraction()
+    {
+        bool activate = roundControl.victoryScreen;
+        RpcActivateVictoryInteraction(activate);
     }
 
     // OnDestroy is called when the player GameObject is destroyed

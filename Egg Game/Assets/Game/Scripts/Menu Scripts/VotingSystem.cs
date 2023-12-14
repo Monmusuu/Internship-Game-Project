@@ -19,7 +19,6 @@ public class VotingSystem : NetworkBehaviour
     private int playersVoted = 0; // Variable to track the number of players who have voted
 
     [SerializeField] private Button backButton;
-    [SerializeField] private GameObject mapCanvas;
 
     [SerializeField]
     private PlayerSaveData playerSaveData;

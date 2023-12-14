@@ -74,7 +74,7 @@ public class MultiTargetCamera : NetworkBehaviour
             {
                 Move();
                 Zoom();
-                if(roundControl.victoryScreen){
+                if(roundControl.victoryScreen && !roundControl.victoryTimer){
                     mapObject = GameObject.Find("VictoryBackground");
                 }
             }
