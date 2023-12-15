@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
-using Mirror;
 
-public class MultiTargetCamera : NetworkBehaviour
+public class MultiTargetCamera : MonoBehaviour
 {
     public List<Player> players = new List<Player>();
     public GameObject mapObject;
@@ -35,62 +35,35 @@ public class MultiTargetCamera : NetworkBehaviour
             AddPlayer(player);
         }
 
-        // If this script is on the local player object, set the offset
-        if (isLocalPlayer)
-        {
-            offset = new Vector3(0f, 5f, -10f); // Adjust the values according to your needs
-        }
-
-        // Try to find the RoundControl component and log the result
-        roundControl = FindObjectOfType<RoundControl>();
-        if (roundControl != null)
-        {
-            Debug.Log("RoundControl found in MultiTargetCamera.");
-        }
-        else
-        {
-            Debug.LogWarning("RoundControl not found in MultiTargetCamera. Ensure that RoundControl exists in the scene and is active before the camera script starts.");
-        }
+        StartCoroutine(WaitForRoundControl());
     }
 
     private void LateUpdate()
     {
-        // If the camera is not attached to the local player (host-side), follow the center point of all players
-        if (!isLocalPlayer)
+        if (roundControl.placingItems)
         {
-            if (roundControl.placingItems)
-            {
+            ZoomOutToSeeMap();
+        }
+        else
+        {
+            if(roundControl.victoryScreen && !roundControl.victoryTimer){
+                mapObject = GameObject.Find("VictoryBackground");
                 ZoomOutToSeeMap();
-                //Debug.Log("Zooming Out");
-            }
-            else
-            {
-                if(roundControl.victoryScreen && !roundControl.victoryTimer){
-                    mapObject = GameObject.Find("VictoryBackground");
-                    ZoomOutToSeeMap();
-                }else{
-                    Move();
-                    Zoom();
+            }else{
+
+                for (int i = 0; i < players.Count; i++)
+                {
+                    if (players[i].isLocalKing)
+                    {
+                        ZoomOutToSeeMap();
+                        //Debug.Log("Zooming Out");
+                    }else{
+                        Move();
+                        Zoom();
+                    }
                 }
             }
         }
-        else // If the camera is attached to the local player (client-side), follow the local player
-        {
-            if (roundControl.placingItems)
-            {
-                ZoomOutToSeeMap();
-            }
-            else
-            {
-                Move();
-                // Zoom(); // We won't call the Zoom function on the client side.
-            }
-        }
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
     }
 
     // Method to add a player to the players list
@@ -171,11 +144,25 @@ public class MultiTargetCamera : NetworkBehaviour
 
     float GetGreatestDistance()
     {
-        var bounds = new Bounds(players[0].transform.position, Vector3.zero);
+        var bounds = new Bounds(Vector3.zero, Vector3.zero);
+        bool firstPlayer = true;
+
         for (int i = 0; i < players.Count; i++)
         {
-            bounds.Encapsulate(players[i].transform.position);
+            if (!players[i].isKing)
+            {
+                if (firstPlayer)
+                {
+                    bounds = new Bounds(players[i].transform.position, Vector3.zero);
+                    firstPlayer = false;
+                }
+                else
+                {
+                    bounds.Encapsulate(players[i].transform.position);
+                }
+            }
         }
+
         return bounds.size.x;
     }
 
@@ -186,11 +173,39 @@ public class MultiTargetCamera : NetworkBehaviour
             return players[0].transform.position;
         }
 
-        var bounds = new Bounds(players[0].transform.position, Vector3.zero);
+        var bounds = new Bounds(Vector3.zero, Vector3.zero);
+        bool firstPlayer = true;
+
         for (int i = 0; i < players.Count; i++)
         {
-            bounds.Encapsulate(players[i].transform.position);
+            if (!players[i].isKing)
+            {
+                if (firstPlayer)
+                {
+                    bounds = new Bounds(players[i].transform.position, Vector3.zero);
+                    firstPlayer = false;
+                }
+                else
+                {
+                    bounds.Encapsulate(players[i].transform.position);
+                }
+            }
         }
+
         return bounds.center;
+    }
+
+    IEnumerator WaitForRoundControl() {
+        while (roundControl == null) {
+            GameObject roundControlObject = GameObject.Find("RoundControl(Clone)");
+
+            if (roundControlObject!= null) {
+                roundControl = roundControlObject.GetComponent<RoundControl>();
+
+                break;
+            }
+
+            yield return null; // Wait for a frame before checking again
+        }
     }
 }

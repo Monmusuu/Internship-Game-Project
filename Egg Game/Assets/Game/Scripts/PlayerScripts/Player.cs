@@ -39,9 +39,10 @@ public class Player : NetworkBehaviour
     [SerializeField] private float weaponCooldown = 0.8f;
 
     // Player status and synchronization
-    [SyncVar] public bool isKing = false;
+    [SyncVar(hook = nameof(OnCurrentKingStateChanged))] public bool isKing = false;
     [SyncVar(hook = nameof(OnIsDeadChanged))] public bool isDead = false;
     public bool isAlreadyDead = false;
+    public bool isLocalKing = false;
     public bool becameKing = false;
     public bool isPlayer = false;
     [SyncVar(hook = nameof(OnIsFlashingChanged))] private bool isflashing = false;
@@ -163,11 +164,9 @@ public class Player : NetworkBehaviour
         rigid = gameObject.GetComponent<Rigidbody2D>();
         menuScript = FindObjectOfType<MenuScript>();
 
-        if (isServer)
-        {
-            multiTargetCamera = GameObject.FindObjectOfType<MultiTargetCamera>();
-            multiTargetCamera.AddPlayer(this);
-        }
+        multiTargetCamera = GameObject.FindObjectOfType<MultiTargetCamera>();
+        multiTargetCamera.AddPlayer(this);
+    
     }
 
     void Update()
@@ -646,6 +645,11 @@ public class Player : NetworkBehaviour
             becameKing = true;
         }
 
+        if (other.gameObject.CompareTag("KingPoint") && isLocalPlayer)
+        {
+            //isLocalKing = true;
+        }
+
         if (other.gameObject.CompareTag("Trap") && !isflashing)
         {
             audioSource.PlayOneShot(hitAudioClip);
@@ -766,5 +770,11 @@ public class Player : NetworkBehaviour
     private void OnCurrentScoreChanged(int oldScore, int newScore)
     {
         // Handle the change in currentScore here if needed
+    }
+    
+    private void OnCurrentKingStateChanged (bool oldValue, bool newValue){
+        if(isLocalPlayer){
+            isLocalKing = newValue;
+        }
     }
 }

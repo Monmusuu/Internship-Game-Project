@@ -212,6 +212,8 @@ public class RoundControl : NetworkBehaviour
                 //Increase the fill amount of the victory curtain image
                 if (victoryCurtainFillAmount < 1.0f && victoryTimer)
                 {
+                    itemsPlaced = false;
+                    placingItems = false;
                     victoryCurtainFillAmount += Time.deltaTime * 0.5f; // Adjust fillSpeed as needed
 
                     if(victoryCurtainFillAmount > 0.9f){
@@ -407,7 +409,7 @@ public class RoundControl : NetworkBehaviour
         Player king = players.Find(player => player != null && player.isKing);
 
         // If there is no king or the king is null, return false
-        if (king == null)
+        if (king == null || players.Count <= 1)
         {
             return false;
         }
