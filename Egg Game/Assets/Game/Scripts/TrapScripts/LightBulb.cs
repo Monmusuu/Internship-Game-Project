@@ -11,6 +11,9 @@ public class LightBulb : NetworkBehaviour
 
     private Color originalColor;
 
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
+
     private void Start()
     {
         originalColor = spriteRenderer.color;
@@ -20,6 +23,9 @@ public class LightBulb : NetworkBehaviour
     [Server]
     public void ActivateFunction(Sprite sprite)
     {
+        // Play the activation audio clip
+        RpcPlayActivationAudio();
+
         SetSpriteWithOpacity(sprite);
     }
 
@@ -42,5 +48,12 @@ public class LightBulb : NetworkBehaviour
     private void OnColorChange(Color oldColor, Color newColor)
     {
         spriteRenderer.color = newColor;
+    }
+
+    [ClientRpc]
+    void RpcPlayActivationAudio()
+    {
+        // Play the activation audio clip on all clients
+        audioSource.PlayOneShot(audioClip);
     }
 }

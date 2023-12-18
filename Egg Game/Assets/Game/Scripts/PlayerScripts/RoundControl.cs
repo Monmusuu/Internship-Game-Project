@@ -100,7 +100,7 @@ public class RoundControl : NetworkBehaviour
                             currentKing.currentScore += 1;
                             Debug.Log("Player's score: " + currentKing.currentScore);
 
-                            if(currentKing.currentScore == 2){
+                            if(currentKing.currentScore == 8){
                                 victoryTimer = true;
                                 victoryScreen = true;
                             }else{
@@ -171,7 +171,7 @@ public class RoundControl : NetworkBehaviour
                                 // Increase the currentScore of the current king
                                 currentKing.currentScore += 1;
 
-                                if(currentKing.currentScore == 2){
+                                if(currentKing.currentScore == 8){
                                     victoryTimer = true;
                                     victoryScreen = true;
                                 }
@@ -201,7 +201,7 @@ public class RoundControl : NetworkBehaviour
                         {
                             // Increase the currentScore of the current king
                             currentKing.currentScore += 1;
-                            if(currentKing.currentScore == 2){
+                            if(currentKing.currentScore == 8){
                                 victoryTimer = true;
                                 victoryScreen = true;
                             }

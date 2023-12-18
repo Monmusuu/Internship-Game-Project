@@ -7,10 +7,15 @@ public class TrapMicrophone : NetworkBehaviour
 {
     public Transform projectileSpawnPoint;
     public GameObject projectilePrefab;
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
 
     [Server]
     public void ActivateFunction()
     {
+        // Play the activation audio clip
+        RpcPlayActivationAudio();
+
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
         SoundWave projectileScript = projectile.GetComponent<SoundWave>();
         if (projectileScript != null)
@@ -31,5 +36,12 @@ public class TrapMicrophone : NetworkBehaviour
         {
             Debug.LogWarning("The projectile prefab is missing the SoundWave component!");
         }
+    }
+
+    [ClientRpc]
+    void RpcPlayActivationAudio()
+    {
+        // Play the activation audio clip on all clients
+        audioSource.PlayOneShot(audioClip);
     }
 }

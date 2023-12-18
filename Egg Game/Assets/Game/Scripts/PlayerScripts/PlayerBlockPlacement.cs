@@ -81,8 +81,9 @@ public class PlayerBlockPlacement : NetworkBehaviour
 
     // Place the block on the server
     GameObject placedBlock = null;
-
     public MenuScript menuScript;
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
 
     private void Awake()
     {
@@ -258,6 +259,9 @@ public class PlayerBlockPlacement : NetworkBehaviour
         
         //Spawn the placed block on the server so that it's visible to all clients
         NetworkServer.Spawn(placedBlock);
+
+        // Play the activation audio clip on all clients
+        audioSource.PlayOneShot(audioClip);
 
         placedBlock.layer = kingLayerValue;
 

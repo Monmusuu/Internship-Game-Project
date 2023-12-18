@@ -7,6 +7,8 @@ public class MouseTrap : NetworkBehaviour
     public Animator animator;
     public Collider2D attackCollider;
     private bool isOnCooldown = false;
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip audioClip; // The audio clip to be played
     
     // OnTriggerEnter2D is called when another collider enters the trigger zone
     private void OnTriggerEnter2D(Collider2D other)
@@ -32,6 +34,9 @@ public class MouseTrap : NetworkBehaviour
     {
         // Set the cooldown flag
         isOnCooldown = true;
+
+        // Play the activation audio clip on all clients
+        audioSource.PlayOneShot(audioClip);
 
         // Wait for 2 seconds
         yield return new WaitForSeconds(2f);
