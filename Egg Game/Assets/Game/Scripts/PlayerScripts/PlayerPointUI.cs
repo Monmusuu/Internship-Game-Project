@@ -96,14 +96,15 @@ public class PlayerPointUI : NetworkBehaviour
                         // Set the position to (0, 0, 0)
                         transform.localPosition = Vector3.zero;
 
-                        if (string.IsNullOrEmpty(PlayerName.text))
-                        {
-                            PlayerName.text = "Player" + i;
-                        }
-                        else
-                        {
-                            PlayerName.text = SteamFriends.GetPersonaName();
-                        }
+                        // if (string.IsNullOrEmpty(PlayerName.text))
+                        // {
+                        //     PlayerName.text = "Player" + i;
+                        // }
+                        // else
+                        // {
+                            // Set the player name on the current UI
+                            PlayerName.text = player.playerName;
+                        //}
 
                         if (player == null)
                         {

@@ -8,7 +8,7 @@ using Mirror;
 
 public class VotingSystem : NetworkBehaviour
 {
-    public int numMaps = 5; // Number of available maps
+    public int numMaps = 6; // Number of available maps
     [SerializeField] private TextMeshProUGUI[] voteCountTexts; // Array to store the TextMeshProUGUI components for displaying vote counts
 
     private Dictionary<int, bool> hasVoted; // Dictionary to track whether each player has voted
@@ -252,14 +252,21 @@ public class VotingSystem : NetworkBehaviour
 
     private void OnTimerProgressChanged(float oldProgress, float newProgress)
     {
-        timerImage.fillAmount = newProgress;
+        if (timerImage != null)
+        {
+            timerImage.fillAmount = newProgress;
+        }
+        else
+        {
+            //Debug.LogError("timerImage is null in OnTimerProgressChanged.");
+        }
     }
 
 
     private void SwitchToMapScene(int mapIndex)
     {
         // Replace "MapScene1", "MapScene2", etc. with the actual scene names for each map index
-        string[] sceneNames = { "Nathan", "MapScene2", "MapScene3", "MapScene4", "MapScene5", "MapScene6" };
+        string[] sceneNames = { "Nathan", "MapScene2", "MapScene3", "MapScene4", "MapScene5", "MapScene6", "CharacterSelection" };
 
         // Check if the map index is within the valid range
         if (mapIndex >= 0 && mapIndex < sceneNames.Length)

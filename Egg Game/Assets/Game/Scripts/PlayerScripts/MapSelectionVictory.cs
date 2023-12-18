@@ -24,9 +24,6 @@ public class MapSelectionVictory : NetworkBehaviour
     private Image selectedImage;
     private Color originalColor;
 
-    [SerializeField]
-    private ClickableImage[] clickableImages;
-
     private Collider2D objectCollider;
 
     // Game focus variable
@@ -133,8 +130,8 @@ public class MapSelectionVictory : NetworkBehaviour
             // Assuming MapCanvasHolderTransform is a reference to a Transform of the MapCanvasHolder
             Transform child2 = MapCanvasHolder.transform;
 
-            // Accessing children in the range 1-6 under child2
-            for (int i = 1; i <= 6; i++)
+            // Accessing children in the range 1-8 under child2
+            for (int i = 1; i <= 8; i++)
             {
                 if (child2 != null && i - 1 < child2.childCount)
                 {

@@ -46,7 +46,7 @@ public class MultiTargetCamera : MonoBehaviour
         }
         else
         {
-            if(roundControl.victoryScreen && !roundControl.victoryTimer){
+            if(roundControl != null && roundControl.victoryScreen && !roundControl.victoryTimer){
                 mapObject = GameObject.Find("VictoryBackground");
                 ZoomOutToSeeMap();
             }else{
@@ -149,7 +149,7 @@ public class MultiTargetCamera : MonoBehaviour
 
         for (int i = 0; i < players.Count; i++)
         {
-            if (!players[i].isKing)
+            if (players[i] != null && !players[i].isKing)
             {
                 if (firstPlayer)
                 {
@@ -178,7 +178,7 @@ public class MultiTargetCamera : MonoBehaviour
 
         for (int i = 0; i < players.Count; i++)
         {
-            if (!players[i].isKing)
+            if (players[i] != null && !players[i].isKing)
             {
                 if (firstPlayer)
                 {

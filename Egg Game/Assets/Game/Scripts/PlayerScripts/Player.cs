@@ -4,10 +4,12 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 using TMPro.Examples;
+using Steamworks;
 
 public class Player : NetworkBehaviour
 {
 // Rigidbody and movement parameters
+    public string playerName;
     public Rigidbody2D rigid;
     [SerializeField] private float jumpSpeed = 5;
     [SerializeField] private float m_RunSpeed = 1;
@@ -111,10 +113,10 @@ public class Player : NetworkBehaviour
     
     private void Awake()
     {
-        Transform hatChild = transform.GetChild(4);
+        Transform hatChild = transform.GetChild(5);
         hatSpriteRenderer = hatChild.GetComponent<SpriteRenderer>();
         bodySpriteRenderer = GetComponent<SpriteRenderer>();
-        Transform weaponChild = transform.GetChild(3);
+        Transform weaponChild = transform.GetChild(4);
         weaponSpriteRenderer = weaponChild.GetComponent<SpriteRenderer>();
     }
 
@@ -125,6 +127,8 @@ public class Player : NetworkBehaviour
 
     void Start()
     {
+        playerName = SteamFriends.GetPersonaName();
+
         // Check if the current player is the local player
         if (isLocalPlayer)
         {
