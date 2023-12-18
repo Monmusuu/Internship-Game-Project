@@ -947,6 +947,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  playerName: 
   rigid: {fileID: 3219085190463158599}
   jumpSpeed: 22
   m_RunSpeed: 15
@@ -966,6 +967,7 @@ MonoBehaviour:
   isKing: 0
   isDead: 0
   isAlreadyDead: 0
+  isLocalKing: 0
   becameKing: 0
   isPlayer: 0
   currentHealth: 6
@@ -1513,7 +1515,6 @@ MonoBehaviour:
   syncInterval: 0
   speed: 200
   selectedColor: {r: 0, g: 1, b: 0, a: 1}
-  clickableImages: []
   mapObjectContainer:
     mapObjects: []
   mapButton: {fileID: 0}
@@ -1799,9 +1800,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 6
-  m_Sprite: {fileID: -815256263, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
+  m_Sprite: {fileID: -1746037780, guid: 66ab208cb6c98144ba9d7f4a7ecd3669, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1.04, y: 1}
