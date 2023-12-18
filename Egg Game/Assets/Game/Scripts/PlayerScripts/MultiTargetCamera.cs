@@ -40,7 +40,7 @@ public class MultiTargetCamera : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (roundControl.placingItems)
+        if (roundControl != null && roundControl.placingItems)
         {
             ZoomOutToSeeMap();
         }
