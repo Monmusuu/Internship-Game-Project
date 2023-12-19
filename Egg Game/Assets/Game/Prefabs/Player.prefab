@@ -1118,6 +1118,7 @@ MonoBehaviour:
   swingAudioClip: {fileID: 8300000, guid: ae097e4d7f3d91445b8092c4b0558bce, type: 3}
   jumpAudioClip: {fileID: 8300000, guid: 1ecdcded40507774cbb8ba6343dab0e9, type: 3}
   oilAudioClip: {fileID: 8300000, guid: 0c3234347062e4044a10e1226497d60a, type: 3}
+  iceWalkAudioClip: {fileID: 8300000, guid: 3517320ae4fd10c46ad8fc0c05f287ce, type: 3}
 --- !u!70 &3219085190463158595
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

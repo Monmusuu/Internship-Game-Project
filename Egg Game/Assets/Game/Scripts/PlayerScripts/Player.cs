@@ -39,6 +39,7 @@ public class Player : NetworkBehaviour
     [SerializeField] private double internalTimer;
     private bool isAttacking = false;
     [SerializeField] private float weaponCooldown = 0.8f;
+    private bool isOnIce = false;
 
     // Player status and synchronization
     [SyncVar(hook = nameof(OnCurrentKingStateChanged))] public bool isKing = false;
@@ -110,6 +111,7 @@ public class Player : NetworkBehaviour
     public AudioClip swingAudioClip; // The audio clip to be played
     public AudioClip jumpAudioClip; // The audio clip to be played
     public AudioClip oilAudioClip; // The audio clip to be played
+    public AudioClip iceWalkAudioClip; // The audio clip to be played
     
     private void Awake()
     {
@@ -703,6 +705,12 @@ public class Player : NetworkBehaviour
         if (other.gameObject.CompareTag("Flame")) {
             currentHealth -= 0.05f;
         }
+
+        if (other.gameObject.CompareTag("IceBlock")) {
+            isOnIce = true;
+        }else{
+            isOnIce = false;
+        }
     }
 
     private void OnIsFlashingChanged(bool oldValue, bool newValue)
@@ -723,6 +731,12 @@ public class Player : NetworkBehaviour
             yield return new WaitForSeconds(0.5f);
         }
         isflashing = false;
+    }
+
+    public void IceWalk(){
+        if(isOnIce){
+            audioSource.PlayOneShot(iceWalkAudioClip);
+        }
     }
 
     public void hatChangeSprite(int newIndex)
