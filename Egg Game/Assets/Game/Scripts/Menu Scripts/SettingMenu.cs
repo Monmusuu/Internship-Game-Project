@@ -139,11 +139,11 @@ public class SettingMenu : MonoBehaviour
     public void SetSFXVolume(float value){
         if (value <= 0.0001f)
         {
-            masterButton.image.sprite = muteBasicAudio; // Change the image to the mute sprite
+            sfxButton.image.sprite = muteBasicAudio; // Change the image to the mute sprite
         }
         else
         {
-            masterButton.image.sprite = nonMuteBasicAudio; // Change the image to the unmute sprite
+            sfxButton.image.sprite = nonMuteBasicAudio; // Change the image to the unmute sprite
         }
         mixer.SetFloat(Mixer_SFX, Mathf.Log10(value)*20);
         PlayerPrefs.SetFloat("SFXVolume", value); // Save the SFX volume to PlayerPrefs
