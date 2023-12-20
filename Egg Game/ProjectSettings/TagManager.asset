@@ -40,6 +40,7 @@ TagManager:
   - Point6
   - UIHolder
   - IceBlock
+  - MouseTrap
   layers:
   - Default
   - TransparentFX

@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8899664163507194902}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &905747638897534579
 BoxCollider2D:
@@ -87,11 +87,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8899664161773216447}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 1.2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8899664163507194902}
+  m_Father: {fileID: 8899664162920358278}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8899664161773216445
@@ -322,20 +322,11 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.089999996, y: -0.26}
-      - {x: 0.17999999, y: -0.22999999}
-      - {x: 0.31, y: -0.19999999}
-      - {x: 0.48, y: -0.13}
+    - - {x: 0.17999999, y: -0.22999999}
       - {x: 0.55, y: -0.11}
-      - {x: 0.57, y: -0.089999996}
       - {x: 0.57, y: 0.44}
-      - {x: -0.56, y: 0.44}
       - {x: -0.57, y: 0.42999998}
       - {x: -0.57, y: -0.44}
-      - {x: -0.48, y: -0.44}
-      - {x: -0.32999998, y: -0.39}
-      - {x: -0.19, y: -0.35999998}
-      - {x: 0.01, y: -0.28}
 --- !u!1 &8899664161789709419
 GameObject:
   m_ObjectHideFlags: 0
@@ -449,7 +440,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8899664163507194902}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8899664162920358273
 GameObject:
@@ -478,9 +469,10 @@ Transform:
   m_LocalPosition: {x: 0.25, y: 1.221, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8899664161773216444}
   m_Father: {fileID: 8899664163507194902}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8899664163507194896
 GameObject:
@@ -516,9 +508,8 @@ Transform:
   m_LocalScale: {x: 1.6, y: 1.56, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8899664161773216444}
-  - {fileID: 8899664161789709416}
   - {fileID: 8899664162920358278}
+  - {fileID: 8899664161789709416}
   - {fileID: 8899664162347894008}
   - {fileID: 6421395292531829930}
   m_Father: {fileID: 0}

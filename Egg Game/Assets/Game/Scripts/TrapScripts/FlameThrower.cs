@@ -16,16 +16,19 @@ public class FlameThrower : NetworkBehaviour
     [Server]
     public void ActivateFunction()
     {
-        // Start burning
-        RpcActivateFlameThrower(true);
-        StartCoroutine(DeactivateAfterDelay(2.0f)); // Adjust the delay as needed
+        if(smallCollider.enabled == true){
+            Debug.Log("Activate Large Flame");
+            animator.SetTrigger("Burn");
+
+            // Start burning
+            RpcActivateFlameThrower(true);
+            StartCoroutine(DeactivateAfterDelay(3.4f)); // Adjust the delay as needed
+        }
     }
 
     [ClientRpc]
     void RpcActivateFlameThrower(bool activate)
     {
-        animator.SetBool("Burn", activate);
-
         // Enable or disable colliders based on the activation state
         smallCollider.enabled = !activate;
         largeCollider.enabled = activate;

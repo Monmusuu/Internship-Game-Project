@@ -138,6 +138,7 @@ MonoBehaviour:
   animator: {fileID: 3711782470674941905}
   audioSource: {fileID: 5464389366705485036}
   audioClip: {fileID: 8300000, guid: 522bab75930752a4b96694a06cf608c3, type: 3}
+  activationCooldown: 0.5
 --- !u!95 &3711782470674941905
 Animator:
   serializedVersion: 5

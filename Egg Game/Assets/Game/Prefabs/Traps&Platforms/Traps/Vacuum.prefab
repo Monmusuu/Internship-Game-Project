@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4177139402556719689}
   - component: {fileID: 4177139402556719694}
   - component: {fileID: 4177139402556719695}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Vacuum
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 4177139402782909608}
   - component: {fileID: 4177139402782909609}
   - component: {fileID: 2591718775811481458}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -403,7 +403,7 @@ GameObject:
   - component: {fileID: 4177139402891428065}
   - component: {fileID: 4177139402891428070}
   - component: {fileID: 4177139402891428071}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Rope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -593,7 +593,7 @@ GameObject:
   - component: {fileID: 4177139403011006856}
   - component: {fileID: 4177139403011006862}
   - component: {fileID: 4177139403011006863}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Rope (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -759,7 +759,7 @@ GameObject:
   - component: {fileID: 4177139403142261889}
   - component: {fileID: 4177139403142261895}
   - component: {fileID: 4177139403142261892}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Rope (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -925,7 +925,7 @@ GameObject:
   - component: {fileID: 4177139403282991669}
   - component: {fileID: 4177139403282991656}
   - component: {fileID: 4177139403282991658}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Sucker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1051,7 +1051,7 @@ GameObject:
   - component: {fileID: 7301572228440417625}
   - component: {fileID: 3602508453554320172}
   - component: {fileID: 4416561060886024578}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: SuckerObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}

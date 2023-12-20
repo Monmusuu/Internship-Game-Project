@@ -55,7 +55,17 @@ public class GuillotineScript : NetworkBehaviour
     public void ActivateFunction()
     {
         Debug.Log("ActivateFunction called");
-        StartMovingDown();
+
+        // Check if the object is already at pointA
+        if (transform.position == pointA.position)
+        {
+            StartMovingDown();
+        }
+        else
+        {
+            Debug.Log("Object is not in position A");
+            // Handle the case when the object is not in position A
+        }
     }
 
     private void StartMovingDown()

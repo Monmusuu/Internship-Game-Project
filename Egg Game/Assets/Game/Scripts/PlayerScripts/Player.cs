@@ -11,8 +11,8 @@ public class Player : NetworkBehaviour
 // Rigidbody and movement parameters
     public string playerName;
     public Rigidbody2D rigid;
-    [SerializeField] private float jumpSpeed = 5;
-    [SerializeField] private float m_RunSpeed = 1;
+    [SerializeField] private float jumpSpeed = 22;
+    [SerializeField] private float m_RunSpeed = 15;
     private float m_horizontal;
     private const float groundCheckRadius = 0.2f;
 
@@ -39,7 +39,7 @@ public class Player : NetworkBehaviour
     [SerializeField] private double internalTimer;
     private bool isAttacking = false;
     [SerializeField] private float weaponCooldown = 0.8f;
-    private bool isOnIce = false;
+    [SyncVar] private bool isOnIce = false;
 
     // Player status and synchronization
     [SyncVar(hook = nameof(OnCurrentKingStateChanged))] public bool isKing = false;
@@ -692,24 +692,44 @@ public class Player : NetworkBehaviour
             StartCoroutine(InvincibleFlash());
         }
 
+        if (other.gameObject.CompareTag("Spike"))
+        {
+            m_RunSpeed = 4f;
+        }
+
         if (other.gameObject.CompareTag("GuillotineBlade") && !isflashing)
         {
             audioSource.PlayOneShot(hitAudioClip);
             isflashing = true;
-            currentHealth -= 1;
+            currentHealth -= 2.5f;
+            StartCoroutine(InvincibleFlash());
+        }
+
+        if (other.gameObject.CompareTag("MouseTrap") && !isflashing)
+        {
+            audioSource.PlayOneShot(hitAudioClip);
+            isflashing = true;
+            currentHealth -= 2;
             StartCoroutine(InvincibleFlash());
         }
     }
 
     private void OnTriggerStay2D(Collider2D other) {
         if (other.gameObject.CompareTag("Flame")) {
-            currentHealth -= 0.05f;
+            currentHealth -= 0.08f;
         }
 
         if (other.gameObject.CompareTag("IceBlock")) {
             isOnIce = true;
         }else{
             isOnIce = false;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        if (other.gameObject.CompareTag("Spike"))
+        {
+            m_RunSpeed = 15;
         }
     }
 

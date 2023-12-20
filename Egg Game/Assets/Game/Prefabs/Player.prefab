@@ -340,11 +340,13 @@ MonoBehaviour:
   - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
   - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
   - {fileID: 4472608398988364885, guid: 672b4c3206b0da04a986b39a7d2fe025, type: 3}
+  - {fileID: 4177139402556719701, guid: 1be9c3394e793144b90cb8e370a2c182, type: 3}
   manualTrap2TileObjects:
   - {fileID: 8899664163507194896, guid: 9bc9d60998e5ac44aa49321277d538ec, type: 3}
   - {fileID: 3711782470674941906, guid: 1b87c8e9441e80a45914af2cf58eb526, type: 3}
   - {fileID: 5701593315406794892, guid: 82cc5aa25628302408a787c230e50d0d, type: 3}
   - {fileID: 4472608398988364885, guid: 672b4c3206b0da04a986b39a7d2fe025, type: 3}
+  - {fileID: 4177139402556719701, guid: 1be9c3394e793144b90cb8e370a2c182, type: 3}
   teleporterReciever: {fileID: 8981147863118277878, guid: fdbda3ed8ea6ba9418735d36a87b39ac, type: 3}
   boundingObject: {fileID: 0}
   trapHolder: {fileID: 0}

@@ -47,7 +47,7 @@ public class OliveOil : NetworkBehaviour
     private IEnumerator Destroy()
     {
         float elapsedTime = 0f;
-        float duration = 2f;
+        float duration = 6f;
 
         while (elapsedTime < duration)
         {
