@@ -487,7 +487,7 @@ public class PlayerBlockPlacement : NetworkBehaviour
             // Set the rotation of the preview object
             previewObject.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
 
-            Debug.Log("Preview Object Rotated to: " + rotationAngle);
+            //Debug.Log("Preview Object Rotated to: " + rotationAngle);
         }
     }
 

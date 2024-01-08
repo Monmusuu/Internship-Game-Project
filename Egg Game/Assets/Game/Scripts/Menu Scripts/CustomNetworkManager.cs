@@ -67,11 +67,26 @@ public class CustomNetworkManager : NetworkManager
 
                     Debug.Log("Players: " + playerSaveData.playerCount);
 
-                    // Spawn a PlayerPoint for the newly added player
-                    if(sceneName == "Nathan"){
-                        SpawnPlayerPointForPlayer(conn);
+                    if(sceneName == "CharacterSelection"){
+                        CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex(steamLobby.createdLobbyID, numPlayers-1);
+        
+                        var playerId = conn.identity.GetComponent<CharacterSelection>();
+
+                        playerId.SetSteamId(steamId.m_SteamID);
                     }
 
+
+                    // Spawn a PlayerPoint for the newly added player
+                    if(sceneName == "Nathan"){
+
+                        CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex(steamLobby.createdLobbyID, numPlayers-1);
+        
+                        var playerId = conn.identity.GetComponent<Player>();
+
+                        playerId.SetSteamId(steamId.m_SteamID);
+        
+                        SpawnPlayerPointForPlayer(conn);
+                    }
                     // Initialize player-specific data here
 
                     return;

@@ -8,8 +8,8 @@ using Steamworks;
 
 public class Player : NetworkBehaviour
 {
-// Rigidbody and movement parameters
-    public string playerName;
+    // Rigidbody and movement parameters
+    public string playerName = null;
     public Rigidbody2D rigid;
     [SerializeField] private float jumpSpeed = 22;
     [SerializeField] private float m_RunSpeed = 15;
@@ -112,6 +112,8 @@ public class Player : NetworkBehaviour
     public AudioClip jumpAudioClip; // The audio clip to be played
     public AudioClip oilAudioClip; // The audio clip to be played
     public AudioClip iceWalkAudioClip; // The audio clip to be played
+
+    [SyncVar(hook = nameof(HandleSteamIdUpdate))] private ulong steamId;
     
     private void Awake()
     {
@@ -127,15 +129,25 @@ public class Player : NetworkBehaviour
         internalTimer = weaponTimer;
     }
 
+    public void SetSteamId(ulong steamId){
+        this.steamId = steamId;
+    }
+
+    private void HandleSteamIdUpdate(ulong oldSteamId, ulong newSteamId){
+        var cSteamId = new CSteamID(newSteamId);
+        
+        playerName = SteamFriends.GetFriendPersonaName(cSteamId);
+    }
+
     void Start()
     {
-        playerName = SteamFriends.GetPersonaName();
-
         // Check if the current player is the local player
         if (isLocalPlayer)
         {
             // Add an AudioListener component to the local player
             AddAudioListener();
+
+            //playerName = SteamFriends.GetPersonaName();
         }
         AssignPlayerTag();
 
@@ -416,6 +428,11 @@ public class Player : NetworkBehaviour
                 interactionCursor.color = playerColor;
                 placeCursor.color = playerColor;
                 victoryCursor.color = playerColor;
+                if(string.IsNullOrEmpty(playerName)){
+                    playerName = gameObject.tag;
+                    Debug.Log("Player Name set to tag: " + playerName);
+                }
+                
                 break;
             }
         }

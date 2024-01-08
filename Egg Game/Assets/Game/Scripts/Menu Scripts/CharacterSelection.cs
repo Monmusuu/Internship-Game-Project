@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Mirror;
+using TMPro;
+using Steamworks;
 
 public class CharacterSelection : NetworkBehaviour
 {
@@ -47,12 +49,27 @@ public class CharacterSelection : NetworkBehaviour
     [SerializeField]
     private SpriteRenderer cursor;
 
+    public TMP_Text playerName = null;
+
+    [SyncVar(hook = nameof(HandleSteamIdUpdate))] private ulong steamId;
+
+    public void SetSteamId(ulong steamId){
+        this.steamId = steamId;
+    }
+
+    private void HandleSteamIdUpdate(ulong oldSteamId, ulong newSteamId){
+        var cSteamId = new CSteamID(newSteamId);
+        
+        playerName.text = SteamFriends.GetFriendPersonaName(cSteamId);
+    }
+
+
     public override void OnStartClient()
     {
         base.OnStartClient();
-        hatRenderer = transform.GetChild(0).GetChild(3).GetComponent<SpriteRenderer>();
-        bodyRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
-        weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
+        hatRenderer = transform.GetChild(0).GetChild(2).GetComponent<SpriteRenderer>();
+        bodyRenderer = transform.GetChild(0).GetChild(3).GetComponent<SpriteRenderer>();
+        weaponRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
     }
 
     private void Start()
@@ -65,9 +82,9 @@ public class CharacterSelection : NetworkBehaviour
         // Check if the mapButton GameObject exists before attempting to find the Button component
         GameObject backButton2 = GameObject.Find("Back Button 2");
 
-        hatRenderer = transform.GetChild(0).GetChild(3).GetComponent<SpriteRenderer>();
-        bodyRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
-        weaponRenderer = transform.GetChild(0).GetChild(5).GetComponent<SpriteRenderer>();
+        hatRenderer = transform.GetChild(0).GetChild(2).GetComponent<SpriteRenderer>();
+        bodyRenderer = transform.GetChild(0).GetChild(3).GetComponent<SpriteRenderer>();
+        weaponRenderer = transform.GetChild(0).GetChild(4).GetComponent<SpriteRenderer>();
     }
 
     void AssignPlayerTag()
@@ -89,6 +106,10 @@ public class CharacterSelection : NetworkBehaviour
                 Color playerColor = GetPlayerColor(i - 1); // Subtract 1 from the index
                 Debug.Log("Assigned tag: " + playerTag);
                 cursor.color = playerColor;
+                if(playerName == null || string.IsNullOrEmpty(playerName.text)){
+                    playerName.text = gameObject.tag;
+                    Debug.Log("Player Name set to tag: " + playerName);
+                }
                 break;
             }
         }
