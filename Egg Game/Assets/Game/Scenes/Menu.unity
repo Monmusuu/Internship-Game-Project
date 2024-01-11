@@ -6048,7 +6048,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -4049728018821672459, guid: 1d270a51abe70a246b202c7e295fc021, type: 2}
   m_audioClip: {fileID: 8300000, guid: 685f058c488c6584a880d30d464794f0, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -9926,7 +9926,7 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/Game/Scenes/Menu.unity
   onlineScene: Assets/Game/Scenes/CharacterSelection.unity
-  transport: {fileID: 1764644816}
+  transport: {fileID: 1764644809}
   networkAddress: localhost
   maxConnections: 6
   authenticator: {fileID: 0}
@@ -10013,7 +10013,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 2756044037716022131, guid: 1d270a51abe70a246b202c7e295fc021, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -10118,7 +10118,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1764644806}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c7424c1070fad4ba2a7a96b02fbeb4bb, type: 3}
   m_Name: 
@@ -10142,7 +10142,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1764644806}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
   m_Name: 
